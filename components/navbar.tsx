@@ -33,9 +33,7 @@ export default function Navbar() {
   }, [])
 
   const navItems = [
-    { name: "Como Funciona", href: "/como-funciona" },
-    { name: "Para Psicólogos", href: "/para-psicologos" },
-    { name: "Sobre Nós", href: "/sobre-nos" }, // Mantido como "/sobre-nos" por enquanto
+    { name: "Sobre Nós", href: "/sobre-nos" },
   ]
 
   return (

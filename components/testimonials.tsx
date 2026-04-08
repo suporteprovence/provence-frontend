@@ -5,21 +5,21 @@ import { Star, Quote } from "lucide-react"
 
 const testimonials = [
   {
-    name: "Maria Silva",
+    name: "Maria S.",
     role: "Paciente",
     content:
       "Excelente plataforma! Facilitou muito minha vida poder fazer consultas online e ter todo meu histórico terapêutico organizado.",
     rating: 5,
   },
   {
-    name: "João Santos",
+    name: "João P.",
     role: "Paciente",
     content:
       "O atendimento é muito profissional e a plataforma é super intuitiva. Recomendo para todos que buscam terapia online!",
     rating: 5,
   },
   {
-    name: "Ana Oliveira",
+    name: "Ana C.",
     role: "Paciente",
     content:
       "Adorei a facilidade de marcar sessões e a rapidez no atendimento. Os psicólogos são excelentes e atenciosos.",

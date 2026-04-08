@@ -25,58 +25,7 @@ interface HistorySession {
   type: "video" | "presencial"
 }
 
-const historySessions: HistorySession[] = [
-  {
-    id: "1",
-    patient: { name: "Maria Silva" },
-    date: "2025-10-08",
-    time: "09:00",
-    duration: 60,
-    sessionNumber: 3,
-    notes: "Paciente demonstrou progresso significativo no manejo da ansiedade. Continuamos trabalhando técnicas de respiração e mindfulness.",
-    type: "video",
-  },
-  {
-    id: "2",
-    patient: { name: "João Santos" },
-    date: "2025-10-07",
-    time: "14:00",
-    duration: 50,
-    sessionNumber: 1,
-    notes: "Primeira sessão. Paciente relatou dificuldades com sono e estresse no trabalho. Estabelecemos objetivos terapêuticos.",
-    type: "presencial",
-  },
-  {
-    id: "3",
-    patient: { name: "Carla Mendes" },
-    date: "2025-10-06",
-    time: "11:00",
-    duration: 60,
-    sessionNumber: 4,
-    notes: "Discussão sobre relacionamentos interpessoais. Paciente mostrou insights importantes sobre padrões de comportamento.",
-    type: "presencial",
-  },
-  {
-    id: "4",
-    patient: { name: "Pedro Lima" },
-    date: "2025-10-05",
-    time: "15:30",
-    duration: 60,
-    sessionNumber: 2,
-    notes: "Continuação do trabalho com técnicas cognitivo-comportamentais. Paciente relatou melhora nos sintomas.",
-    type: "video",
-  },
-  {
-    id: "5",
-    patient: { name: "Ana Costa" },
-    date: "2025-10-04",
-    time: "10:00",
-    duration: 60,
-    sessionNumber: 5,
-    notes: "Sessão focada em estratégias de enfrentamento. Paciente demonstrou maior autoconhecimento.",
-    type: "video",
-  },
-]
+const historySessions: HistorySession[] = []
 
 export function HistoricoProfessional() {
   const [selectedSession, setSelectedSession] = useState<HistorySession | null>(null)

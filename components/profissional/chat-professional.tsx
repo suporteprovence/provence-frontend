@@ -28,56 +28,9 @@ interface Message {
   type: "text" | "file"
 }
 
-const contacts: Contact[] = [
-  {
-    id: "1",
-    name: "Maria Silva",
-    lastMessage: "Obrigada pela sessão de hoje!",
-    timestamp: "10:30",
-    unread: 2,
-    online: true,
-  },
-  {
-    id: "2",
-    name: "João Santos",
-    lastMessage: "Gostaria de remarcar nossa próxima sessão",
-    timestamp: "09:15",
-    unread: 1,
-    online: false,
-  },
-  {
-    id: "3",
-    name: "Ana Costa",
-    lastMessage: "Bom dia, doutor!",
-    timestamp: "Ontem",
-    unread: 0,
-    online: true,
-  },
-  {
-    id: "4",
-    name: "Pedro Lima",
-    lastMessage: "Consegui fazer os exercícios que você passou",
-    timestamp: "Ontem",
-    unread: 0,
-    online: false,
-  },
-  {
-    id: "5",
-    name: "Carla Mendes",
-    lastMessage: "Até amanhã!",
-    timestamp: "Seg",
-    unread: 0,
-    online: false,
-  },
-]
+const contacts: Contact[] = []
 
-const mockMessages: Message[] = [
-  { id: "1", senderId: "1", content: "Bom dia, doutor! Tudo bem?", timestamp: "10:15", type: "text" },
-  { id: "2", senderId: "professional", content: "Bom dia, Maria! Tudo ótimo, e você?", timestamp: "10:16", type: "text" },
-  { id: "3", senderId: "1", content: "Estou bem! Queria agradecer pela sessão de hoje, me ajudou muito.", timestamp: "10:17", type: "text" },
-  { id: "4", senderId: "professional", content: "Fico muito feliz em saber! Continue praticando os exercícios que conversamos.", timestamp: "10:18", type: "text" },
-  { id: "5", senderId: "1", content: "Com certeza! Obrigada pela sessão de hoje!", timestamp: "10:30", type: "text" },
-]
+const mockMessages: Message[] = []
 
 export function ChatProfessional() {
   const [selectedContact, setSelectedContact] = useState<Contact>(contacts[0])

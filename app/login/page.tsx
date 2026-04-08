@@ -25,7 +25,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
-const API_BASE = "https://provence.host/auth/login.php"
+const API_BASE = "https://provence.host"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")

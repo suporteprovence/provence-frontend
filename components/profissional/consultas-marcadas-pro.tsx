@@ -38,53 +38,7 @@ interface Appointment {
   notes?: string
 }
 
-const appointments: Appointment[] = [
-  {
-    id: "1",
-    patient: { name: "Maria Silva", email: "maria@email.com", phone: "(11) 98765-4321" },
-    date: "2025-10-09",
-    time: "09:00",
-    type: "video",
-    status: "confirmada",
-    sessionNumber: 3,
-  },
-  {
-    id: "2",
-    patient: { name: "João Santos", email: "joao@email.com", phone: "(11) 98765-4322" },
-    date: "2025-10-09",
-    time: "10:30",
-    type: "presencial",
-    status: "confirmada",
-    sessionNumber: 1,
-  },
-  {
-    id: "3",
-    patient: { name: "Ana Costa", email: "ana@email.com", phone: "(11) 98765-4323" },
-    date: "2025-10-09",
-    time: "14:00",
-    type: "video",
-    status: "pendente",
-    sessionNumber: 5,
-  },
-  {
-    id: "4",
-    patient: { name: "Pedro Lima", email: "pedro@email.com", phone: "(11) 98765-4324" },
-    date: "2025-10-10",
-    time: "15:30",
-    type: "video",
-    status: "confirmada",
-    sessionNumber: 2,
-  },
-  {
-    id: "5",
-    patient: { name: "Carla Mendes", email: "carla@email.com", phone: "(11) 98765-4325" },
-    date: "2025-10-08",
-    time: "11:00",
-    type: "presencial",
-    status: "concluida",
-    sessionNumber: 4,
-  },
-]
+const appointments: Appointment[] = []
 
 export function ConsultasMarcadasPro() {
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)

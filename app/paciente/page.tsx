@@ -271,11 +271,9 @@ export default function PatientDashboard() {
           </button>
           <button
             onClick={() => {
-              // se você tiver logout real, coloca aqui
-              // exemplo:
-              // localStorage.removeItem("token")
-              // localStorage.removeItem("user")
-              // window.location.href = "/"
+              localStorage.removeItem("user_logged")
+              localStorage.removeItem("token")
+              window.location.href = "/login"
             }}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-white/70 hover:bg-white/5 transition-colors"
           >

@@ -8,7 +8,6 @@ import {
   Settings,
   Home,
   Users,
-  Video,
   ChevronRight,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -25,7 +24,6 @@ export function Sidebar({ userType }: SidebarProps) {
     { href: "/dashboard/agenda", label: "Agenda", icon: Calendar },
     { href: "/dashboard/pacientes", label: "Pacientes", icon: Users },
     { href: "/dashboard/mensagens", label: "Mensagens", icon: MessageSquare },
-    { href: "/dashboard/videoconferencia", label: "Videoconferências", icon: Video },
     { href: "/dashboard/configuracoes", label: "Configurações", icon: Settings },
   ]
 
@@ -41,7 +39,7 @@ export function Sidebar({ userType }: SidebarProps) {
   return (
     <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-200">
       <div className="p-6">
-        <h2 className="text-2xl font-bold text-[#3681AB]">HealthCare</h2>
+        <h2 className="text-2xl font-bold text-[#4B0082]">Provence</h2>
       </div>
       <nav className="flex-1 px-4 pb-4">
         <ul className="space-y-1">
