@@ -111,7 +111,7 @@ export default function LoginPage() {
           }
         }, 1500)
       } else {
-        setError(data.message || "Email ou senha incorretos")
+        setError(data.message || "E-mail ou senha incorretos")
       }
     } catch (err) {
       console.error("Erro no login:", err)
@@ -185,7 +185,7 @@ export default function LoginPage() {
                     className="text-[#2c2c2c] font-semibold flex items-center gap-2 text-sm"
                   >
                     <Mail className="h-4 w-4 text-[#8b5cf6]" />
-                    Email
+                    E-mail
                   </Label>
                   <div className="relative">
                     <Input

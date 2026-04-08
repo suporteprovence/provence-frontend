@@ -194,7 +194,7 @@ export default function TermosUsoPage() {
                   <div>
                     <h3 className="text-lg font-bold text-purple-700 mb-3">7. Contato</h3>
                     <p className="mb-4">
-                      {"Para d\u00favidas sobre estes termos, entre em contato conosco atrav\u00e9s do email: suporte@provence.com ou telefone: (11) 9999-9999."}
+                      {"Para d\u00favidas sobre estes termos, entre em contato conosco atrav\u00e9s do e-mail: suporte.provence0@gmail.com"}
                     </p>
                   </div>
                   <p className="text-xs text-slate-500 mt-8 pt-4 border-t border-slate-200">

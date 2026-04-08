@@ -95,78 +95,15 @@ export interface Pagamento {
   data_liberacao?: string
 }
 
-// Dados iniciais para desenvolvimento
+// Dados iniciais vazios (dados reais vem do backend PHP)
 const initialData = {
-  usuarios: [
-    {
-      id: 1,
-      nome: "Dr. João Silva",
-      email: "joao@exemplo.com",
-      senha: "senha123",
-      tipo: "profissional" as const,
-      aprovado: true,
-      ativo: true,
-      perfil_completo: true,
-      aceita_termos: true,
-      criado_em: new Date().toISOString(),
-    },
-    {
-      id: 2,
-      nome: "Maria Santos",
-      email: "maria@exemplo.com",
-      senha: "senha123",
-      tipo: "paciente" as const,
-      aprovado: true,
-      ativo: true,
-      perfil_completo: true,
-      aceita_termos: true,
-      criado_em: new Date().toISOString(),
-    },
-  ],
-  profissionais: [
-    {
-      id: 1,
-      crp: "12345-SP",
-      especialidade: "Psicologia Clínica",
-      valor_consulta: 150.0,
-      bio: "Especialista em terapia cognitivo-comportamental com 10 anos de experiência.",
-      cidade: "São Paulo",
-      estado: "SP",
-    },
-  ],
-  pacientes: [
-    {
-      id: 2,
-      objetivos: "Busco ajuda para ansiedade e desenvolvimento pessoal.",
-      cidade: "São Paulo",
-      estado: "SP",
-    },
-  ],
-  consultas: [
-    {
-      id: 1,
-      id_paciente: 2,
-      id_profissional: 1,
-      data_hora: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-      duracao_minutos: 60,
-      valor_pago: 150.0,
-      status: "paga" as const,
-      pode_ser_avaliada: false,
-      criado_em: new Date().toISOString(),
-    },
-  ],
-  mensagens: [
-    {
-      id: 1,
-      id_consulta: 1,
-      id_remetente: 2,
-      id_destinatario: 1,
-      mensagem: "Olá Dr. João, estou ansioso para nossa consulta amanhã!",
-      enviada_em: new Date().toISOString(),
-    },
-  ],
-  avaliacoes: [],
-  pagamentos: [],
+  usuarios: [] as any[],
+  profissionais: [] as any[],
+  pacientes: [] as any[],
+  consultas: [] as any[],
+  mensagens: [] as any[],
+  avaliacoes: [] as any[],
+  pagamentos: [] as any[],
 }
 
 // Funções para simular operações de banco de dados

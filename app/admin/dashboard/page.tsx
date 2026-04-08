@@ -458,7 +458,7 @@ export default function AdminDashboard() {
 
                                     <div className="grid grid-cols-2 gap-6">
                                       <div>
-                                        <Label className="text-slate-700 font-semibold">Email</Label>
+                                        <Label className="text-slate-700 font-semibold">E-mail</Label>
                                         <p className="text-slate-600 mt-1">{selectedProfissional.email}</p>
                                       </div>
                                       <div>

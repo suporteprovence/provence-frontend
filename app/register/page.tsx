@@ -102,7 +102,7 @@ export default function CadastroPage() {
 
   const validateForm = () => {
     if (!form.nome.trim()) return "Nome é obrigatório"
-    if (!form.email.trim()) return "Email é obrigatório"
+    if (!form.email.trim()) return "E-mail é obrigatório"
     if (!form.senha || form.senha.length < 6) return "Senha deve ter pelo menos 6 caracteres"
     if (!form.telefone.trim()) return "Telefone é obrigatório"
     if (!form.cpf.trim()) return "CPF é obrigatório"
@@ -311,7 +311,7 @@ export default function CadastroPage() {
 
                   <div className="space-y-3">
                     <Label htmlFor="email" className="text-slate-700 font-semibold text-sm">
-                      Email *
+                      E-mail *
                     </Label>
                     <Input
                       id="email"

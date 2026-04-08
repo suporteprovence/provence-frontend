@@ -111,7 +111,7 @@ export function PerfilProfessional() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>Email</Label>
+                      <Label>E-mail</Label>
                       <Input type="email" defaultValue="dr.silva@email.com" disabled={!isEditing} className="rounded-xl bg-card/50 border-border/50" />
                     </div>
                     <div className="space-y-2">

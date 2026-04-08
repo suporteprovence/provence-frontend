@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Clock, CheckCircle, Mail, Phone, ArrowLeft, AlertCircle, Calendar, User } from "lucide-react"
+import { Clock, CheckCircle, Mail, ArrowLeft, AlertCircle, Calendar, User } from "lucide-react"
 
 interface CadastroPendente {
   nome: string
@@ -187,7 +187,7 @@ export default function CadastroPendentePage() {
                         <span className="font-semibold text-slate-800">{cadastroData.nome}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-600">Email:</span>
+                        <span className="text-slate-600">E-mail:</span>
                         <span className="font-semibold text-slate-800">{cadastroData.email}</span>
                       </div>
                     </div>
@@ -254,7 +254,7 @@ export default function CadastroPendentePage() {
                       </div>
                     </div>
                     <div className="flex-grow">
-                      <h4 className="text-lg font-bold text-emerald-800 mb-2">Notificação por Email</h4>
+                      <h4 className="text-lg font-bold text-emerald-800 mb-2">Notificação por E-mail</h4>
                       <p className="text-emerald-700 leading-relaxed">
                         Você receberá um email detalhado quando sua conta for aprovada ou se precisarmos de informações
                         adicionais. Mantenha sua caixa de entrada sempre verificada.
@@ -304,28 +304,17 @@ export default function CadastroPendentePage() {
               <div className="bg-gradient-to-r from-slate-50 to-gray-50 rounded-2xl p-6 border border-slate-200">
                 <h4 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-3">
                   <div className="w-8 h-8 bg-gradient-to-r from-slate-500 to-gray-500 rounded-lg flex items-center justify-center">
-                    <Phone className="h-5 w-5 text-white" />
+                    <Mail className="h-5 w-5 text-white" />
                   </div>
                   Precisa de Ajuda?
                 </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-center gap-3 p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-slate-200">
-                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
-                      <Mail className="h-5 w-5 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-slate-600">Email</p>
-                      <p className="font-semibold text-slate-800">suporte@provence.com</p>
-                    </div>
+                <div className="flex items-center gap-3 p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-slate-200">
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                    <Mail className="h-5 w-5 text-white" />
                   </div>
-                  <div className="flex items-center gap-3 p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-slate-200">
-                    <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
-                      <Phone className="h-5 w-5 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-slate-600">Telefone</p>
-                      <p className="font-semibold text-slate-800">(11) 9999-9999</p>
-                    </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-600">E-mail</p>
+                    <p className="font-semibold text-slate-800">suporte.provence0@gmail.com</p>
                   </div>
                 </div>
 

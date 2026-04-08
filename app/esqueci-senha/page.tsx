@@ -28,7 +28,7 @@ export default function EsqueciSenhaPage() {
   const handleEnviarEmail = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email.trim()) {
-      setError("Por favor, digite seu email")
+      setError("Por favor, digite seu e-mail")
       return
     }
 
@@ -50,20 +50,20 @@ export default function EsqueciSenhaPage() {
       if (response.ok) {
         const data = await response.json()
         if (data.existe) {
-          setSuccess("Email encontrado! Agora você pode definir uma nova senha.")
+          setSuccess("E-mail encontrado! Agora você pode definir uma nova senha.")
           setStep("nova-senha")
         } else {
-          setError("Email não encontrado em nosso sistema")
+          setError("E-mail não encontrado em nosso sistema")
         }
       } else {
         // mantém seu comportamento atual (fallback)
-        setSuccess("Email encontrado! Agora você pode definir uma nova senha.")
+        setSuccess("E-mail encontrado! Agora você pode definir uma nova senha.")
         setStep("nova-senha")
       }
     } catch (err) {
       console.error("Erro ao verificar email:", err)
       // mantém seu comportamento atual (fallback)
-      setSuccess("Email encontrado! Agora você pode definir uma nova senha.")
+      setSuccess("E-mail encontrado! Agora você pode definir uma nova senha.")
       setStep("nova-senha")
     } finally {
       setLoading(false)
@@ -156,7 +156,7 @@ export default function EsqueciSenhaPage() {
                 {step === "email" ? "Recuperar Senha" : "Nova Senha"}
               </CardTitle>
               <CardDescription className="text-slate-600 text-lg font-medium">
-                {step === "email" ? "Digite seu email para redefinir sua senha" : "Crie uma nova senha segura para sua conta"}
+                {step === "email" ? "Digite seu e-mail para redefinir sua senha" : "Crie uma nova senha segura para sua conta"}
               </CardDescription>
             </CardHeader>
 
@@ -166,7 +166,7 @@ export default function EsqueciSenhaPage() {
                   <div className="space-y-3">
                     <Label htmlFor="email" className="text-slate-700 font-semibold flex items-center gap-2 text-sm">
                       <Mail className="h-4 w-4 text-purple-600" />
-                      Email cadastrado
+                      E-mail cadastrado
                     </Label>
                     <Input
                       id="email"
