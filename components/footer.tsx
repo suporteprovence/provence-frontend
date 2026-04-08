@@ -25,18 +25,18 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="/sobre" className="hover:text-white transition-colors">
+                <a href="/sobre-nos" className="hover:text-white transition-colors">
                   Sobre
                 </a>
               </li>
               <li>
-                <a href="/recursos" className="hover:text-white transition-colors">
-                  Recursos
+                <a href="/register" className="hover:text-white transition-colors">
+                  Cadastre-se
                 </a>
               </li>
               <li>
-                <a href="/psicologos" className="hover:text-white transition-colors">
-                  Psicólogos
+                <a href="/login" className="hover:text-white transition-colors">
+                  Entrar
                 </a>
               </li>
             </ul>
@@ -47,23 +47,8 @@ export default function Footer() {
             <h4 className="font-semibold mb-4 text-lg">Suporte</h4>
             <ul className="space-y-2 text-[#D7C7FF] text-sm mb-6">
               <li>
-                <a href="/faq" className="hover:text-white transition-colors">
-                  FAQ
-                </a>
-              </li>
-              <li>
-                <a href="/contato" className="hover:text-white transition-colors">
-                  Contato
-                </a>
-              </li>
-              <li>
-                <a href="/termos" className="hover:text-white transition-colors">
+                <a href="/termos-uso" className="hover:text-white transition-colors">
                   Termos de Uso
-                </a>
-              </li>
-              <li>
-                <a href="/privacidade" className="hover:text-white transition-colors">
-                  Política de Privacidade
                 </a>
               </li>
             </ul>
@@ -71,7 +56,7 @@ export default function Footer() {
             <div className="bg-[#5A189A] p-4 rounded-xl">
               <p className="text-xs text-[#CDB4FF] mb-1">Fale com a gente</p>
               <p className="text-sm font-medium break-all">
-                contato@psicoonline.com.br
+                contato@provence.host
               </p>
             </div>
           </div>
