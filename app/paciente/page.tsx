@@ -7,8 +7,6 @@ import {
   History,
   User,
   CreditCard,
-  Bell,
-  Moon,
   LogOut,
   LayoutDashboard,
 } from "lucide-react"
@@ -279,14 +277,6 @@ export default function PatientDashboard() {
         {/* Top Header */}
         <header className="bg-white border-b sticky top-0 z-10">
           <div className="flex items-center justify-end gap-4 px-8 py-4">
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <Moon className="w-5 h-5" />
-            </Button>
-
-            <Button variant="ghost" size="icon" className="rounded-full relative">
-              <Bell className="w-5 h-5" />
-            </Button>
-
             <div className="flex items-center gap-3">
               <div className="text-right">
                 <p className="text-sm font-medium">{userName}</p>
