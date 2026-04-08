@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation"
 import {
   Calendar,
   MessageSquare,
-  Settings,
   Home,
   Users,
   ChevronRight,
@@ -24,14 +23,12 @@ export function Sidebar({ userType }: SidebarProps) {
     { href: "/dashboard/agenda", label: "Agenda", icon: Calendar },
     { href: "/dashboard/pacientes", label: "Pacientes", icon: Users },
     { href: "/dashboard/mensagens", label: "Mensagens", icon: MessageSquare },
-    { href: "/dashboard/configuracoes", label: "Configurações", icon: Settings },
   ]
 
   const patientLinks = [
     { href: "/dashboard", label: "Dashboard", icon: Home },
     { href: "/dashboard/consultas", label: "Minhas Consultas", icon: Calendar },
     { href: "/dashboard/mensagens", label: "Mensagens", icon: MessageSquare },
-    { href: "/dashboard/configuracoes", label: "Configurações", icon: Settings },
   ]
 
   const links = userType === "professional" ? professionalLinks : patientLinks

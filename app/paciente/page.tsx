@@ -9,7 +9,6 @@ import {
   CreditCard,
   Bell,
   Moon,
-  Settings,
   LogOut,
   LayoutDashboard,
 } from "lucide-react"
@@ -261,14 +260,6 @@ export default function PatientDashboard() {
 
         {/* Bottom Actions (sem lógica fictícia) */}
         <div className="p-4 border-t border-white/10 space-y-1">
-          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-white/70 hover:bg-white/5 transition-colors">
-            <Bell className="w-5 h-5" />
-            <span className="text-sm font-medium">Notificações</span>
-          </button>
-          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-white/70 hover:bg-white/5 transition-colors">
-            <Settings className="w-5 h-5" />
-            <span className="text-sm font-medium">Configurações</span>
-          </button>
           <button
             onClick={() => {
               localStorage.removeItem("user_logged")
