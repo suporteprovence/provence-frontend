@@ -271,11 +271,18 @@ export function GerenciarAgenda() {
                   </Button>
                 </>
               )}
-              {appointment.status === "confirmada" && (
-                <Button size="sm" className="w-full bg-primary" onClick={() => appointment.linkSessao && window.open(appointment.linkSessao, "_blank")}>
-                  {appointment.type === "video" ? "Entrar na Videochamada" : "Iniciar Sessão"}
-                </Button>
-              )}
+              {appointment.status === "confirmada" &&
+                (appointment.linkSessao ? (
+                  <Button
+                    size="sm"
+                    className="w-full bg-primary"
+                    onClick={() => window.open(appointment.linkSessao, "_blank")}
+                  >
+                    Entrar na Sessão
+                  </Button>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Aguardando o link da sessão.</p>
+                ))}
             </div>
           </div>
         </div>

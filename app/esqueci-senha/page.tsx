@@ -12,8 +12,9 @@ import { Mail, ArrowLeft, CheckCircle, Loader2, Key, Shield, Lock } from "lucide
 import Link from "next/link"
 
 
+// verificar_email.php e redefinir_senha.php ficam na raiz de public_html na Hostinger
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") || "https://provence.host/redefinir_senha.php"
+  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") || "https://provence.host"
 
 export default function EsqueciSenhaPage() {
   const [step, setStep] = useState<"email" | "nova-senha">("email")
@@ -37,7 +38,7 @@ export default function EsqueciSenhaPage() {
     setSuccess("")
 
     try {
-      // ✅ API: api/api_provence/api/verificar_email.php
+      // ✅ API: https://provence.host/verificar_email.php
       const response = await fetch(`${API_BASE}/verificar_email.php`, {
         method: "POST",
         headers: {
@@ -93,7 +94,7 @@ export default function EsqueciSenhaPage() {
     setSuccess("")
 
     try {
-      // ✅ API: api/api_provence/api/redefinir_senha.php
+      // ✅ API: https://provence.host/redefinir_senha.php
       const response = await fetch(`${API_BASE}/redefinir_senha.php`, {
         method: "POST",
         headers: {

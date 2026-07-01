@@ -22,6 +22,7 @@ import { AgendamentoForm } from "@/components/paciente/agendamento-form"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { logout } from "@/lib/logout"
 
 type PatientUser = {
   id?: number
@@ -259,11 +260,7 @@ export default function PatientDashboard() {
         {/* Bottom Actions (sem lógica fictícia) */}
         <div className="p-4 border-t border-white/10 space-y-1">
           <button
-            onClick={() => {
-              localStorage.removeItem("user_logged")
-              localStorage.removeItem("token")
-              window.location.href = "/login"
-            }}
+            onClick={() => logout()}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-white/70 hover:bg-white/5 transition-colors"
           >
             <LogOut className="w-5 h-5" />

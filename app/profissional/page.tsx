@@ -1,6 +1,8 @@
 "use client"
 
 import { useState } from "react"
+import { LogOut } from "lucide-react"
+import { logout } from "@/lib/logout"
 import { GerenciarAgenda } from "@/components/profissional/gerenciar-agenda"
 import { ConsultasMarcadasPro } from "@/components/profissional/consultas-marcadas-pro"
 import { ChatProfessional } from "@/components/profissional/chat-professional"
@@ -45,7 +47,7 @@ export default function ProfessionalPage() {
     <div className="min-h-screen bg-background">
       <nav className="border-b bg-card">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -59,6 +61,13 @@ export default function ProfessionalPage() {
                 {tab.label}
               </button>
             ))}
+            <button
+              onClick={() => logout()}
+              className="ml-auto flex items-center gap-2 px-4 py-2 rounded-md text-muted-foreground hover:bg-accent hover:text-red-500 transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+              Sair
+            </button>
           </div>
         </div>
       </nav>

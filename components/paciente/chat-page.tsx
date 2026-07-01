@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Send, Paperclip, Search } from "lucide-react"
+import { Send, Search } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -288,9 +288,6 @@ export function ChatPage() {
 
             <div className="p-4 border-t">
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon">
-                  <Paperclip className="w-5 h-5 text-gray-500" />
-                </Button>
                 <Input
                   placeholder="Digite sua mensagem..."
                   value={message}

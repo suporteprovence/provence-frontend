@@ -4,7 +4,8 @@ import { Calendar, User, CreditCard, Settings, Home, HelpCircle, Plus, LogOut, F
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Image from "next/image"
-import { useRouter, usePathname } from "next/navigation"
+import { usePathname } from "next/navigation"
+import { logout } from "@/lib/logout"
 
 interface UserData {
   id: number
@@ -24,7 +25,6 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ userData }: SidebarProps) {
-  const router = useRouter()
   const pathname = usePathname()
 
   // Menu items baseado no tipo de usuário
@@ -54,19 +54,8 @@ export default function Sidebar({ userData }: SidebarProps) {
 
   const menuItems = getMenuItems()
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch("http://localhost/api/auth/logout.php", {
-        method: "POST",
-        credentials: "include",
-      })
-      if (response.ok) {
-        localStorage.removeItem("user_logged")
-        router.push("/login")
-      }
-    } catch (error) {
-      console.error("Erro ao fazer logout:", error)
-    }
+  const handleLogout = () => {
+    logout()
   }
 
   const isActive = (href: string) => {

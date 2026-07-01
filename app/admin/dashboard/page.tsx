@@ -24,6 +24,7 @@ import {
   RefreshCw,
   BarChart3,
 } from "lucide-react"
+import { logout } from "@/lib/logout"
 
 interface ProfissionalPendente {
   id: number
@@ -52,7 +53,8 @@ export default function AdminDashboard() {
   const router = useRouter()
 
 
-  const API_BASE = "https://provence.host/api/api_provence/api"
+  // Os PHPs do painel administrativo ficam em public_html/admin/ na Hostinger
+  const API_BASE = "https://provence.host/admin"
 
 
   const ENDPOINTS = {
@@ -186,8 +188,7 @@ export default function AdminDashboard() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem("user_logged")
-    router.push("/login")
+    logout()
   }
 
   const formatarData = (dataString: string) => {
