@@ -20,7 +20,8 @@ export default function CadastroPendentePage() {
   const router = useRouter()
 
   // ✅ BASE DA API NA HOSTINGER (public_html = raiz de provence.host)
-  const API_BASE = "https://provence.host"
+  const API_BASE =
+    process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") || "https://provence.host"
 
   // ✅ ENDPOINT (conforme seus prints: api/login.php, api/register.php, etc)
   // A ideia aqui: consultar no backend se o cadastro ainda está pendente / já foi aprovado.

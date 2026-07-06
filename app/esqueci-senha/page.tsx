@@ -19,6 +19,7 @@ const API_BASE =
 export default function EsqueciSenhaPage() {
   const [step, setStep] = useState<"email" | "nova-senha">("email")
   const [email, setEmail] = useState("")
+  const [cpf, setCpf] = useState("")
   const [novaSenha, setNovaSenha] = useState("")
   const [confirmarSenha, setConfirmarSenha] = useState("")
   const [loading, setLoading] = useState(false)
@@ -32,40 +33,40 @@ export default function EsqueciSenhaPage() {
       setError("Por favor, digite seu e-mail")
       return
     }
+    if (cpf.replace(/\D/g, "").length < 11) {
+      setError("Por favor, informe o CPF cadastrado (apenas números)")
+      return
+    }
 
     setLoading(true)
     setError("")
     setSuccess("")
 
     try {
-      // ✅ API: https://provence.host/verificar_email.php
+      // Confirma identidade por e-mail + CPF antes de liberar a troca de senha
       const response = await fetch(`${API_BASE}/verificar_email.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({ email: email.trim(), cpf: cpf.replace(/\D/g, "") }),
         credentials: "include",
       })
 
       if (response.ok) {
         const data = await response.json()
         if (data.existe) {
-          setSuccess("E-mail encontrado! Agora você pode definir uma nova senha.")
+          setSuccess("Identidade confirmada! Agora você pode definir uma nova senha.")
           setStep("nova-senha")
         } else {
-          setError("E-mail não encontrado em nosso sistema")
+          setError("E-mail e CPF não conferem com nenhuma conta.")
         }
       } else {
-        // mantém seu comportamento atual (fallback)
-        setSuccess("E-mail encontrado! Agora você pode definir uma nova senha.")
-        setStep("nova-senha")
+        setError("Erro de conexão. Tente novamente.")
       }
     } catch (err) {
-      console.error("Erro ao verificar email:", err)
-      // mantém seu comportamento atual (fallback)
-      setSuccess("E-mail encontrado! Agora você pode definir uma nova senha.")
-      setStep("nova-senha")
+      console.error("Erro ao verificar identidade:", err)
+      setError("Erro de conexão. Verifique se o servidor está funcionando.")
     } finally {
       setLoading(false)
     }
@@ -102,6 +103,7 @@ export default function EsqueciSenhaPage() {
         },
         body: JSON.stringify({
           email: email.trim(),
+          cpf: cpf.replace(/\D/g, ""),
           nova_senha: novaSenha,
         }),
         credentials: "include",
@@ -157,7 +159,7 @@ export default function EsqueciSenhaPage() {
                 {step === "email" ? "Recuperar Senha" : "Nova Senha"}
               </CardTitle>
               <CardDescription className="text-slate-600 text-lg font-medium">
-                {step === "email" ? "Digite seu e-mail para redefinir sua senha" : "Crie uma nova senha segura para sua conta"}
+                {step === "email" ? "Confirme seu e-mail e CPF para redefinir sua senha" : "Crie uma nova senha segura para sua conta"}
               </CardDescription>
             </CardHeader>
 
@@ -178,6 +180,25 @@ export default function EsqueciSenhaPage() {
                       className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
                       required
                     />
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label htmlFor="cpf" className="text-slate-700 font-semibold flex items-center gap-2 text-sm">
+                      <Shield className="h-4 w-4 text-purple-600" />
+                      CPF cadastrado
+                    </Label>
+                    <Input
+                      id="cpf"
+                      inputMode="numeric"
+                      value={cpf}
+                      onChange={(e) => setCpf(e.target.value)}
+                      placeholder="Somente números"
+                      className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
+                      required
+                    />
+                    <p className="text-xs text-slate-500">
+                      Confirmamos seu e-mail e CPF para garantir que só você redefina sua senha.
+                    </p>
                   </div>
 
                   {error && (

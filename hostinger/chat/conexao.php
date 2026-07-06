@@ -1,35 +1,60 @@
 <?php
 /**
- * Provence — Chat (PHP + MySQL na Hostinger)
- * Conexão com o banco, CORS com credenciais e leitura da sessão do login.
+ * Provence — Chat (PHP + MySQL na Hostinger): bootstrap.
  *
- * Este arquivo é incluído por listar.php e enviar.php.
- * Faça upload da pasta inteira para: public_html/chat/  (fica em https://provence.host/chat/)
+ * Reaproveita o config/db.php que o restante do site já usa — ele cria a
+ * conexão PDO ($pdo) a partir do .env, trata o CORS com credenciais e responde
+ * ao preflight OPTIONS. Assim NÃO é preciso configurar credenciais aqui.
+ *
+ * Deploy: enviar a pasta para public_html/chat/ (https://provence.host/chat/).
  */
 
-// ------------------------------------------------------------------
-// CORS — o frontend (Vercel) precisa enviar o cookie de sessão (PHPSESSID).
-// Por isso NÃO pode usar "*": precisa devolver a origem exata + credentials.
-// ------------------------------------------------------------------
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-$origemPermitida =
-    $origin === 'https://provence.host' ||
-    // produção e previews da Vercel (ex.: provence-frontend.vercel.app)
-    preg_match('/^https:\/\/[a-z0-9-]+\.vercel\.app$/i', $origin) === 1;
+$configDb = __DIR__ . '/../config/db.php';
 
-if ($origemPermitida) {
-    header("Access-Control-Allow-Origin: $origin");
-    header('Vary: Origin');
-}
-header('Access-Control-Allow-Credentials: true');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization, Accept');
-header('Content-Type: application/json; charset=utf-8');
+if (file_exists($configDb)) {
+    // Produção: usa a mesma conexão/CORS/headers do restante do site
+    require_once $configDb; // define $pdo, trata CORS + OPTIONS, carrega .env
+} else {
+    // ---- Fallback para ambiente local/dev (sem config/db.php) ----
+    $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+    $origemExtra = getenv('CHAT_EXTRA_ORIGIN') ?: '';
+    if (
+        $origin === 'https://provence.host'
+        || preg_match('/^https:\/\/[a-z0-9-]+\.vercel\.app$/i', $origin) === 1
+        || ($origemExtra !== '' && $origin === $origemExtra)
+    ) {
+        header("Access-Control-Allow-Origin: $origin");
+        header('Vary: Origin');
+    }
+    header('Access-Control-Allow-Credentials: true');
+    header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, Accept');
+    header('Content-Type: application/json; charset=utf-8');
 
-// Responde ao preflight do navegador sem tocar no banco
-if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
-    http_response_code(204);
-    exit;
+    if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
+        http_response_code(204);
+        exit;
+    }
+
+    $DB_HOST = getenv('DB_HOST') ?: 'localhost';
+    $DB_NAME = getenv('DB_NAME') ?: 'u218657465_PROVENCE';
+    $DB_USER = getenv('DB_USER') ?: 'u218657465_provence';
+    $DB_PASS = getenv('DB_PASS') !== false ? getenv('DB_PASS') : '';
+    try {
+        $pdo = new PDO(
+            "mysql:host={$DB_HOST};dbname={$DB_NAME};charset=utf8mb4",
+            $DB_USER,
+            $DB_PASS,
+            [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ]
+        );
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Erro de conexão com o banco de dados']);
+        exit;
+    }
 }
 
 // Sessão — a mesma criada por auth/login.php (mesmo domínio = cookie compartilhado)
@@ -37,42 +62,11 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// ==================================================================
-// >>> PREENCHER com as credenciais do MySQL da Hostinger <<<
-// Painel Hostinger > Bancos de dados MySQL. Em regra, no PHP da própria
-// Hostinger o host é 'localhost'. Se falhar, troque por 'srv1199.hstgr.io'.
-// ==================================================================
-$DB_HOST = 'localhost';
-$DB_NAME = 'u218657465_PROVENCE';
-$DB_USER = 'u218657465_XXXXXX';   // <-- preencher
-$DB_PASS = 'XXXXXXXXXX';          // <-- preencher
-// ==================================================================
-
-try {
-    $pdo = new PDO(
-        "mysql:host={$DB_HOST};dbname={$DB_NAME};charset=utf8mb4",
-        $DB_USER,
-        $DB_PASS,
-        [
-            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES   => false,
-        ]
-    );
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Erro de conexão com o banco de dados']);
-    exit;
-}
-
 /**
  * Descobre o id do usuário logado a partir da sessão criada no login.
  * Testa as chaves mais comuns para não depender do nome exato usado em
- * auth/login.php — assim funciona sem precisar editar o login.
- *
- * Se o chat retornar 401 mesmo logado, verifique em auth/login.php qual
- * chave é gravada (ex.: $_SESSION['usuario_id'] = ...) e garanta que ela
- * esteja na lista abaixo.
+ * auth/login.php. Se o chat retornar 401 mesmo logado, basta confirmar a
+ * chave usada no login e garantir que ela esteja na lista abaixo.
  */
 function usuario_logado_id(): ?int
 {
@@ -82,7 +76,6 @@ function usuario_logado_id(): ?int
             return (int) $_SESSION[$k];
         }
     }
-    // casos em que o usuário fica aninhado, ex.: $_SESSION['usuario']['id']
     foreach (['usuario', 'user', 'dados', 'auth'] as $wrap) {
         if (isset($_SESSION[$wrap]) && is_array($_SESSION[$wrap]) && isset($_SESSION[$wrap]['id'])) {
             return (int) $_SESSION[$wrap]['id'];

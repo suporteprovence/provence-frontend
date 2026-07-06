@@ -54,7 +54,9 @@ export default function AdminDashboard() {
 
 
   // Os PHPs do painel administrativo ficam em public_html/admin/ na Hostinger
-  const API_BASE = "https://provence.host/admin"
+  const API_ROOT =
+    process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") || "https://provence.host"
+  const API_BASE = `${API_ROOT}/admin`
 
 
   const ENDPOINTS = {

@@ -2,7 +2,8 @@
 // O domínio provence.host aponta para public_html/ na Hostinger
 // Então: https://provence.host/ = public_html/
 
-export const API_BASE = "https://provence.host"
+export const API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") || "https://provence.host"
 
 // Estrutura de pastas das APIs na Hostinger (public_html/):
 //

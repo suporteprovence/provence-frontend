@@ -8,20 +8,35 @@ colocá-los no servidor.
 
 ```
 hostinger/
-└── chat/
-    ├── conexao.php   ← conexão com o banco + CORS + sessão (EDITAR credenciais)
-    ├── listar.php    ← lista de conversas e histórico de mensagens
-    └── enviar.php    ← envio de mensagem
+├── chat/                    → vai para public_html/chat/
+│   ├── conexao.php          ← conexão com o banco + CORS + sessão (EDITAR credenciais)
+│   ├── listar.php           ← lista de conversas e histórico de mensagens
+│   └── enviar.php           ← envio de mensagem
+└── raiz/                    → conteúdo vai para a RAIZ de public_html/ (substitui os antigos)
+    ├── verificar_email.php  ← recuperação de senha: confirma e-mail + CPF
+    └── redefinir_senha.php  ← recuperação de senha: só troca se e-mail + CPF conferem
 ```
 
-Faça upload da pasta `chat/` inteira para dentro de **`public_html/`** na
-Hostinger (Gerenciador de Arquivos ou FTP). O resultado final deve ser:
+Faça upload:
+- da pasta `chat/` inteira para dentro de **`public_html/`**;
+- dos arquivos de `raiz/` para a **RAIZ de `public_html/`**, **substituindo** os
+  `verificar_email.php` e `redefinir_senha.php` atuais (faça um backup antes).
+
+Resultado final:
 
 ```
-public_html/chat/conexao.php   → https://provence.host/chat/conexao.php
-public_html/chat/listar.php    → https://provence.host/chat/listar.php
-public_html/chat/enviar.php    → https://provence.host/chat/enviar.php
+public_html/chat/conexao.php    → https://provence.host/chat/conexao.php
+public_html/chat/listar.php     → https://provence.host/chat/listar.php
+public_html/chat/enviar.php     → https://provence.host/chat/enviar.php
+public_html/verificar_email.php → https://provence.host/verificar_email.php  (novo, seguro)
+public_html/redefinir_senha.php → https://provence.host/redefinir_senha.php  (novo, seguro)
 ```
+
+> **Recuperação de senha (reforço de segurança):** os arquivos de `raiz/`
+> substituem os antigos, que trocavam a senha só com o e-mail (qualquer um
+> trocava a senha de qualquer conta). Agora exigem **e-mail + CPF** conferindo.
+> Eles reaproveitam a conexão de `chat/conexao.php`, então a pasta `chat/`
+> precisa estar publicada e com as credenciais preenchidas.
 
 > Já existe uma tabela `mensagens` no banco (é parte do schema original do
 > projeto). **Não é preciso criar tabela nenhuma** — o chat usa a estrutura
