@@ -1,18 +1,148 @@
 "use client"
 
-import { useState } from "react"
-import { Camera, Mail, Phone, MapPin, Award, Briefcase, GraduationCap, Save } from "lucide-react"
+import { useEffect, useState } from "react"
+import { Mail, Phone, MapPin, Save, Loader2 } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { API_BASE } from "@/lib/api-config"
+
+type PerfilProfissional = {
+  nome: string
+  email: string
+  telefone: string
+  cpf: string
+  data_nascimento: string
+  crp: string
+  especialidade: string
+  valor_consulta: string
+  cidade: string
+  estado: string
+  bio: string
+}
+
+const vazio: PerfilProfissional = {
+  nome: "",
+  email: "",
+  telefone: "",
+  cpf: "",
+  data_nascimento: "",
+  crp: "",
+  especialidade: "",
+  valor_consulta: "",
+  cidade: "",
+  estado: "",
+  bio: "",
+}
 
 export function PerfilProfessional() {
+  const [perfil, setPerfil] = useState<PerfilProfissional>(vazio)
   const [isEditing, setIsEditing] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
+
+  useEffect(() => {
+    fetchPerfil()
+  }, [])
+
+  const fetchPerfil = async () => {
+    setLoading(true)
+    setError("")
+    try {
+      const res = await fetch(`${API_BASE}/usuarios/get_perfil.php`, {
+        method: "GET",
+        headers: { Accept: "application/json" },
+        credentials: "include",
+      })
+      const data = await res.json()
+      if (data.success && (data.data || data.usuario)) {
+        const p = data.data || data.usuario
+        setPerfil({
+          nome: p.nome ?? "",
+          email: p.email ?? "",
+          telefone: p.telefone ?? "",
+          cpf: p.cpf ?? "",
+          data_nascimento: p.data_nascimento ?? "",
+          crp: p.crp ?? "",
+          especialidade: p.especialidade ?? "",
+          valor_consulta: p.valor_consulta != null ? String(p.valor_consulta) : "",
+          cidade: p.cidade ?? "",
+          estado: p.estado ?? "",
+          bio: p.bio ?? "",
+        })
+      } else {
+        setError(data.message || "Não foi possível carregar seu perfil.")
+      }
+    } catch {
+      setError("Erro de conexão ao carregar o perfil.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const setCampo = (campo: keyof PerfilProfissional, valor: string) =>
+    setPerfil((atual) => ({ ...atual, [campo]: valor }))
+
+  const handleSave = async () => {
+    setSaving(true)
+    setError("")
+    setSuccess("")
+    try {
+      const res = await fetch(`${API_BASE}/usuarios/atualizar_perfil.php`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          tipo_usuario: "profissional",
+          nome: perfil.nome,
+          telefone: perfil.telefone,
+          data_nascimento: perfil.data_nascimento || null,
+          especialidade: perfil.especialidade,
+          valor_consulta: perfil.valor_consulta ? Number(perfil.valor_consulta) : null,
+          bio: perfil.bio,
+          cidade: perfil.cidade,
+          estado: perfil.estado,
+        }),
+      })
+      const data = await res.json()
+      if (data.success || data.status === "success") {
+        setSuccess("Perfil atualizado com sucesso!")
+        setIsEditing(false)
+      } else {
+        setError(data.message || "Não foi possível salvar as alterações.")
+      }
+    } catch {
+      setError("Erro de conexão ao salvar o perfil.")
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const iniciais = (perfil.nome || "P")
+    .split(" ")
+    .filter(Boolean)
+    .map((n) => n[0])
+    .join("")
+    .substring(0, 2)
+    .toUpperCase()
+
+  const localizacao = [perfil.cidade, perfil.estado].filter(Boolean).join(" / ")
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -21,61 +151,97 @@ export function PerfilProfessional() {
           <h2 className="text-2xl font-bold">Meu Perfil</h2>
           <p className="text-muted-foreground">Gerencie suas informações profissionais</p>
         </div>
-        <Button onClick={() => setIsEditing(!isEditing)} className="rounded-xl bg-gradient-to-r from-primary to-accent">
-          {isEditing ? (
-            <>
-              <Save className="w-4 h-4 mr-2" />
-              Salvar Alterações
-            </>
-          ) : (
-            "Editar Perfil"
-          )}
-        </Button>
+        {isEditing ? (
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className="rounded-xl"
+              onClick={() => {
+                setIsEditing(false)
+                setError("")
+                setSuccess("")
+                fetchPerfil()
+              }}
+              disabled={saving}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={saving}
+              className="rounded-xl bg-gradient-to-r from-primary to-accent"
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Salvando...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Salvar Alterações
+                </>
+              )}
+            </Button>
+          </div>
+        ) : (
+          <Button
+            onClick={() => {
+              setIsEditing(true)
+              setSuccess("")
+            }}
+            className="rounded-xl bg-gradient-to-r from-primary to-accent"
+          >
+            Editar Perfil
+          </Button>
+        )}
       </div>
+
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+      {success && (
+        <Alert>
+          <AlertDescription className="text-emerald-700">{success}</AlertDescription>
+        </Alert>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Profile Card */}
         <Card className="glass p-6 border-border/50">
           <div className="flex flex-col items-center text-center">
-            <div className="relative mb-4">
-              <Avatar className="w-32 h-32 border-4 border-primary/20">
-                <AvatarImage src="/professional-avatar.jpg" />
-                <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground text-3xl font-semibold">
-                  DS
-                </AvatarFallback>
-              </Avatar>
-              {isEditing && (
-                <Button
-                  size="icon"
-                  className="absolute bottom-0 right-0 rounded-full bg-gradient-to-r from-primary to-accent shadow-lg"
-                >
-                  <Camera className="w-4 h-4" />
-                </Button>
-              )}
-            </div>
-            <h3 className="text-xl font-bold mb-1">Dr. Silva</h3>
-            <p className="text-sm text-muted-foreground mb-4">Psicólogo Clínico</p>
-            <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 mb-4">
-              CRP 06/123456
-            </Badge>
+            <Avatar className="w-32 h-32 border-4 border-primary/20 mb-4">
+              <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground text-3xl font-semibold">
+                {iniciais}
+              </AvatarFallback>
+            </Avatar>
+            <h3 className="text-xl font-bold mb-1">{perfil.nome || "Profissional"}</h3>
+            <p className="text-sm text-muted-foreground mb-4">{perfil.especialidade || "Psicólogo(a)"}</p>
+            {perfil.crp && (
+              <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 mb-4">
+                CRP {perfil.crp}
+              </Badge>
+            )}
             <div className="w-full space-y-3 text-left">
               <div className="flex items-center gap-3 text-sm">
                 <div className="p-2 rounded-lg bg-primary/10">
                   <Mail className="w-4 h-4 text-primary" />
                 </div>
-                <span className="text-muted-foreground">dr.silva@email.com</span>
+                <span className="text-muted-foreground break-all">{perfil.email || "—"}</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <div className="p-2 rounded-lg bg-accent/10">
                   <Phone className="w-4 h-4 text-accent" />
                 </div>
-                <span className="text-muted-foreground">(11) 98765-4321</span>
+                <span className="text-muted-foreground">{perfil.telefone || "—"}</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <div className="p-2 rounded-lg bg-emerald-500/10">
                   <MapPin className="w-4 h-4 text-emerald-500" />
                 </div>
-                <span className="text-muted-foreground">São Paulo, SP</span>
+                <span className="text-muted-foreground">{localizacao || "—"}</span>
               </div>
             </div>
           </div>
@@ -102,26 +268,42 @@ export function PerfilProfessional() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>Nome Completo</Label>
-                      <Input defaultValue="Dr. Silva" disabled={!isEditing} className="rounded-xl bg-card/50 border-border/50" />
+                      <Input
+                        value={perfil.nome}
+                        onChange={(e) => setCampo("nome", e.target.value)}
+                        disabled={!isEditing}
+                        className="rounded-xl bg-card/50 border-border/50"
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label>Data de Nascimento</Label>
-                      <Input type="date" defaultValue="1985-05-15" disabled={!isEditing} className="rounded-xl bg-card/50 border-border/50" />
+                      <Input
+                        type="date"
+                        value={perfil.data_nascimento}
+                        onChange={(e) => setCampo("data_nascimento", e.target.value)}
+                        disabled={!isEditing}
+                        className="rounded-xl bg-card/50 border-border/50"
+                      />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>E-mail</Label>
-                      <Input type="email" defaultValue="dr.silva@email.com" disabled={!isEditing} className="rounded-xl bg-card/50 border-border/50" />
+                      <Input value={perfil.email} disabled className="rounded-xl bg-card/50 border-border/50" />
                     </div>
                     <div className="space-y-2">
                       <Label>Telefone</Label>
-                      <Input defaultValue="(11) 98765-4321" disabled={!isEditing} className="rounded-xl bg-card/50 border-border/50" />
+                      <Input
+                        value={perfil.telefone}
+                        onChange={(e) => setCampo("telefone", e.target.value)}
+                        disabled={!isEditing}
+                        className="rounded-xl bg-card/50 border-border/50"
+                      />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label>Endereço</Label>
-                    <Input defaultValue="Rua das Flores, 123 - São Paulo, SP" disabled={!isEditing} className="rounded-xl bg-card/50 border-border/50" />
+                    <Label>CPF</Label>
+                    <Input value={perfil.cpf} disabled className="rounded-xl bg-card/50 border-border/50" />
                   </div>
                 </div>
               </Card>
@@ -129,72 +311,55 @@ export function PerfilProfessional() {
 
             <TabsContent value="professional">
               <Card className="glass p-6 border-border/50">
-                <div className="space-y-6">
+                <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>CRP</Label>
-                      <Input defaultValue="06/123456" disabled={!isEditing} className="rounded-xl bg-card/50 border-border/50" />
+                      <Input value={perfil.crp} disabled className="rounded-xl bg-card/50 border-border/50" />
                     </div>
                     <div className="space-y-2">
-                      <Label>Especialização</Label>
-                      <Input defaultValue="Psicologia Clínica" disabled={!isEditing} className="rounded-xl bg-card/50 border-border/50" />
+                      <Label>Especialidade</Label>
+                      <Input
+                        value={perfil.especialidade}
+                        onChange={(e) => setCampo("especialidade", e.target.value)}
+                        disabled={!isEditing}
+                        className="rounded-xl bg-card/50 border-border/50"
+                      />
                     </div>
                   </div>
-
-                  <div className="space-y-3">
-                    <Label className="flex items-center gap-2">
-                      <GraduationCap className="w-4 h-4" />
-                      Formação Acadêmica
-                    </Label>
-                    <Card className="glass p-4 border-border/50">
-                      <div className="space-y-3">
-                        <div>
-                          <p className="font-semibold">Mestrado em Psicologia Clínica</p>
-                          <p className="text-sm text-muted-foreground">Universidade de São Paulo - 2010-2012</p>
-                        </div>
-                        <div>
-                          <p className="font-semibold">Graduação em Psicologia</p>
-                          <p className="text-sm text-muted-foreground">Universidade de São Paulo - 2005-2009</p>
-                        </div>
-                      </div>
-                    </Card>
-                  </div>
-
-                  <div className="space-y-3">
-                    <Label className="flex items-center gap-2">
-                      <Award className="w-4 h-4" />
-                      Certificações
-                    </Label>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
-                        Terapia Cognitivo-Comportamental
-                      </Badge>
-                      <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">
-                        Mindfulness
-                      </Badge>
-                      <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
-                        Psicoterapia Breve
-                      </Badge>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Valor da Consulta (R$)</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={perfil.valor_consulta}
+                        onChange={(e) => setCampo("valor_consulta", e.target.value)}
+                        disabled={!isEditing}
+                        className="rounded-xl bg-card/50 border-border/50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Estado (UF)</Label>
+                      <Input
+                        maxLength={2}
+                        value={perfil.estado}
+                        onChange={(e) => setCampo("estado", e.target.value.toUpperCase())}
+                        disabled={!isEditing}
+                        placeholder="SP"
+                        className="rounded-xl bg-card/50 border-border/50"
+                      />
                     </div>
                   </div>
-
-                  <div className="space-y-3">
-                    <Label className="flex items-center gap-2">
-                      <Briefcase className="w-4 h-4" />
-                      Experiência Profissional
-                    </Label>
-                    <Card className="glass p-4 border-border/50">
-                      <div className="space-y-3">
-                        <div>
-                          <p className="font-semibold">Psicólogo Clínico - Consultório Particular</p>
-                          <p className="text-sm text-muted-foreground">2015 - Presente</p>
-                        </div>
-                        <div>
-                          <p className="font-semibold">Psicólogo - Hospital das Clínicas</p>
-                          <p className="text-sm text-muted-foreground">2012 - 2015</p>
-                        </div>
-                      </div>
-                    </Card>
+                  <div className="space-y-2">
+                    <Label>Cidade</Label>
+                    <Input
+                      value={perfil.cidade}
+                      onChange={(e) => setCampo("cidade", e.target.value)}
+                      disabled={!isEditing}
+                      className="rounded-xl bg-card/50 border-border/50"
+                    />
                   </div>
                 </div>
               </Card>
@@ -202,25 +367,15 @@ export function PerfilProfessional() {
 
             <TabsContent value="about">
               <Card className="glass p-6 border-border/50">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Sobre Mim</Label>
-                    <Textarea
-                      placeholder="Conte um pouco sobre você e sua abordagem terapêutica..."
-                      className="rounded-xl bg-card/50 border-border/50 min-h-[200px]"
-                      disabled={!isEditing}
-                      defaultValue="Sou psicólogo clínico com mais de 10 anos de experiência em atendimento individual e de casais. Minha abordagem é baseada na Terapia Cognitivo-Comportamental, com foco em ajudar meus pacientes a desenvolverem habilidades para lidar com desafios emocionais e comportamentais."
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Áreas de Atuação</Label>
-                    <Textarea
-                      placeholder="Descreva suas principais áreas de atuação..."
-                      className="rounded-xl bg-card/50 border-border/50 min-h-[150px]"
-                      disabled={!isEditing}
-                      defaultValue={"- Ansiedade e Transtornos de Ansiedade\n- Depressão\n- Relacionamentos e Terapia de Casal\n- Desenvolvimento Pessoal\n- Gestão de Estresse"}
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label>Sobre Mim</Label>
+                  <Textarea
+                    placeholder="Conte um pouco sobre você e sua abordagem terapêutica..."
+                    className="rounded-xl bg-card/50 border-border/50 min-h-[200px]"
+                    value={perfil.bio}
+                    onChange={(e) => setCampo("bio", e.target.value)}
+                    disabled={!isEditing}
+                  />
                 </div>
               </Card>
             </TabsContent>
