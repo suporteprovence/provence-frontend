@@ -54,6 +54,7 @@ export default function CadastroPage() {
   })
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [aceiteTermos, setAceiteTermos] = useState(false)
   const router = useRouter()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -117,6 +118,8 @@ export default function CadastroPage() {
       if (valor > 1000) return "Valor máximo da consulta é R$ 1.000,00"
     }
 
+    if (!aceiteTermos) return "É necessário aceitar os Termos de Uso e a Política de Privacidade."
+
     return null
   }
 
@@ -140,6 +143,7 @@ export default function CadastroPage() {
           telefone: form.telefone.trim(),
           cpf: form.cpf.trim(),
           tipo_usuario: form.tipo_usuario,
+          aceite_termos: aceiteTermos,
         }
 
         if (form.tipo_usuario === "profissional") {
@@ -458,6 +462,28 @@ export default function CadastroPage() {
                     <AlertDescription className="text-red-700 font-medium">{error}</AlertDescription>
                   </Alert>
                 )}
+
+                <div className="flex items-start gap-3 rounded-2xl border border-purple-200 bg-purple-50/60 p-4">
+                  <input
+                    id="aceite"
+                    type="checkbox"
+                    checked={aceiteTermos}
+                    onChange={(e) => setAceiteTermos(e.target.checked)}
+                    className="mt-1 h-4 w-4 accent-purple-600"
+                  />
+                  <label htmlFor="aceite" className="text-sm text-slate-700 leading-relaxed">
+                    Li e aceito os{" "}
+                    <a
+                      href="/termos-uso"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-purple-600 font-medium hover:underline"
+                    >
+                      Termos de Uso e a Política de Privacidade
+                    </a>
+                    .
+                  </label>
+                </div>
 
                 <Button
                   type="submit"
