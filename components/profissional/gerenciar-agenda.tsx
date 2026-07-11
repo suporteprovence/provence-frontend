@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { API_BASE } from "@/lib/api-config"
+import { ConfirmacaoSessao } from "@/components/consultas/confirmacao-sessao"
 
 // --- Tipagens ---
 type AppointmentStatus = "confirmada" | "pendente" | "cancelada" | "concluida"
@@ -284,6 +285,8 @@ export function GerenciarAgenda() {
                   <p className="text-sm text-muted-foreground">Aguardando o link da sessão.</p>
                 ))}
             </div>
+
+            <ConfirmacaoSessao consultaId={appointment.id} />
           </div>
         </div>
       </Card>

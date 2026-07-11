@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Loader2, Calendar, Clock, User } from "lucide-react"
 import { API_BASE } from "@/lib/api-config"
+import { ConfirmacaoSessao } from "@/components/consultas/confirmacao-sessao"
 
 type Consulta = {
   id: number
@@ -130,6 +131,7 @@ export function ConsultasMarcadas() {
                   </div>
                   {statusBadge(c.status)}
                 </div>
+                <ConfirmacaoSessao consultaId={c.id} />
               </CardContent>
             </Card>
           ))}
