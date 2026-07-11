@@ -51,10 +51,12 @@ interface Appointment {
 // --- Helpers de Normalização ---
 function normalizeStatus(raw: any): AppointmentStatus {
   const s = String(raw ?? "").toLowerCase().trim()
-  if (s.includes("confirm")) return "confirmada"
-  if (s.includes("pend")) return "pendente"
+  // Enum real: pendente, paga, realizada, cancelada_por_nao_ocorrencia,
+  // link_enviado, confirmada_paciente, confirmada_profissional, confirmada_ambos
   if (s.includes("cancel")) return "cancelada"
-  if (s.includes("concl") || s.includes("final") || s.includes("done")) return "concluida"
+  if (s === "realizada" || s.includes("concl") || s.includes("final") || s.includes("done")) return "concluida"
+  if (s.includes("confirm") || s === "paga" || s === "link_enviado") return "confirmada"
+  if (s.includes("pend")) return "pendente"
   return "pendente"
 }
 
@@ -87,7 +89,7 @@ function mapApiToAppointment(item: any): Appointment {
   const patientEmail = item?.paciente_email ?? ""
   const patientPhone = item?.paciente_telefone ?? ""
   const patientAvatar = item?.paciente_foto ?? ""
-  const date = toDateOnlyISO(item?.data ?? item?.data_consulta)
+  const date = toDateOnlyISO(item?.data ?? item?.data_consulta ?? item?.data_hora)
   const time = toTimeHHmm(item?.hora ?? item?.horario)
   const type = normalizeType(item?.tipo ?? item?.tipo_atendimento)
   const status = normalizeStatus(item?.status ?? item?.situacao)
@@ -162,6 +164,8 @@ export function GerenciarAgenda() {
     let json: any = null
     try { json = text ? JSON.parse(text) : null } catch { json = null }
     if (!res.ok) throw new Error(json?.message || `Erro ${res.status}`)
+    // O backend responde HTTP 200 com success:false; não tratar como sucesso.
+    if (json && json.success === false) throw new Error(json.message || "Não foi possível concluir a ação.")
     return json
   }
 
@@ -189,25 +193,14 @@ export function GerenciarAgenda() {
     }
   }
 
-  const confirmarConsulta = async (id: string) => {
-    setActionLoadingId(id)
-    try {
-      await fetchJson(`${API_BASE}/profissional/confirmar-consulta.php`, { method: "POST", body: JSON.stringify({ id }) })
-      setAppointments((prev) => prev.map((a) => (a.id === id ? { ...a, status: "confirmada" } : a)))
-    } catch {
-      setError("Erro ao confirmar")
-    } finally {
-      setActionLoadingId(null)
-    }
-  }
-
   const cancelarConsulta = async (id: string) => {
     setActionLoadingId(id)
+    setError("")
     try {
-      await fetchJson(`${API_BASE}/paciente/cancel_consulta.php`, { method: "POST", body: JSON.stringify({ id }) })
+      await fetchJson(`${API_BASE}/paciente/cancel_consulta.php`, { method: "POST", body: JSON.stringify({ consulta_id: id }) })
       setAppointments((prev) => prev.map((a) => (a.id === id ? { ...a, status: "cancelada" } : a)))
-    } catch {
-      setError("Erro ao cancelar")
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Erro ao cancelar")
     } finally {
       setActionLoadingId(null)
     }
@@ -263,14 +256,9 @@ export function GerenciarAgenda() {
 
             <div className="flex gap-2">
               {appointment.status === "pendente" && (
-                <>
-                  <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600 text-white flex-1" onClick={() => confirmarConsulta(appointment.id)} disabled={actionLoadingId === appointment.id}>
-                    {actionLoadingId === appointment.id ? <Loader2 className="animate-spin w-4 h-4" /> : "Confirmar"}
-                  </Button>
-                  <Button size="sm" variant="outline" className="text-red-500 border-red-200" onClick={() => cancelarConsulta(appointment.id)}>
-                    Cancelar
-                  </Button>
-                </>
+                <Button size="sm" variant="outline" className="text-red-500 border-red-200" onClick={() => cancelarConsulta(appointment.id)} disabled={actionLoadingId === appointment.id}>
+                  {actionLoadingId === appointment.id ? <Loader2 className="animate-spin w-4 h-4" /> : "Cancelar"}
+                </Button>
               )}
               {appointment.status === "confirmada" &&
                 (appointment.linkSessao ? (

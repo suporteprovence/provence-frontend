@@ -99,6 +99,28 @@ try {
 
     $pdo->beginTransaction();
 
+    // Gate de elegibilidade: só confirma sessão de consulta paga e ainda não
+    // encerrada/cancelada. Trava a linha (FOR UPDATE) para não correr com um
+    // cancelamento/reembolso concorrente. Sem isso, os dois participantes
+    // poderiam "confirmar o fim" de uma consulta cancelada/reembolsada e liberar
+    // pagamento indevido.
+    $stConsulta = $pdo->prepare("SELECT status FROM consultas WHERE id = ? FOR UPDATE");
+    $stConsulta->execute([$consulta_id]);
+    $statusConsulta = $stConsulta->fetchColumn();
+    $elegiveis = ['paga', 'link_enviado', 'confirmada_paciente', 'confirmada_profissional', 'confirmada_ambos'];
+    if (!in_array($statusConsulta, $elegiveis, true)) {
+        $pdo->rollBack();
+        if ($statusConsulta === 'realizada') {
+            $msg = 'Esta consulta já foi finalizada.';
+        } elseif ($statusConsulta === 'cancelada_por_nao_ocorrencia') {
+            $msg = 'Esta consulta foi cancelada.';
+        } else {
+            $msg = 'Esta consulta ainda não está disponível para confirmação.';
+        }
+        echo json_encode(['success' => false, 'message' => $msg]);
+        exit;
+    }
+
     // Fim exige que o mesmo participante já tenha confirmado o início
     if ($fase === 'fim') {
         $st = $pdo->prepare("SELECT 1 FROM confirmacoes_sessao WHERE consulta_id = ? AND quem = ? AND fase = 'inicio'");
@@ -125,8 +147,10 @@ try {
     $status_consulta = null;
     if ($ambosFim) {
         $pdo->prepare("UPDATE consultas SET status = 'realizada', pode_ser_avaliada = TRUE WHERE id = ?")->execute([$consulta_id]);
-        $pdo->prepare("UPDATE pagamentos SET status = 'liberado', data_liberacao = NOW() WHERE consulta_id = ? AND status != 'liberado'")->execute([$consulta_id]);
-        $pagamento_liberado = true;
+        // Só libera pagamento que esteja APROVADO. Nunca toca em reembolsado/falhou/pendente.
+        $updPag = $pdo->prepare("UPDATE pagamentos SET status = 'liberado', data_liberacao = NOW() WHERE consulta_id = ? AND status = 'aprovado'");
+        $updPag->execute([$consulta_id]);
+        $pagamento_liberado = $updPag->rowCount() > 0;
         $status_consulta = 'realizada';
     }
 
@@ -134,7 +158,9 @@ try {
 
     echo json_encode([
         'success' => true,
-        'message' => $ambosFim ? 'Sessão confirmada pelos dois lados. Pagamento liberado.' : 'Confirmação registrada.',
+        'message' => $ambosFim
+            ? ($pagamento_liberado ? 'Sessão confirmada pelos dois lados. Pagamento liberado.' : 'Sessão confirmada pelos dois lados.')
+            : 'Confirmação registrada.',
         'pagamento_liberado' => $pagamento_liberado,
         'status_consulta' => $status_consulta,
         'estado' => estadoConfirmacoes($pdo, $consulta_id),

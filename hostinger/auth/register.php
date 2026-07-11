@@ -131,7 +131,7 @@ try {
         'tipo_usuario' => $usuario_completo['tipo'],
         'aprovado' => (bool)$usuario_completo['aprovado'],
         'perfil_completo' => true,
-        'aceita_termos' => false
+        'aceita_termos' => true
     );
 
     if ($tipo_usuario === 'profissional') {
@@ -155,7 +155,10 @@ try {
     echo json_encode(array('success' => true, 'message' => $msg, 'data' => $response_data));
 
 } catch (Exception $e) {
-    $pdo->rollBack();
-    echo json_encode(array('success' => false, 'message' => 'Erro ao cadastrar: ' . $e->getMessage()));
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+    error_log('register: ' . $e->getMessage());
+    echo json_encode(array('success' => false, 'message' => 'Erro ao cadastrar. Tente novamente.'));
 }
 ?>

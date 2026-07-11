@@ -23,12 +23,14 @@ $allowed_origins = array(
 
 $origin = isset($_SERVER["HTTP_ORIGIN"]) ? $_SERVER["HTTP_ORIGIN"] : "";
 
-if (preg_match('/\.vercel\.app$/', $origin)) {
+// Só ecoa a origem se ela estiver EXATAMENTE na allowlist. NÃO refletir
+// *.vercel.app arbitrário: como enviamos Allow-Credentials, refletir qualquer
+// subdomínio vercel.app permitiria que um site publicado em *.vercel.app fizesse
+// requisições cross-origin credenciadas e lesse/gravasse dados do usuário logado
+// (PII, dados bancários). Previews novos da Vercel devem ser adicionados à mão.
+if (in_array($origin, $allowed_origins, true)) {
     header("Access-Control-Allow-Origin: " . $origin);
-} elseif (in_array($origin, $allowed_origins)) {
-    header("Access-Control-Allow-Origin: " . $origin);
-} else {
-    header("Access-Control-Allow-Origin: https://provence-frontend.vercel.app");
+    header("Vary: Origin");
 }
 
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
@@ -63,7 +65,8 @@ try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
+    error_log('DB connection error: ' . $e->getMessage());
     http_response_code(500);
-    echo json_encode(array("success" => false, "message" => "Erro de conexao ao banco", "error" => $e->getMessage()));
+    echo json_encode(array("success" => false, "message" => "Erro de conexao ao banco"));
     exit;
 }

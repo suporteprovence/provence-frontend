@@ -11,6 +11,7 @@ type Consulta = {
   id: number
   profissional_nome: string
   data: string
+  data_formatada?: string
   horario: string
   status: string
   especialidade?: string
@@ -42,10 +43,11 @@ export function ConsultasMarcadas() {
       const data = await res.json()
       if (data.success || data.status === "success") {
         const todas = data.consultas || data.data || []
+        // Mostra as consultas ativas; esconde só as terminais (enum real).
         setConsultas(
           todas.filter(
             (c: Consulta) =>
-              c.status === "pendente" || c.status === "confirmada" || c.status === "agendada"
+              c.status !== "realizada" && c.status !== "cancelada_por_nao_ocorrencia"
           )
         )
       } else {
@@ -60,12 +62,17 @@ export function ConsultasMarcadas() {
 
   const statusBadge = (status: string) => {
     switch (status) {
-      case "confirmada":
+      case "confirmada_ambos":
+      case "paga":
         return <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">{"Confirmada"}</Badge>
+      case "link_enviado":
+        return <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">{"Link enviado"}</Badge>
+      case "confirmada_paciente":
+        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">{"Você confirmou"}</Badge>
+      case "confirmada_profissional":
+        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">{"Profissional confirmou"}</Badge>
       case "pendente":
-        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">{"Pendente"}</Badge>
-      case "agendada":
-        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">{"Agendada"}</Badge>
+        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">{"Aguardando pagamento"}</Badge>
       default:
         return <Badge variant="secondary">{status}</Badge>
     }
@@ -111,7 +118,7 @@ export function ConsultasMarcadas() {
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
-                        {new Date(c.data + "T12:00:00").toLocaleDateString("pt-BR")}
+                        {c.data_formatada || (c.data ? new Date(c.data + "T12:00:00").toLocaleDateString("pt-BR") : "")}
                       </span>
                       <span className="flex items-center gap-1">
                         <Clock className="w-4 h-4" />
