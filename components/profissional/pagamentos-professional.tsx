@@ -1,137 +1,136 @@
 "use client"
 
-import { useMemo, useState } from "react"
-import { Download, Filter } from "lucide-react"
+import { useEffect, useState } from "react"
+import { Loader2, TrendingUp, Calendar, User, Wallet } from "lucide-react"
 import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Badge } from "@/components/ui/badge"
+import { API_BASE } from "@/lib/api-config"
 
-type TransactionStatus = "pago" | "pendente" | "cancelado"
-type PaymentMethod = "pix" | "cartao" | "boleto"
-
-type Transaction = {
-  id: string
-  patient: { name: string; avatar?: string }
-  amount: number
-  date: string
-  status: TransactionStatus
-  method: PaymentMethod
-  sessionNumber: number
+type Pagamento = {
+  id: number
+  paciente_nome: string
+  data_formatada: string
+  valor_pago: number | string
+  status: string
 }
 
+const brl = (v: number | string) =>
+  Number(v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+
 export function PagamentosProfessional() {
-  const [filterMonth, setFilterMonth] = useState<string>("all")
+  const [pagamentos, setPagamentos] = useState<Pagamento[]>([])
+  const [totalMes, setTotalMes] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
 
-  // Sem dados fictícios. Quando tiver API, preenche aqui via fetch/useEffect.
-  const transactions: Transaction[] = []
+  useEffect(() => {
+    fetchPagamentos()
+  }, [])
 
-  const filtered = useMemo(() => {
-    if (filterMonth === "all") return transactions
-    return transactions.filter((t) => {
-      const m = String(new Date(t.date).getMonth() + 1).padStart(2, "0")
-      return m === filterMonth
-    })
-  }, [transactions, filterMonth])
+  const fetchPagamentos = async () => {
+    setLoading(true)
+    setError("")
+    try {
+      const res = await fetch(`${API_BASE}/dashboard/get_pagamentos.php`, {
+        credentials: "include",
+        headers: { Accept: "application/json" },
+      })
+      const data = await res.json()
+      if (data.success && data.data) {
+        setPagamentos(Array.isArray(data.data.pagamentos) ? data.data.pagamentos : [])
+        setTotalMes(Number(data.data.total_mes) || 0)
+      } else {
+        setError(data.message || "Não foi possível carregar os pagamentos.")
+      }
+    } catch {
+      setError("Erro de conexão ao carregar os pagamentos.")
+    } finally {
+      setLoading(false)
+    }
+  }
 
-  const totalRevenue = filtered.filter((t) => t.status === "pago").reduce((sum, t) => sum + t.amount, 0)
-  const pendingRevenue = filtered.filter((t) => t.status === "pendente").reduce((sum, t) => sum + t.amount, 0)
+  const totalRecebido = pagamentos
+    .filter((p) => p.status === "paga" || p.status === "realizada")
+    .reduce((s, p) => s + Number(p.valor_pago || 0), 0)
 
-  const paidCount = filtered.filter((t) => t.status === "pago").length
-  const pendingCount = filtered.filter((t) => t.status === "pendente").length
-  const allCount = filtered.length
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Pagamentos</h2>
-          <p className="text-muted-foreground">Gerencie suas receitas e transações</p>
-        </div>
-        <Button variant="outline" className="rounded-xl bg-transparent" disabled>
-          <Download className="w-4 h-4 mr-2" />
-          Exportar Relatório
-        </Button>
+      <div>
+        <h2 className="text-2xl font-bold">Pagamentos</h2>
+        <p className="text-muted-foreground">Suas receitas das consultas pagas e realizadas.</p>
       </div>
 
-      {/* Cards resumo */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="p-6 border-border/50">
-          <p className="text-sm text-muted-foreground font-medium mb-2">Receita Total</p>
-          <h3 className="text-3xl font-bold mb-1">{"R$ " + totalRevenue.toLocaleString("pt-BR")}</h3>
-          <p className="text-xs text-muted-foreground">Pagamentos confirmados</p>
-        </Card>
+      {error && <p className="text-sm text-red-600">{error}</p>}
 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="p-6 border-border/50">
-          <p className="text-sm text-muted-foreground font-medium mb-2">Pendentes</p>
-          <h3 className="text-3xl font-bold mb-1">{"R$ " + pendingRevenue.toLocaleString("pt-BR")}</h3>
-          <p className="text-xs text-muted-foreground">Aguardando confirmação</p>
-        </Card>
-      </div>
-
-      {/* Lista */}
-      <Card className="p-6 border-border/50">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h3 className="text-lg font-semibold">Histórico de Transações</h3>
-            <p className="text-sm text-muted-foreground">Todas as transações</p>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 rounded-lg bg-emerald-500/10">
+              <TrendingUp className="w-5 h-5 text-emerald-600" />
+            </div>
+            <p className="text-sm font-medium text-muted-foreground">Recebido no mês</p>
           </div>
+          <p className="text-3xl font-bold">{brl(totalMes)}</p>
+        </Card>
+        <Card className="p-6 border-border/50">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 rounded-lg bg-blue-500/10">
+              <Wallet className="w-5 h-5 text-blue-600" />
+            </div>
+            <p className="text-sm font-medium text-muted-foreground">Últimas transações</p>
+          </div>
+          <p className="text-3xl font-bold">{brl(totalRecebido)}</p>
+        </Card>
+      </div>
 
-          <Select value={filterMonth} onValueChange={setFilterMonth}>
-            <SelectTrigger className="w-56 rounded-xl bg-card/50 border-border/50">
-              <Filter className="w-4 h-4 mr-2" />
-              <SelectValue placeholder="Filtrar por mês" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos os meses</SelectItem>
-              <SelectItem value="01">Janeiro</SelectItem>
-              <SelectItem value="02">Fevereiro</SelectItem>
-              <SelectItem value="03">Março</SelectItem>
-              <SelectItem value="04">Abril</SelectItem>
-              <SelectItem value="05">Maio</SelectItem>
-              <SelectItem value="06">Junho</SelectItem>
-              <SelectItem value="07">Julho</SelectItem>
-              <SelectItem value="08">Agosto</SelectItem>
-              <SelectItem value="09">Setembro</SelectItem>
-              <SelectItem value="10">Outubro</SelectItem>
-              <SelectItem value="11">Novembro</SelectItem>
-              <SelectItem value="12">Dezembro</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Tabs defaultValue="todas" className="space-y-4">
-          <TabsList className="border-border/50 p-1">
-            <TabsTrigger value="todas">{"Todas (" + allCount + ")"}</TabsTrigger>
-            <TabsTrigger value="pagas">{"Pagas (" + paidCount + ")"}</TabsTrigger>
-            <TabsTrigger value="pendentes">{"Pendentes (" + pendingCount + ")"}</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="todas">
-            {allCount === 0 ? (
-              <div className="py-10 text-center text-muted-foreground">Nenhuma transação encontrada.</div>
-            ) : (
-              <div className="space-y-3">{/* map das transações quando tiver API */}</div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="pagas">
-            {paidCount === 0 ? (
-              <div className="py-10 text-center text-muted-foreground">Nenhuma transação paga.</div>
-            ) : (
-              <div className="space-y-3" />
-            )}
-          </TabsContent>
-
-          <TabsContent value="pendentes">
-            {pendingCount === 0 ? (
-              <div className="py-10 text-center text-muted-foreground">Nenhuma transação pendente.</div>
-            ) : (
-              <div className="space-y-3" />
-            )}
-          </TabsContent>
-        </Tabs>
-      </Card>
+      <div>
+        <h3 className="text-lg font-semibold mb-3">Últimas transações</h3>
+        {pagamentos.length === 0 ? (
+          <Card className="p-6 text-center border-border/50">
+            <p className="text-muted-foreground">Nenhum pagamento registrado ainda.</p>
+          </Card>
+        ) : (
+          <div className="space-y-3">
+            {pagamentos.map((p) => (
+              <Card key={p.id} className="p-4 border-border/50">
+                <div className="flex items-center justify-between gap-4 flex-wrap">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 font-medium">
+                      <User className="w-4 h-4 text-muted-foreground" />
+                      {p.paciente_nome}
+                    </div>
+                    <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <Calendar className="w-4 h-4" />
+                      {p.data_formatada}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-semibold text-emerald-600">{brl(p.valor_pago)}</span>
+                    <Badge
+                      variant="secondary"
+                      className={
+                        p.status === "realizada"
+                          ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                          : "bg-blue-500/10 text-blue-600 border-blue-500/20"
+                      }
+                    >
+                      {p.status === "realizada" ? "Realizada" : "Paga"}
+                    </Badge>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
