@@ -197,7 +197,7 @@ export function GerenciarAgenda() {
     setActionLoadingId(id)
     setError("")
     try {
-      await fetchJson(`${API_BASE}/paciente/cancel_consulta.php`, { method: "POST", body: JSON.stringify({ consulta_id: id }) })
+      await fetchJson(`${API_BASE}/profissional/cancelar_consulta.php`, { method: "POST", body: JSON.stringify({ consulta_id: id }) })
       setAppointments((prev) => prev.map((a) => (a.id === id ? { ...a, status: "cancelada" } : a)))
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erro ao cancelar")

@@ -40,9 +40,10 @@ Suba exatamente estes arquivos (mantendo as pastas):
 | `usuarios/atualizar_perfil.php` | `public_html/usuarios/atualizar_perfil.php` | SUBSTITUI |
 | `profissional/dados_bancarios.php` | `public_html/profissional/dados_bancarios.php` | NOVO |
 | `profissional/get_all_consultas.php` | `public_html/profissional/get_all_consultas.php` | SUBSTITUI (corrige colunas) |
+| `profissional/cancelar_consulta.php` | `public_html/profissional/cancelar_consulta.php` | NOVO (cancelamento pelo profissional) |
 | `consultas/confirmar_sessao.php` | `public_html/consultas/confirmar_sessao.php` | NOVO |
 
-Não suba a pasta inteira `hostinger/`. Suba só os 7 arquivos da tabela.
+Não suba a pasta inteira `hostinger/`. Suba só os 8 arquivos da tabela.
 Não é preciso mexer no `.env` de produção (as credenciais continuam as mesmas).
 
 ## Passo 5 — Smoke test em produção
