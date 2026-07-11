@@ -28,6 +28,53 @@ if (!is_array($data)) {
 $user_id = (int) $_SESSION['user_id'];
 $nascimento = !empty($data['data_nascimento']) ? $data['data_nascimento'] : null;
 
+// Validação defensiva (o frontend valida, mas o servidor não pode confiar só nele)
+// Limites da plataforma (configuração; fonte única de verdade)
+$cfg_min = 50.0;
+$cfg_max = 1000.0;
+try {
+    $cfg = $pdo->query(
+        "SELECT chave, valor FROM configuracoes_sistema
+         WHERE chave IN ('valor_minimo_consulta','valor_maximo_consulta')"
+    )->fetchAll(PDO::FETCH_KEY_PAIR);
+    if (isset($cfg['valor_minimo_consulta'])) $cfg_min = (float) $cfg['valor_minimo_consulta'];
+    if (isset($cfg['valor_maximo_consulta'])) $cfg_max = (float) $cfg['valor_maximo_consulta'];
+} catch (Exception $e) {
+    // mantém os defaults
+}
+
+$erros = [];
+if (!isset($data['nome']) || trim((string) $data['nome']) === '') {
+    $erros['nome'] = 'Informe o nome.';
+}
+
+// Valor da consulta: valida e corrige automaticamente para o máximo se ultrapassar
+$temValor = isset($data['valor_consulta']) && $data['valor_consulta'] !== null && $data['valor_consulta'] !== '';
+$valorFinal = null;
+if ($temValor) {
+    if (!is_numeric($data['valor_consulta']) || (float) $data['valor_consulta'] <= 0) {
+        $erros['valor_consulta'] = 'Valor da consulta inválido.';
+    } else {
+        $valorFinal = round((float) $data['valor_consulta'], 2);
+        if ($valorFinal < $cfg_min) {
+            $erros['valor_consulta'] = 'O valor mínimo é R$ ' . number_format($cfg_min, 2, ',', '.') . '.';
+        } elseif ($valorFinal > $cfg_max) {
+            $valorFinal = $cfg_max; // corrige automático para o máximo permitido
+        }
+    }
+}
+
+if (!empty($data['estado']) && !preg_match('/^[A-Za-z]{2}$/', trim((string) $data['estado']))) {
+    $erros['estado'] = 'UF deve ter 2 letras.';
+}
+if ($nascimento !== null && !preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $nascimento)) {
+    $erros['data_nascimento'] = 'Data de nascimento inválida.';
+}
+if (!empty($erros)) {
+    echo json_encode(['success' => false, 'message' => 'Dados inválidos.', 'erros' => $erros]);
+    exit;
+}
+
 try {
     $pdo->beginTransaction();
 
@@ -55,7 +102,7 @@ try {
         );
         $stmt->execute([
             $data['especialidade'] ?? null,
-            (isset($data['valor_consulta']) && $data['valor_consulta'] !== '') ? $data['valor_consulta'] : null,
+            $valorFinal,
             $data['bio'] ?? null,
             $nascimento,
             $data['cidade'] ?? null,

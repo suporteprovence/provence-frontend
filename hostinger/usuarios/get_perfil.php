@@ -69,7 +69,20 @@ try {
         $data['estado']          = $p['estado'] ?? null;
     }
 
-    echo json_encode(['success' => true, 'message' => 'Perfil encontrado', 'data' => $data]);
+    // Limites de valor da consulta (configuração da plataforma; fonte única de verdade)
+    $limites = ['minimo' => 50.0, 'maximo' => 1000.0];
+    try {
+        $cfg = $pdo->query(
+            "SELECT chave, valor FROM configuracoes_sistema
+             WHERE chave IN ('valor_minimo_consulta','valor_maximo_consulta')"
+        )->fetchAll(PDO::FETCH_KEY_PAIR);
+        if (isset($cfg['valor_minimo_consulta'])) $limites['minimo'] = (float) $cfg['valor_minimo_consulta'];
+        if (isset($cfg['valor_maximo_consulta'])) $limites['maximo'] = (float) $cfg['valor_maximo_consulta'];
+    } catch (Exception $e) {
+        // mantém os defaults
+    }
+
+    echo json_encode(['success' => true, 'message' => 'Perfil encontrado', 'data' => $data, 'limites' => $limites]);
 } catch (Exception $e) {
     error_log("Erro ao buscar perfil: " . $e->getMessage());
     echo json_encode(['success' => false, 'message' => 'Erro interno do servidor']);
