@@ -30,27 +30,48 @@ export function AgendamentoForm({ profissional, onBack }: Props) {
   const [selectedTime, setSelectedTime] = useState("")
 
   useEffect(() => {
-    fetchHorarios()
+    carregarHorarios()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profissional.id])
 
-  const fetchHorarios = async () => {
+  // Próximos 14 dias em ISO (data local, sem o fuso empurrar pro dia anterior).
+  const proximosDias = (qtd = 14) => {
+    const out: string[] = []
+    const hoje = new Date()
+    for (let i = 0; i < qtd; i++) {
+      const d = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() + i)
+      out.push(
+        `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
+      )
+    }
+    return out
+  }
+
+  // O backend devolve horários POR data (exige profissional_id + data). Buscamos
+  // os próximos dias em paralelo e ficamos só com os que têm horário disponível.
+  const carregarHorarios = async () => {
     setLoading(true)
     setError("")
+    setSelectedDate("")
+    setSelectedTime("")
     try {
-      const res = await fetch(
-        `${API_BASE}/agendamento/get-horarios-disponiveis.php?profissional_id=${profissional.id}`,
-        {
-          method: "GET",
-          headers: { Accept: "application/json" },
-          credentials: "include",
-        }
+      const resultados = await Promise.all(
+        proximosDias(14).map(async (iso) => {
+          try {
+            const res = await fetch(
+              `${API_BASE}/agendamento/get-horarios-disponiveis.php?profissional_id=${profissional.id}&data=${iso}`,
+              { method: "GET", headers: { Accept: "application/json" }, credentials: "include" }
+            )
+            const data = await res.json()
+            const horarios =
+              data.success || data.status === "success" ? data.data || data.horarios || [] : []
+            return { data: iso, horarios: Array.isArray(horarios) ? horarios : [] }
+          } catch {
+            return { data: iso, horarios: [] as string[] }
+          }
+        })
       )
-      const data = await res.json()
-      if (data.success || data.status === "success") {
-        setHorariosData(data.horarios || data.data || [])
-      } else {
-        setError(data.message || "Erro ao carregar horários.")
-      }
+      setHorariosData(resultados.filter((r) => r.horarios.length > 0))
     } catch {
       setError("Erro de conexão ao carregar horários.")
     } finally {

@@ -47,14 +47,14 @@ export default function Hero() {
               className="flex flex-wrap justify-center gap-4 mb-16"
             >
               <Link
-                href="/cadastro"
+                href="/register"
                 className="inline-flex items-center px-8 py-3 rounded-full text-base font-medium text-white bg-[#4B0082] hover:bg-[#3B0062] transition-all shadow-lg hover:shadow-[#4B0082]/20 group"
               >
                 Comece Sua Jornada
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
-                href="/saiba-mais"
+                href="/sobre-nos"
                 className="inline-flex items-center px-8 py-3 rounded-full text-base font-medium text-[#4B0082] bg-white hover:bg-[#F0EBFF] transition-all"
               >
                 Saiba Mais
