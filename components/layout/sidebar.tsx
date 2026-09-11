@@ -36,7 +36,7 @@ export function Sidebar({ userType }: SidebarProps) {
   return (
     <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-200">
       <div className="p-6">
-        <h2 className="text-2xl font-bold text-[#4B0082]">Provence</h2>
+        <h2 className="text-2xl font-bold text-provence-900">Provence</h2>
       </div>
       <nav className="flex-1 px-4 pb-4">
         <ul className="space-y-1">
@@ -48,7 +48,7 @@ export function Sidebar({ userType }: SidebarProps) {
                   href={link.href}
                   className={cn(
                     "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-                    isActive ? "bg-[#3681AB] text-white" : "text-gray-700 hover:bg-gray-100",
+                    isActive ? "bg-provence-900 text-white" : "text-gray-700 hover:bg-gray-100",
                   )}
                 >
                   <link.icon className="h-5 w-5" />

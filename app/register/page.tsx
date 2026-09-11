@@ -190,26 +190,26 @@ export default function CadastroPage() {
 }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-100 flex flex-col relative">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-provence-50 to-provence-100 flex flex-col relative">
       {/* Simplified background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-200 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-provence-50 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-provence-100 rounded-full blur-3xl"></div>
       </div>
 
       <div className="flex-grow container mx-auto flex items-center justify-center p-4 relative z-10">
         <div className="w-full max-w-3xl">
           <Card className="bg-white/80 backdrop-blur-xl shadow-2xl border-0 rounded-3xl overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-white/80 to-purple-50/80 backdrop-blur-xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-white/80 to-provence-50/80 backdrop-blur-xl"></div>
 
             <CardHeader className="text-center pb-6 pt-8 relative z-10">
               <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-600 via-violet-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                <div className="w-16 h-16 bg-gradient-to-br from-provence-800 via-provence-900 to-provence-950 rounded-2xl flex items-center justify-center shadow-2xl">
                   <Sparkles className="h-8 w-8 text-white" />
                 </div>
               </div>
 
-              <CardTitle className="text-4xl font-bold bg-gradient-to-r from-purple-700 via-violet-700 to-indigo-700 bg-clip-text text-transparent mb-3 tracking-tight">
+              <CardTitle className="text-4xl font-bold bg-gradient-to-r from-provence-800 via-provence-900 to-provence-950 bg-clip-text text-transparent mb-3 tracking-tight">
                 Criar conta
               </CardTitle>
               <CardDescription className="text-slate-600 text-lg font-medium">
@@ -226,25 +226,25 @@ export default function CadastroPage() {
                     onClick={() => handleUserTypeChange("paciente")}
                     className={`flex items-center gap-3 px-8 py-4 rounded-2xl border-2 transition-all duration-300 ${
                       form.tipo_usuario === "paciente"
-                        ? "border-purple-400 bg-gradient-to-r from-purple-50 to-violet-50 shadow-lg shadow-purple-200/50"
-                        : "border-slate-200 bg-white/50 hover:border-purple-300 hover:shadow-md"
+                        ? "border-provence-400 bg-gradient-to-r from-provence-50 to-provence-100 shadow-lg shadow-provence-300/50"
+                        : "border-slate-200 bg-white/50 hover:border-provence-200 hover:shadow-md"
                     }`}
                   >
                     <div
                       className={`w-4 h-4 rounded-full transition-all duration-300 ${
                         form.tipo_usuario === "paciente"
-                          ? "bg-gradient-to-r from-purple-500 to-violet-500 shadow-lg"
+                          ? "bg-gradient-to-r from-provence-600 to-provence-700 shadow-lg"
                           : "bg-slate-300"
                       }`}
                     />
                     <User
                       className={`w-5 h-5 transition-colors duration-300 ${
-                        form.tipo_usuario === "paciente" ? "text-purple-600" : "text-slate-500"
+                        form.tipo_usuario === "paciente" ? "text-provence-900" : "text-slate-500"
                       }`}
                     />
                     <span
                       className={`font-semibold transition-colors duration-300 ${
-                        form.tipo_usuario === "paciente" ? "text-purple-700" : "text-slate-600"
+                        form.tipo_usuario === "paciente" ? "text-provence-900" : "text-slate-600"
                       }`}
                     >
                       Paciente
@@ -256,25 +256,25 @@ export default function CadastroPage() {
                     onClick={() => handleUserTypeChange("profissional")}
                     className={`flex items-center gap-3 px-8 py-4 rounded-2xl border-2 transition-all duration-300 ${
                       form.tipo_usuario === "profissional"
-                        ? "border-purple-400 bg-gradient-to-r from-purple-50 to-violet-50 shadow-lg shadow-purple-200/50"
-                        : "border-slate-200 bg-white/50 hover:border-purple-300 hover:shadow-md"
+                        ? "border-provence-400 bg-gradient-to-r from-provence-50 to-provence-100 shadow-lg shadow-provence-300/50"
+                        : "border-slate-200 bg-white/50 hover:border-provence-200 hover:shadow-md"
                     }`}
                   >
                     <div
                       className={`w-4 h-4 rounded-full transition-all duration-300 ${
                         form.tipo_usuario === "profissional"
-                          ? "bg-gradient-to-r from-purple-500 to-violet-500 shadow-lg"
+                          ? "bg-gradient-to-r from-provence-600 to-provence-700 shadow-lg"
                           : "bg-slate-300"
                       }`}
                     />
                     <Stethoscope
                       className={`w-5 h-5 transition-colors duration-300 ${
-                        form.tipo_usuario === "profissional" ? "text-purple-600" : "text-slate-500"
+                        form.tipo_usuario === "profissional" ? "text-provence-900" : "text-slate-500"
                       }`}
                     />
                     <span
                       className={`font-semibold transition-colors duration-300 ${
-                        form.tipo_usuario === "profissional" ? "text-purple-700" : "text-slate-600"
+                        form.tipo_usuario === "profissional" ? "text-provence-900" : "text-slate-600"
                       }`}
                     >
                       Profissional
@@ -308,7 +308,7 @@ export default function CadastroPage() {
                       value={form.nome}
                       onChange={handleChange}
                       required
-                      className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
+                      className="h-12 border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
                       placeholder="Seu nome completo"
                     />
                   </div>
@@ -324,7 +324,7 @@ export default function CadastroPage() {
                       value={form.email}
                       onChange={handleChange}
                       required
-                      className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
+                      className="h-12 border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
                       placeholder="seu@email.com"
                     />
                   </div>
@@ -340,7 +340,7 @@ export default function CadastroPage() {
                       value={form.senha}
                       onChange={handleChange}
                       required
-                      className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
+                      className="h-12 border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
                       placeholder="Mínimo 6 caracteres"
                       minLength={6}
                     />
@@ -356,7 +356,7 @@ export default function CadastroPage() {
                       value={form.telefone}
                       onChange={(e) => setForm((prev) => ({ ...prev, telefone: formatPhone(e.target.value) }))}
                       required
-                      className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
+                      className="h-12 border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
                       placeholder="(11) 99999-9999"
                       maxLength={15}
                     />
@@ -372,7 +372,7 @@ export default function CadastroPage() {
                       value={form.cpf}
                       onChange={(e) => setForm((prev) => ({ ...prev, cpf: formatCPF(e.target.value) }))}
                       required
-                      className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
+                      className="h-12 border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
                       placeholder="000.000.000-00"
                       maxLength={14}
                     />
@@ -388,7 +388,7 @@ export default function CadastroPage() {
                           value={form.especialidade}
                           onValueChange={(value) => setForm((prev) => ({ ...prev, especialidade: value }))}
                         >
-                          <SelectTrigger className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm">
+                          <SelectTrigger className="h-12 border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm">
                             <SelectValue placeholder="Selecione sua especialidade" />
                           </SelectTrigger>
                           <SelectContent>
@@ -411,7 +411,7 @@ export default function CadastroPage() {
                           value={form.numero_crp}
                           onChange={handleChange}
                           required
-                          className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
+                          className="h-12 border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
                           placeholder="Ex: CRP 06/123456"
                         />
                       </div>
@@ -432,7 +432,7 @@ export default function CadastroPage() {
                               setForm((prev) => ({ ...prev, valor_consulta: formatCurrency(e.target.value) }))
                             }
                             required
-                            className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-12 text-slate-700 placeholder:text-slate-400"
+                            className="h-12 border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-12 text-slate-700 placeholder:text-slate-400"
                             placeholder="150,00"
                           />
                         </div>
@@ -447,7 +447,7 @@ export default function CadastroPage() {
                           name="bio"
                           value={form.bio}
                           onChange={handleChange}
-                          className="w-full h-24 px-4 py-3 border border-slate-200 rounded-xl focus:border-purple-400 focus:ring-purple-400/20 bg-white/50 backdrop-blur-sm transition-all duration-300 resize-none text-slate-700 placeholder:text-slate-400"
+                          className="w-full h-24 px-4 py-3 border border-slate-200 rounded-xl focus:border-provence-800 focus:ring-provence-800/20 bg-white/50 backdrop-blur-sm transition-all duration-300 resize-none text-slate-700 placeholder:text-slate-400"
                           rows={3}
                           placeholder="Conte um pouco sobre sua experiência e abordagem profissional..."
                         />
@@ -463,13 +463,13 @@ export default function CadastroPage() {
                   </Alert>
                 )}
 
-                <div className="flex items-start gap-3 rounded-2xl border border-purple-200 bg-purple-50/60 p-4">
+                <div className="flex items-start gap-3 rounded-2xl border border-provence-300 bg-provence-50/60 p-4">
                   <input
                     id="aceite"
                     type="checkbox"
                     checked={aceiteTermos}
                     onChange={(e) => setAceiteTermos(e.target.checked)}
-                    className="mt-1 h-4 w-4 accent-purple-600"
+                    className="mt-1 h-4 w-4 accent-provence-900"
                   />
                   <label htmlFor="aceite" className="text-sm text-slate-700 leading-relaxed">
                     Li e aceito os{" "}
@@ -477,7 +477,7 @@ export default function CadastroPage() {
                       href="/termos-uso"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-purple-600 font-medium hover:underline"
+                      className="text-provence-900 font-medium hover:underline"
                     >
                       Termos de Uso e a Política de Privacidade
                     </a>
@@ -487,7 +487,7 @@ export default function CadastroPage() {
 
                 <Button
                   type="submit"
-                  className="w-full h-12 bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 hover:from-purple-700 hover:via-violet-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full h-12 bg-gradient-to-r from-provence-900 to-provence-950 hover:from-provence-950 hover:to-provence-950 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={loading}
                 >
                   {loading ? (
@@ -510,7 +510,7 @@ export default function CadastroPage() {
                 Já tem uma conta?{" "}
                 <Link
                   href="/login"
-                  className="text-purple-600 hover:text-purple-700 transition-colors font-semibold hover:underline"
+                  className="text-provence-900 hover:text-provence-950 transition-colors font-semibold hover:underline"
                 >
                   Entrar
                 </Link>

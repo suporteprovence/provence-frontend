@@ -8,7 +8,7 @@ import Testimonials from "@/components/testimonials"
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#E8DCF4] via-white to-[#AED7ED]/20">
+    <div className="min-h-screen bg-gradient-to-b from-provence-100 via-white to-provence-300/20">
       <Navbar />
       <main>
         <Hero />

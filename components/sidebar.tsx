@@ -71,7 +71,7 @@ export default function Sidebar({ userData }: SidebarProps) {
       <div className="p-8 border-b border-slate-700">
         <div className="flex items-center justify-center">
           <Image
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/provence_logo-removebg-preview-tXdqi9KCbWwQ89jwGVxJhaGioGvqwe.png"
+            src="/provence-logo.png"
             alt="Provence Logo"
             width={180}
             height={72}
@@ -90,13 +90,13 @@ export default function Sidebar({ userData }: SidebarProps) {
               href={item.href}
               className={`flex items-center space-x-4 px-4 py-3 rounded-xl transition-all duration-200 group ${
                 isActive(item.href)
-                  ? "bg-gradient-to-r from-purple-600 to-purple-500 text-white shadow-lg shadow-purple-500/25"
+                  ? "bg-gradient-to-r from-provence-950 to-provence-900 text-white shadow-lg shadow-provence-600/25"
                   : "text-slate-300 hover:bg-slate-800 hover:text-white"
               }`}
             >
               <item.icon
                 className={`h-5 w-5 transition-colors ${
-                  isActive(item.href) ? "text-white" : "text-slate-400 group-hover:text-purple-400"
+                  isActive(item.href) ? "text-white" : "text-slate-400 group-hover:text-provence-400"
                 }`}
               />
               <span className="font-medium">{item.label}</span>
@@ -110,7 +110,7 @@ export default function Sidebar({ userData }: SidebarProps) {
         <div className="flex items-center space-x-3 mb-4 p-3 bg-slate-800 rounded-xl">
           <Avatar className="h-10 w-10">
             <AvatarImage src={userData.foto_perfil || "/placeholder.svg?height=40&width=40"} />
-            <AvatarFallback className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+            <AvatarFallback className="bg-gradient-to-r from-provence-900 to-provence-950 text-white">
               {userData.nome
                 .split(" ")
                 .map((n) => n[0])

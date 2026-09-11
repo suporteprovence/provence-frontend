@@ -38,7 +38,7 @@ const features = [
 
 export default function Features() {
   return (
-    <section className="py-20 bg-gradient-to-br from-white to-[#F0EBFF]/30">
+    <section className="py-20 bg-gradient-to-br from-white to-provence-50/30">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -47,8 +47,8 @@ export default function Features() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <span className="text-[#4B0082] text-sm font-medium uppercase tracking-wider">RECURSOS</span>
-          <h2 className="text-3xl md:text-4xl font-bold text-[#4B0082] mt-4 mb-4">Tudo que você precisa</h2>
+          <span className="text-provence-900 text-sm font-medium uppercase tracking-wider">RECURSOS</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-provence-900 mt-4 mb-4">Tudo que você precisa</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Nossa plataforma oferece todas as ferramentas necessárias para uma experiência de psicoterapia online
             completa, segura e eficiente.
@@ -63,17 +63,17 @@ export default function Features() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="bg-white p-8 rounded-2xl hover:shadow-xl transition-all duration-300 border border-[#D7C7FF] hover:border-[#8B5CF6] group relative overflow-hidden"
+              className="bg-white p-8 rounded-2xl hover:shadow-xl transition-all duration-300 border border-provence-100 hover:border-provence-600 group relative overflow-hidden"
             >
               {/* Elemento decorativo */}
-              <div className="absolute -right-16 -top-16 w-32 h-32 bg-[#F0EBFF] rounded-full transform transition-transform duration-500 group-hover:scale-150"></div>
+              <div className="absolute -right-16 -top-16 w-32 h-32 bg-provence-50 rounded-full transform transition-transform duration-500 group-hover:scale-150"></div>
 
               <div className="relative z-10">
-                <div className="bg-gradient-to-br from-[#4B0082] to-[#8B5CF6] w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:shadow-[#8B5CF6]/50 transition-all duration-300 transform group-hover:scale-110">
+                <div className="bg-gradient-to-br from-provence-950 to-provence-900 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:shadow-provence-600/50 transition-all duration-300 transform group-hover:scale-110">
                   <feature.icon className="w-8 h-8 text-white" />
                 </div>
 
-                <h3 className="text-xl font-semibold text-[#4B0082] mb-3 group-hover:translate-x-2 transition-all duration-300">
+                <h3 className="text-xl font-semibold text-provence-900 mb-3 group-hover:translate-x-2 transition-all duration-300">
                   {feature.title}
                 </h3>
 
@@ -83,7 +83,7 @@ export default function Features() {
               </div>
 
               {/* Elemento decorativo inferior */}
-              <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#4B0082] to-[#8B5CF6] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+              <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-provence-900 to-provence-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
             </motion.div>
           ))}
         </div>

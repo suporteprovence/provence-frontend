@@ -10,7 +10,7 @@ const ProvenceLogo = () => {
   return (
     <div className="flex items-center -ml-6">
       <Image
-        src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/provence_logo-removebg-preview-tXdqi9KCbWwQ89jwGVxJhaGioGvqwe.png"
+        src="/provence-logo.png"
         alt="Provence Logo"
         width={140}
         height={56}
@@ -57,21 +57,21 @@ export default function Navbar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-gray-700 hover:text-[#4B0082] transition-colors text-base font-medium"
+                className="text-gray-700 hover:text-provence-900 transition-colors text-base font-medium"
               >
                 {item.name}
               </Link>
             ))}
             <Link
               href="/login"
-              className="text-[#4B0082] hover:text-[#3B0062] transition-colors text-base font-medium flex items-center gap-2 px-5 py-2.5 rounded-full hover:bg-[#F0EBFF]"
+              className="text-provence-900 hover:text-provence-950 transition-colors text-base font-medium flex items-center gap-2 px-5 py-2.5 rounded-full hover:bg-provence-50"
             >
               <LogIn size={20} />
               Entrar
             </Link>
             <Link
               href="/register"
-              className="bg-[#4B0082] text-white px-7 py-3 rounded-full hover:bg-[#3B0062] transition-all text-base font-medium shadow-sm hover:shadow-lg flex items-center gap-2 hover:scale-105 transform duration-200"
+              className="bg-provence-900 text-white px-7 py-3 rounded-full hover:bg-provence-950 transition-all text-base font-medium shadow-sm hover:shadow-lg flex items-center gap-2 hover:scale-105 transform duration-200"
             >
               <UserPlus size={20} />
               Cadastrar
@@ -80,7 +80,7 @@ export default function Navbar() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden text-[#4B0082] hover:bg-[#F0EBFF] p-3 rounded-full transition-colors"
+            className="md:hidden text-provence-900 hover:bg-provence-50 p-3 rounded-full transition-colors"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Menu"
           >
@@ -104,7 +104,7 @@ export default function Navbar() {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className="text-gray-700 hover:text-[#4B0082] transition-colors py-2.5 text-xl font-medium"
+                    className="text-gray-700 hover:text-provence-900 transition-colors py-2.5 text-xl font-medium"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {item.name}
@@ -112,7 +112,7 @@ export default function Navbar() {
                 ))}
                 <Link
                   href="/login"
-                  className="text-[#4B0082] hover:text-[#3B0062] transition-colors py-3.5 flex items-center gap-3 text-xl font-medium"
+                  className="text-provence-900 hover:text-provence-950 transition-colors py-3.5 flex items-center gap-3 text-xl font-medium"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <LogIn size={24} />
@@ -120,7 +120,7 @@ export default function Navbar() {
                 </Link>
                 <Link
                   href="/register"
-                  className="bg-[#4B0082] text-white px-7 py-3.5 rounded-full hover:bg-[#3B0062] transition-all text-center shadow-sm hover:shadow-lg mt-3 flex items-center justify-center gap-3 text-xl font-medium"
+                  className="bg-provence-900 text-white px-7 py-3.5 rounded-full hover:bg-provence-950 transition-all text-center shadow-sm hover:shadow-lg mt-3 flex items-center justify-center gap-3 text-xl font-medium"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <UserPlus size={24} />

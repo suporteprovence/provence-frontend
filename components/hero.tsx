@@ -7,7 +7,7 @@ import Navbar from "./navbar"
 
 export default function Hero() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#EDE7FF] via-[#E2D7FF] to-[#D7C7FF] relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-provence-50 via-provence-100 to-provence-200 relative overflow-hidden">
       <Navbar />
 
       {/* Hero Section */}
@@ -20,8 +20,8 @@ export default function Hero() {
               transition={{ delay: 0.2, duration: 0.5 }}
               className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm mb-8 mx-auto"
             >
-              <Shield size={18} className="text-[#4B0082]" />
-              <span className="text-sm font-medium text-[#4B0082]">Psicoterapia Online Segura</span>
+              <Shield size={18} className="text-provence-900" />
+              <span className="text-sm font-medium text-provence-900">Psicoterapia Online Segura</span>
             </motion.div>
 
             <motion.div
@@ -48,14 +48,14 @@ export default function Hero() {
             >
               <Link
                 href="/register"
-                className="inline-flex items-center px-8 py-3 rounded-full text-base font-medium text-white bg-[#4B0082] hover:bg-[#3B0062] transition-all shadow-lg hover:shadow-[#4B0082]/20 group"
+                className="inline-flex items-center px-8 py-3 rounded-full text-base font-medium text-white bg-provence-900 hover:bg-provence-950 transition-all shadow-lg hover:shadow-provence-900/20 group"
               >
                 Comece Sua Jornada
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
                 href="/sobre-nos"
-                className="inline-flex items-center px-8 py-3 rounded-full text-base font-medium text-[#4B0082] bg-white hover:bg-[#F0EBFF] transition-all"
+                className="inline-flex items-center px-8 py-3 rounded-full text-base font-medium text-provence-900 bg-white hover:bg-provence-50 transition-all"
               >
                 Saiba Mais
               </Link>
@@ -87,8 +87,8 @@ export default function Hero() {
                   transition={{ delay: 0.7 + index * 0.1, duration: 0.8 }}
                   className="flex items-center gap-4 p-6 rounded-2xl bg-white shadow-md"
                 >
-                  <div className="w-12 h-12 rounded-full bg-[#F0EBFF] flex items-center justify-center flex-shrink-0">
-                    <card.icon className="w-6 h-6 text-[#4B0082]" />
+                  <div className="w-12 h-12 rounded-full bg-provence-50 flex items-center justify-center flex-shrink-0">
+                    <card.icon className="w-6 h-6 text-provence-900" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 text-lg">{card.title}</h3>

@@ -157,7 +157,7 @@ export default function PatientDashboard() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-64 bg-[#0A1E3D] text-white flex flex-col fixed h-full">
+      <aside className="w-64 bg-provence-950 text-white flex flex-col fixed h-full">
         {/* Logo */}
         <div className="p-6 border-b border-white/10">
           <h1 className="text-xl font-bold">Provence</h1>
@@ -171,7 +171,7 @@ export default function PatientDashboard() {
               <Avatar className="w-10 h-10">
                 <AvatarFallback className="bg-blue-500 text-white">{userInitials}</AvatarFallback>
               </Avatar>
-              <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-[#0A1E3D]" />
+              <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-provence-950" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{userName}</p>
@@ -189,7 +189,7 @@ export default function PatientDashboard() {
           <button
             onClick={() => goTo("dashboard")}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              activeItem === "dashboard" ? "bg-purple-600 text-white" : "text-white/70 hover:bg-white/5"
+              activeItem === "dashboard" ? "bg-provence-900 text-white" : "text-white/70 hover:bg-white/5"
             }`}
           >
             <LayoutDashboard className="w-5 h-5" />
@@ -199,7 +199,7 @@ export default function PatientDashboard() {
           <button
             onClick={() => goTo("agendar")}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              activeItem === "agendar" ? "bg-purple-600 text-white" : "text-white/70 hover:bg-white/5"
+              activeItem === "agendar" ? "bg-provence-900 text-white" : "text-white/70 hover:bg-white/5"
             }`}
           >
             <Calendar className="w-5 h-5" />
@@ -209,7 +209,7 @@ export default function PatientDashboard() {
           <button
             onClick={() => goTo("consultas")}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              activeItem === "consultas" ? "bg-purple-600 text-white" : "text-white/70 hover:bg-white/5"
+              activeItem === "consultas" ? "bg-provence-900 text-white" : "text-white/70 hover:bg-white/5"
             }`}
           >
             <Calendar className="w-5 h-5" />
@@ -219,7 +219,7 @@ export default function PatientDashboard() {
           <button
             onClick={() => goTo("chat")}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              activeItem === "chat" ? "bg-purple-600 text-white" : "text-white/70 hover:bg-white/5"
+              activeItem === "chat" ? "bg-provence-900 text-white" : "text-white/70 hover:bg-white/5"
             }`}
           >
             <MessageSquare className="w-5 h-5" />
@@ -229,7 +229,7 @@ export default function PatientDashboard() {
           <button
             onClick={() => goTo("historico")}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              activeItem === "historico" ? "bg-purple-600 text-white" : "text-white/70 hover:bg-white/5"
+              activeItem === "historico" ? "bg-provence-900 text-white" : "text-white/70 hover:bg-white/5"
             }`}
           >
             <History className="w-5 h-5" />
@@ -239,7 +239,7 @@ export default function PatientDashboard() {
           <button
             onClick={() => goTo("perfil")}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              activeItem === "perfil" ? "bg-purple-600 text-white" : "text-white/70 hover:bg-white/5"
+              activeItem === "perfil" ? "bg-provence-900 text-white" : "text-white/70 hover:bg-white/5"
             }`}
           >
             <User className="w-5 h-5" />
@@ -249,7 +249,7 @@ export default function PatientDashboard() {
           <button
             onClick={() => goTo("pagamentos")}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              activeItem === "pagamentos" ? "bg-purple-600 text-white" : "text-white/70 hover:bg-white/5"
+              activeItem === "pagamentos" ? "bg-provence-900 text-white" : "text-white/70 hover:bg-white/5"
             }`}
           >
             <CreditCard className="w-5 h-5" />

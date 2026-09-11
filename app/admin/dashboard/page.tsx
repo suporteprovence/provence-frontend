@@ -212,9 +212,9 @@ export default function AdminDashboard() {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-provence-50 to-provence-100 flex items-center justify-center">
         <div className="animate-pulse">
-          <div className="w-8 h-8 bg-purple-200 rounded-full"></div>
+          <div className="w-8 h-8 bg-provence-200 rounded-full"></div>
         </div>
       </div>
     )
@@ -222,9 +222,9 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-provence-50 to-provence-100 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-purple-600 mx-auto mb-4" />
+          <Loader2 className="h-8 w-8 animate-spin text-provence-900 mx-auto mb-4" />
           <p className="text-slate-600">Carregando painel administrativo...</p>
         </div>
       </div>
@@ -232,11 +232,11 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-100 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-provence-50 to-provence-100 relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-200/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-provence-200/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-provence-100/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
       </div>
 
       <div className="container mx-auto p-6 relative z-10">
@@ -244,7 +244,7 @@ export default function AdminDashboard() {
         <div className="mb-8 animate-in fade-in-0 slide-in-from-top-4 duration-1000">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-700 via-violet-700 to-indigo-700 bg-clip-text text-transparent mb-2">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-provence-800 via-provence-900 to-provence-950 bg-clip-text text-transparent mb-2">
                 Painel Administrativo
               </h1>
               <p className="text-slate-600 text-lg">Bem-vindo, {user?.nome || "Administrador"}!</p>
@@ -255,15 +255,15 @@ export default function AdminDashboard() {
                 onClick={carregarProfissionaisPendentes}
                 variant="outline"
                 size="sm"
-                className="border-purple-300 text-purple-700 hover:bg-purple-50 bg-white/80 backdrop-blur-sm rounded-xl"
+                className="border-provence-200 text-provence-900 hover:bg-provence-50 bg-white/80 backdrop-blur-sm rounded-xl"
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Atualizar
               </Button>
 
-              <div className="flex items-center gap-3 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-xl border border-purple-200">
-                <Shield className="h-5 w-5 text-purple-600" />
-                <Badge className="bg-gradient-to-r from-purple-600 to-violet-600 text-white border-0">
+              <div className="flex items-center gap-3 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-xl border border-provence-100">
+                <Shield className="h-5 w-5 text-provence-900" />
+                <Badge className="bg-gradient-to-r from-provence-900 to-provence-950 text-white border-0">
                   Administrador
                 </Badge>
               </div>
@@ -348,8 +348,8 @@ export default function AdminDashboard() {
         <Card className="bg-white/80 backdrop-blur-xl border-0 rounded-2xl shadow-lg animate-in fade-in-0 slide-in-from-bottom-4 duration-1000 delay-400">
           <CardHeader className="pb-6">
             <CardTitle className="text-slate-800 flex items-center gap-3 text-xl">
-              <div className="p-2 bg-gradient-to-br from-purple-100 to-violet-100 rounded-xl">
-                <Users className="h-6 w-6 text-purple-600" />
+              <div className="p-2 bg-gradient-to-br from-provence-50 to-provence-100 rounded-xl">
+                <Users className="h-6 w-6 text-provence-900" />
               </div>
               Profissionais Aguardando Aprovação ({profissionais.length})
             </CardTitle>
@@ -365,7 +365,7 @@ export default function AdminDashboard() {
                 <p className="text-slate-500 mb-6 text-lg">Todas as solicitações foram processadas.</p>
                 <Button
                   onClick={carregarProfissionaisPendentes}
-                  className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white rounded-xl px-6 py-3"
+                  className="bg-gradient-to-r from-provence-900 to-provence-950 hover:from-provence-950 hover:to-provence-950 text-white rounded-xl px-6 py-3"
                 >
                   <RefreshCw className="h-4 w-4 mr-2" />
                   Verificar Novamente
@@ -395,7 +395,7 @@ export default function AdminDashboard() {
                           <div className="flex items-center gap-3">
                             <Avatar className="h-12 w-12">
                               <AvatarImage src={profissional.foto_perfil || "/placeholder.svg"} />
-                              <AvatarFallback className="bg-gradient-to-br from-purple-500 to-violet-500 text-white font-semibold">
+                              <AvatarFallback className="bg-gradient-to-br from-provence-900 to-provence-950 text-white font-semibold">
                                 {profissional.nome.charAt(0)}
                               </AvatarFallback>
                             </Avatar>
@@ -412,7 +412,7 @@ export default function AdminDashboard() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge className="bg-gradient-to-r from-purple-100 to-violet-100 text-purple-700 border-purple-200">
+                          <Badge className="bg-gradient-to-r from-provence-50 to-provence-100 text-provence-900 border-provence-100">
                             {profissional.crp}
                           </Badge>
                         </TableCell>
@@ -429,7 +429,7 @@ export default function AdminDashboard() {
                                   variant="outline"
                                   size="sm"
                                   onClick={() => setSelectedProfissional(profissional)}
-                                  className="border-purple-200 text-purple-700 hover:bg-purple-50 rounded-xl"
+                                  className="border-provence-100 text-provence-900 hover:bg-provence-50 rounded-xl"
                                 >
                                   <Eye className="h-4 w-4" />
                                 </Button>
@@ -447,7 +447,7 @@ export default function AdminDashboard() {
                                     <div className="flex items-center gap-4">
                                       <Avatar className="h-20 w-20">
                                         <AvatarImage src={selectedProfissional.foto_perfil || "/placeholder.svg"} />
-                                        <AvatarFallback className="bg-gradient-to-br from-purple-500 to-violet-500 text-white text-2xl font-bold">
+                                        <AvatarFallback className="bg-gradient-to-br from-provence-900 to-provence-950 text-white text-2xl font-bold">
                                           {selectedProfissional.nome.charAt(0)}
                                         </AvatarFallback>
                                       </Avatar>
@@ -588,4 +588,4 @@ export default function AdminDashboard() {
       </div>
     </div>
   )
-}
+}

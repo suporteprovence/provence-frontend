@@ -120,9 +120,9 @@ export default function CadastroPendentePage() {
 
   if (loading || !cadastroData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-provence-50 to-provence-100 flex items-center justify-center">
         <div className="text-center">
-          <Clock className="h-8 w-8 animate-spin text-purple-600 mx-auto mb-4" />
+          <Clock className="h-8 w-8 animate-spin text-provence-900 mx-auto mb-4" />
           <p className="text-slate-600">Carregando...</p>
           {erro && <p className="text-sm text-red-600 mt-2">{erro}</p>}
         </div>
@@ -131,17 +131,17 @@ export default function CadastroPendentePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-100 flex flex-col relative">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-provence-50 to-provence-100 flex flex-col relative">
       {/* Simplified background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-200 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-provence-50 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-provence-100 rounded-full blur-3xl"></div>
       </div>
 
       <div className="flex-grow container mx-auto flex items-center justify-center p-4 relative z-10">
         <div className="w-full max-w-2xl">
           <Card className="bg-white/80 backdrop-blur-xl shadow-2xl border-0 rounded-3xl overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-white/80 to-purple-50/80 backdrop-blur-xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-white/80 to-provence-50/80 backdrop-blur-xl"></div>
 
             <CardHeader className="text-center pb-6 pt-8 relative z-10">
               <div className="flex justify-center mb-6">
@@ -224,7 +224,7 @@ export default function CadastroPendentePage() {
               {/* Timeline */}
               <div className="space-y-6">
                 <h3 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
-                  <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 bg-gradient-to-r from-provence-900 to-provence-950 rounded-lg flex items-center justify-center">
                     <Clock className="h-5 w-5 text-white" />
                   </div>
                   Próximos Passos
@@ -264,15 +264,15 @@ export default function CadastroPendentePage() {
                   </div>
 
                   {/* Step 3 */}
-                  <div className="flex gap-4 p-6 bg-gradient-to-r from-violet-50 to-purple-50 rounded-2xl border border-violet-200 hover:shadow-lg transition-all duration-300">
+                  <div className="flex gap-4 p-6 bg-gradient-to-r from-provence-50 to-provence-100 rounded-2xl border border-provence-200 hover:shadow-lg transition-all duration-300">
                     <div className="flex-shrink-0">
-                      <div className="w-12 h-12 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl flex items-center justify-center font-bold text-lg shadow-lg">
+                      <div className="w-12 h-12 bg-gradient-to-r from-provence-900 to-provence-950 text-white rounded-xl flex items-center justify-center font-bold text-lg shadow-lg">
                         3
                       </div>
                     </div>
                     <div className="flex-grow">
-                      <h4 className="text-lg font-bold text-violet-800 mb-2">Acesso Liberado</h4>
-                      <p className="text-violet-700 leading-relaxed">
+                      <h4 className="text-lg font-bold text-provence-900 mb-2">Acesso Liberado</h4>
+                      <p className="text-provence-900 leading-relaxed">
                         Após aprovação, você poderá fazer login, configurar seu perfil profissional e começar a atender
                         pacientes através da nossa plataforma.
                       </p>
@@ -328,7 +328,7 @@ export default function CadastroPendentePage() {
             <CardFooter className="flex flex-col space-y-4 pt-6 pb-8 relative z-10">
               <Button
                 onClick={handleVoltarLogin}
-                className="w-full h-12 bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 hover:from-purple-700 hover:via-violet-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
+                className="w-full h-12 bg-gradient-to-r from-provence-900 to-provence-950 hover:from-provence-950 hover:to-provence-950 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
               >
                 <ArrowLeft className="w-5 h-5 mr-2" />
                 Voltar para Login
@@ -344,4 +344,4 @@ export default function CadastroPendentePage() {
       </div>
     </div>
   )
-}
+}

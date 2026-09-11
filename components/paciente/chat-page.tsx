@@ -205,13 +205,13 @@ export function ChatPage() {
                     fetchMessages(conv.id)
                   }}
                   className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                    selectedChat?.id === conv.id ? "bg-purple-50" : "hover:bg-gray-50"
+                    selectedChat?.id === conv.id ? "bg-provence-50" : "hover:bg-gray-50"
                   }`}
                 >
                   <div className="flex items-start gap-3">
                     <div className="relative">
                       <Avatar className="w-12 h-12">
-                        <AvatarFallback className="bg-purple-600 text-white">
+                        <AvatarFallback className="bg-provence-900 text-white">
                           {conv.doctor
                             .split(" ")
                             .map((n) => n[0])
@@ -231,7 +231,7 @@ export function ChatPage() {
                       <div className="flex items-center justify-between mt-1">
                         <p className="text-sm text-gray-600 truncate">{conv.lastMessage}</p>
                         {conv.unread > 0 && (
-                          <Badge className="bg-purple-600 text-white text-xs px-2 py-0">{conv.unread}</Badge>
+                          <Badge className="bg-provence-900 text-white text-xs px-2 py-0">{conv.unread}</Badge>
                         )}
                       </div>
                     </div>
@@ -250,7 +250,7 @@ export function ChatPage() {
           <CardContent className="p-0 h-full flex flex-col">
             <div className="p-4 border-b flex items-center gap-3">
               <Avatar className="w-12 h-12">
-                <AvatarFallback className="bg-purple-600 text-white">
+                <AvatarFallback className="bg-provence-900 text-white">
                   {selectedChat.doctor
                     .split(" ")
                     .map((n) => n[0])
@@ -271,12 +271,12 @@ export function ChatPage() {
                 >
                   <div
                     className={`max-w-[70%] rounded-lg p-3 ${
-                      msg.sender === "patient" ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-900"
+                      msg.sender === "patient" ? "bg-provence-900 text-white" : "bg-gray-100 text-gray-900"
                     }`}
                   >
                     <p className="text-sm">{msg.text}</p>
                     <span
-                      className={`text-xs mt-1 block ${msg.sender === "patient" ? "text-purple-200" : "text-gray-500"}`}
+                      className={`text-xs mt-1 block ${msg.sender === "patient" ? "text-provence-50" : "text-gray-500"}`}
                     >
                       {msg.time}
                     </span>
@@ -302,7 +302,7 @@ export function ChatPage() {
                   disabled={sendingMessage}
                 />
                 <Button
-                  className="bg-purple-600 hover:bg-purple-700"
+                  className="bg-provence-900 hover:bg-provence-950"
                   onClick={handleSendMessage}
                   disabled={sendingMessage || !message.trim()}
                 >

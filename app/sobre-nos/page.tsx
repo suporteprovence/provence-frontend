@@ -7,12 +7,12 @@ export default function AboutPage() {
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
         {/* Título Principal */}
-        <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold text-[#4B0082] mb-20">SOBRE NÓS.</h1>
+        <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold text-provence-900 mb-20">SOBRE NÓS.</h1>
 
         <div className="grid lg:grid-cols-2 gap-16 mb-32">
           {/* Coluna da Esquerda */}
           <div className="space-y-6">
-            <h2 className="text-xl font-medium text-[#4B0082]">Nossa História</h2>
+            <h2 className="text-xl font-medium text-provence-900">Nossa História</h2>
             <p className="text-gray-600 leading-relaxed">
               A PsicoOnline nasceu da visão de tornar o acesso à saúde mental mais democrático e conveniente. Fundada
               por um grupo de profissionais comprometidos com o bem-estar emocional, nossa plataforma une tecnologia e
@@ -27,7 +27,7 @@ export default function AboutPage() {
 
           {/* Coluna da Direita */}
           <div className="space-y-6">
-            <h2 className="text-xl font-medium text-[#4B0082]">Nossa Missão</h2>
+            <h2 className="text-xl font-medium text-provence-900">Nossa Missão</h2>
             <p className="text-gray-600 leading-relaxed">
               Acreditamos que o cuidado com a saúde mental deve ser acessível a todos. Nossa missão é democratizar o
               acesso à psicoterapia de qualidade, conectando pessoas a profissionais qualificados através de uma
@@ -38,7 +38,7 @@ export default function AboutPage() {
 
         {/* Citação */}
         <div className="my-32 max-w-4xl mx-auto text-center">
-          <blockquote className="text-3xl sm:text-4xl lg:text-5xl font-light italic text-[#4B0082] leading-tight">
+          <blockquote className="text-3xl sm:text-4xl lg:text-5xl font-light italic text-provence-900 leading-tight">
             "O primeiro passo para a mudança é reconhecer a importância do cuidado com a saúde mental."
           </blockquote>
           <p className="mt-6 text-gray-600">— Equipe Provence</p>
@@ -46,7 +46,7 @@ export default function AboutPage() {
 
         {/* Seção "A Equipe" */}
         <div className="mt-32">
-          <h2 className="text-5xl sm:text-6xl font-bold text-[#4B0082] mb-16">A EQUIPE.</h2>
+          <h2 className="text-5xl sm:text-6xl font-bold text-provence-900 mb-16">A EQUIPE.</h2>
 
           <div className="grid lg:grid-cols-2 gap-16">
             <div>
@@ -64,14 +64,14 @@ export default function AboutPage() {
             {/* Estatísticas */}
             <div className="grid grid-cols-2 gap-8">
               <div className="text-center">
-                <div className="text-4xl font-bold text-[#4B0082] mb-2">100%</div>
+                <div className="text-4xl font-bold text-provence-900 mb-2">100%</div>
                 <div className="text-sm text-gray-600">
                   Segurança e<br />
                   Privacidade
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-[#4B0082] mb-2">24/7</div>
+                <div className="text-4xl font-bold text-provence-900 mb-2">24/7</div>
                 <div className="text-sm text-gray-600">
                   Suporte
                   <br />
@@ -79,7 +79,7 @@ export default function AboutPage() {
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-[#4B0082] mb-2">SSL</div>
+                <div className="text-4xl font-bold text-provence-900 mb-2">SSL</div>
                 <div className="text-sm text-gray-600">
                   Criptografia
                   <br />
@@ -87,7 +87,7 @@ export default function AboutPage() {
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-[#4B0082] mb-2">CFP</div>
+                <div className="text-4xl font-bold text-provence-900 mb-2">CFP</div>
                 <div className="text-sm text-gray-600">
                   Conformidade
                   <br />
@@ -100,13 +100,13 @@ export default function AboutPage() {
 
         {/* Links de Redes Sociais */}
         <div className="mt-32 flex justify-end space-x-6 text-sm text-gray-600">
-          <a href="#" className="hover:text-[#4B0082] transition-colors">
+          <a href="#" className="hover:text-provence-900 transition-colors">
             instagram.
           </a>
-          <a href="#" className="hover:text-[#4B0082] transition-colors">
+          <a href="#" className="hover:text-provence-900 transition-colors">
             facebook.
           </a>
-          <a href="#" className="hover:text-[#4B0082] transition-colors">
+          <a href="#" className="hover:text-provence-900 transition-colors">
             linkedin.
           </a>
         </div>

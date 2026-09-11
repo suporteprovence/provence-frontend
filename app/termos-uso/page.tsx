@@ -103,9 +103,9 @@ export default function TermosUsoPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-provence-50 to-provence-100 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-purple-600 mx-auto mb-4" />
+          <Loader2 className="h-8 w-8 animate-spin text-provence-900 mx-auto mb-4" />
           <p className="text-slate-600">Carregando...</p>
         </div>
       </div>
@@ -113,27 +113,27 @@ export default function TermosUsoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-100 flex flex-col relative">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-provence-50 to-provence-100 flex flex-col relative">
       <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-200 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-provence-50 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-provence-100 rounded-full blur-3xl"></div>
       </div>
 
       <div className="flex-grow container mx-auto flex items-center justify-center p-4 relative z-10">
         <div className="w-full max-w-4xl">
           <Card className="bg-white/80 backdrop-blur-xl shadow-2xl border-0 rounded-3xl overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-white/80 to-purple-50/80 backdrop-blur-xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-white/80 to-provence-50/80 backdrop-blur-xl"></div>
 
             <CardHeader className="text-center pb-6 pt-8 relative z-10">
               <div className="flex justify-center mb-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-purple-600 via-violet-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-2xl">
-                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-provence-700 via-provence-800 to-provence-900 rounded-2xl flex items-center justify-center shadow-2xl">
+                  <div className="w-16 h-16 bg-gradient-to-br from-provence-900 to-provence-950 rounded-xl flex items-center justify-center">
                     <Shield className="h-8 w-8 text-white" />
                   </div>
                 </div>
               </div>
 
-              <CardTitle className="text-4xl font-bold bg-gradient-to-r from-purple-700 via-violet-700 to-indigo-700 bg-clip-text text-transparent mb-3 tracking-tight">
+              <CardTitle className="text-4xl font-bold bg-gradient-to-r from-provence-800 via-provence-900 to-provence-950 bg-clip-text text-transparent mb-3 tracking-tight">
                 Termos de Uso
               </CardTitle>
               <CardDescription className="text-slate-600 text-lg font-medium">
@@ -145,15 +145,15 @@ export default function TermosUsoPage() {
               <ScrollArea className="h-96 w-full border border-slate-200 rounded-2xl p-6 mb-8 bg-white/50 backdrop-blur-sm">
                 <div className="space-y-6 text-sm text-slate-700 leading-relaxed">
                   <div>
-                    <h3 className="text-lg font-bold text-purple-700 mb-3">1. Termos de Uso</h3>
+                    <h3 className="text-lg font-bold text-provence-900 mb-3">1. Termos de Uso</h3>
                     <p className="mb-4">
                       {"Bem-vindo \u00e0 Provence! Estes termos de uso regem o uso de nossa plataforma de terapia online. Ao usar nossos servi\u00e7os, voc\u00ea concorda com estes termos."}
                     </p>
-                    <h4 className="font-semibold text-purple-600 mb-2">1.1 Uso da Plataforma</h4>
+                    <h4 className="font-semibold text-provence-900 mb-2">1.1 Uso da Plataforma</h4>
                     <p className="mb-4">
                       {"Nossa plataforma conecta pacientes a profissionais de psicologia licenciados. Voc\u00ea deve usar a plataforma apenas para fins leg\u00edtimos e de acordo com estes termos."}
                     </p>
-                    <h4 className="font-semibold text-purple-600 mb-2">{"1.2 Responsabilidades do Usu\u00e1rio"}</h4>
+                    <h4 className="font-semibold text-provence-900 mb-2">{"1.2 Responsabilidades do Usu\u00e1rio"}</h4>
                     <ul className="list-disc list-inside space-y-1 mb-4 ml-4">
                       <li>{"Fornecer informa\u00e7\u00f5es precisas e atualizadas"}</li>
                       <li>Manter a confidencialidade de sua conta</li>
@@ -162,37 +162,37 @@ export default function TermosUsoPage() {
                     </ul>
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-purple-700 mb-3">2. {"Pol\u00edtica de Privacidade"}</h3>
+                    <h3 className="text-lg font-bold text-provence-900 mb-3">2. {"Pol\u00edtica de Privacidade"}</h3>
                     <p className="mb-4">
                       {"Sua privacidade \u00e9 importante para n\u00f3s. Esta pol\u00edtica explica como coletamos, usamos e protegemos suas informa\u00e7\u00f5es pessoais."}
                     </p>
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-purple-700 mb-3">{"3. Confidencialidade M\u00e9dica"}</h3>
+                    <h3 className="text-lg font-bold text-provence-900 mb-3">{"3. Confidencialidade M\u00e9dica"}</h3>
                     <p className="mb-4">
                       {"Todas as comunica\u00e7\u00f5es entre pacientes e profissionais s\u00e3o confidenciais e protegidas pelo sigilo profissional, conforme estabelecido pelo Conselho Federal de Psicologia."}
                     </p>
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-purple-700 mb-3">4. Cancelamento e Reembolso</h3>
+                    <h3 className="text-lg font-bold text-provence-900 mb-3">4. Cancelamento e Reembolso</h3>
                     <p className="mb-4">
                       {"Consultas podem ser canceladas at\u00e9 24 horas antes do hor\u00e1rio agendado para reembolso total. Cancelamentos com menos de 24 horas podem estar sujeitos a taxas."}
                     </p>
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-purple-700 mb-3">{"5. Limita\u00e7\u00e3o de Responsabilidade"}</h3>
+                    <h3 className="text-lg font-bold text-provence-900 mb-3">{"5. Limita\u00e7\u00e3o de Responsabilidade"}</h3>
                     <p className="mb-4">
                       {"A Provence atua como intermedi\u00e1ria entre pacientes e profissionais. N\u00e3o somos respons\u00e1veis pelo conte\u00fado das sess\u00f5es de terapia ou pelos resultados do tratamento."}
                     </p>
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-purple-700 mb-3">{"6. Altera\u00e7\u00f5es nos Termos"}</h3>
+                    <h3 className="text-lg font-bold text-provence-900 mb-3">{"6. Altera\u00e7\u00f5es nos Termos"}</h3>
                     <p className="mb-4">
                       {"Podemos atualizar estes termos periodicamente. Notificaremos sobre mudan\u00e7as significativas e sua continua\u00e7\u00e3o do uso da plataforma constitui aceita\u00e7\u00e3o dos novos termos."}
                     </p>
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-purple-700 mb-3">7. Contato</h3>
+                    <h3 className="text-lg font-bold text-provence-900 mb-3">7. Contato</h3>
                     <p className="mb-4">
                       {"Para d\u00favidas sobre estes termos, entre em contato conosco atrav\u00e9s do e-mail: suporte.provence0@gmail.com"}
                     </p>
@@ -211,7 +211,7 @@ export default function TermosUsoPage() {
                     setAceito(checked as boolean)
                     if (error) setError("")
                   }}
-                  className="data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
+                  className="data-[state=checked]:bg-provence-900 data-[state=checked]:border-provence-900"
                 />
                 <label
                   htmlFor="aceitar-termos"
@@ -232,7 +232,7 @@ export default function TermosUsoPage() {
 
               <Button
                 onClick={handleAceitarTermos}
-                className="w-full h-12 bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 hover:from-purple-700 hover:via-violet-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full h-12 bg-gradient-to-r from-provence-900 via-provence-900 to-provence-950 hover:from-provence-950 hover:via-provence-950 hover:to-provence-950 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={loading || !aceito}
               >
                 {loading ? (

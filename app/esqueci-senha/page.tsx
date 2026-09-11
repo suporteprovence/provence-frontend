@@ -131,31 +131,31 @@ export default function EsqueciSenhaPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-100 flex flex-col relative">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-provence-50 to-provence-100 flex flex-col relative">
       {/* Simplified background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-200 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-provence-50 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-provence-100 rounded-full blur-3xl"></div>
       </div>
 
       <div className="flex-grow container mx-auto flex items-center justify-center p-4 relative z-10">
         <div className="w-full max-w-md">
           <Card className="bg-white/80 backdrop-blur-xl shadow-2xl border-0 rounded-3xl overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-white/80 to-purple-50/80 backdrop-blur-xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-white/80 to-provence-50/80 backdrop-blur-xl"></div>
 
             <CardHeader className="text-center pb-8 pt-12 relative z-10">
               <div className="flex justify-center mb-6">
                 <div className="relative">
-                  <div className="w-20 h-20 bg-gradient-to-br from-purple-600 via-violet-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-2xl">
-                    <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center">
+                  <div className="w-20 h-20 bg-gradient-to-br from-provence-700 via-provence-800 to-provence-900 rounded-2xl flex items-center justify-center shadow-2xl">
+                    <div className="w-16 h-16 bg-gradient-to-br from-provence-800 to-provence-900 rounded-xl flex items-center justify-center">
                       {step === "email" ? <Mail className="h-8 w-8 text-white" /> : <Shield className="h-8 w-8 text-white" />}
                     </div>
                   </div>
-                  <div className="absolute -inset-2 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl blur opacity-20 animate-pulse"></div>
+                  <div className="absolute -inset-2 bg-gradient-to-r from-provence-700 to-provence-900 rounded-2xl blur opacity-20 animate-pulse"></div>
                 </div>
               </div>
 
-              <CardTitle className="text-4xl font-bold bg-gradient-to-r from-purple-700 via-violet-700 to-indigo-700 bg-clip-text text-transparent mb-3 tracking-tight">
+              <CardTitle className="text-4xl font-bold bg-gradient-to-r from-provence-800 via-provence-900 to-provence-950 bg-clip-text text-transparent mb-3 tracking-tight">
                 {step === "email" ? "Recuperar Senha" : "Nova Senha"}
               </CardTitle>
               <CardDescription className="text-slate-600 text-lg font-medium">
@@ -168,7 +168,7 @@ export default function EsqueciSenhaPage() {
                 <form onSubmit={handleEnviarEmail} className="space-y-6">
                   <div className="space-y-3">
                     <Label htmlFor="email" className="text-slate-700 font-semibold flex items-center gap-2 text-sm">
-                      <Mail className="h-4 w-4 text-purple-600" />
+                      <Mail className="h-4 w-4 text-provence-900" />
                       E-mail cadastrado
                     </Label>
                     <Input
@@ -177,14 +177,14 @@ export default function EsqueciSenhaPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="seu@email.com"
-                      className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
+                      className="h-12 border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
                       required
                     />
                   </div>
 
                   <div className="space-y-3">
                     <Label htmlFor="cpf" className="text-slate-700 font-semibold flex items-center gap-2 text-sm">
-                      <Shield className="h-4 w-4 text-purple-600" />
+                      <Shield className="h-4 w-4 text-provence-900" />
                       CPF cadastrado
                     </Label>
                     <Input
@@ -193,7 +193,7 @@ export default function EsqueciSenhaPage() {
                       value={cpf}
                       onChange={(e) => setCpf(e.target.value)}
                       placeholder="Somente números"
-                      className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
+                      className="h-12 border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
                       required
                     />
                     <p className="text-xs text-slate-500">
@@ -216,7 +216,7 @@ export default function EsqueciSenhaPage() {
 
                   <Button
                     type="submit"
-                    className="w-full h-12 bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 hover:from-purple-700 hover:via-violet-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full h-12 bg-gradient-to-r from-provence-900 via-provence-900 to-provence-950 hover:from-provence-950 hover:via-provence-950 hover:to-provence-950 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={loading}
                   >
                     {loading ? (
@@ -236,7 +236,7 @@ export default function EsqueciSenhaPage() {
                 <form onSubmit={handleRedefinirSenha} className="space-y-6">
                   <div className="space-y-3">
                     <Label htmlFor="nova-senha" className="text-slate-700 font-semibold flex items-center gap-2 text-sm">
-                      <Lock className="h-4 w-4 text-purple-600" />
+                      <Lock className="h-4 w-4 text-provence-900" />
                       Nova senha
                     </Label>
                     <Input
@@ -245,7 +245,7 @@ export default function EsqueciSenhaPage() {
                       value={novaSenha}
                       onChange={(e) => setNovaSenha(e.target.value)}
                       placeholder="Mínimo 6 caracteres"
-                      className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
+                      className="h-12 border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
                       required
                       minLength={6}
                     />
@@ -253,7 +253,7 @@ export default function EsqueciSenhaPage() {
 
                   <div className="space-y-3">
                     <Label htmlFor="confirmar-senha" className="text-slate-700 font-semibold flex items-center gap-2 text-sm">
-                      <Key className="h-4 w-4 text-purple-600" />
+                      <Key className="h-4 w-4 text-provence-900" />
                       Confirmar nova senha
                     </Label>
                     <Input
@@ -262,7 +262,7 @@ export default function EsqueciSenhaPage() {
                       value={confirmarSenha}
                       onChange={(e) => setConfirmarSenha(e.target.value)}
                       placeholder="Digite a senha novamente"
-                      className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
+                      className="h-12 border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
                       required
                       minLength={6}
                     />
@@ -314,7 +314,7 @@ export default function EsqueciSenhaPage() {
                     </Button>
                     <Button
                       type="submit"
-                      className="flex-1 h-12 bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 hover:from-purple-700 hover:via-violet-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 h-12 bg-gradient-to-r from-provence-900 via-provence-900 to-provence-950 hover:from-provence-950 hover:via-provence-950 hover:to-provence-950 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                       disabled={loading}
                     >
                       {loading ? (
@@ -340,7 +340,7 @@ export default function EsqueciSenhaPage() {
                 Lembrou da senha?{" "}
                 <Link
                   href="/login"
-                  className="text-purple-600 hover:text-purple-700 transition-colors font-semibold hover:underline"
+                  className="text-provence-900 hover:text-provence-950 transition-colors font-semibold hover:underline"
                 >
                   Fazer login
                 </Link>

@@ -225,9 +225,9 @@ export default function CompletarPerfilPage() {
 
   if (!mounted || !isClient || !user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-provence-50 to-provence-100 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-purple-600 mx-auto mb-4" />
+          <Loader2 className="h-8 w-8 animate-spin text-provence-900 mx-auto mb-4" />
           <p className="text-slate-600">Carregando...</p>
         </div>
       </div>
@@ -235,32 +235,32 @@ export default function CompletarPerfilPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-100 flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-provence-50 to-provence-100 flex flex-col relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-200/30 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-violet-100/20 rounded-full blur-3xl animate-pulse delay-500"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-provence-50/30 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-provence-100/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-provence-50/20 rounded-full blur-3xl animate-pulse delay-500"></div>
       </div>
 
       <div className="flex-grow container mx-auto flex items-center justify-center p-4 relative z-10">
         <div className="w-full max-w-3xl animate-in fade-in-0 slide-in-from-bottom-4 duration-1000">
           <Card className="bg-white/80 backdrop-blur-xl shadow-2xl border-0 rounded-3xl overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-white/80 to-purple-50/80 backdrop-blur-xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-white/80 to-provence-50/80 backdrop-blur-xl"></div>
 
             <CardHeader className="text-center pb-6 pt-8 relative z-10">
               <div className="flex justify-center mb-6">
                 <div className="relative">
-                  <div className="w-20 h-20 bg-gradient-to-br from-purple-600 via-violet-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
-                    <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center">
+                  <div className="w-20 h-20 bg-gradient-to-br from-provence-700 via-provence-800 to-provence-900 rounded-2xl flex items-center justify-center shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                    <div className="w-16 h-16 bg-gradient-to-br from-provence-900 to-provence-950 rounded-xl flex items-center justify-center">
                       <UserCheck className="h-8 w-8 text-white" />
                     </div>
                   </div>
-                  <div className="absolute -inset-2 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl blur opacity-20 animate-pulse"></div>
+                  <div className="absolute -inset-2 bg-gradient-to-r from-provence-700 to-provence-900 rounded-2xl blur opacity-20 animate-pulse"></div>
                 </div>
               </div>
 
-              <CardTitle className="text-4xl font-bold bg-gradient-to-r from-purple-700 via-violet-700 to-indigo-700 bg-clip-text text-transparent mb-3 tracking-tight">
+              <CardTitle className="text-4xl font-bold bg-gradient-to-r from-provence-900 via-provence-900 to-provence-950 bg-clip-text text-transparent mb-3 tracking-tight">
                 Complete seu perfil
               </CardTitle>
               <CardDescription className="text-slate-600 text-lg font-medium">
@@ -289,7 +289,7 @@ export default function CompletarPerfilPage() {
                       htmlFor="data_nascimento"
                       className="text-slate-700 font-semibold flex items-center gap-2 text-sm"
                     >
-                      <Calendar className="h-4 w-4 text-purple-600" />
+                      <Calendar className="h-4 w-4 text-provence-900" />
                       Data de Nascimento {user.tipo_usuario === "paciente" ? "*" : "(Opcional)"}
                     </Label>
                     <div className="relative">
@@ -298,10 +298,10 @@ export default function CompletarPerfilPage() {
                         type="date"
                         value={perfil.data_nascimento}
                         onChange={(e) => handleChange("data_nascimento", e.target.value)}
-                        className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700"
+                        className="h-12 border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700"
                         required={user.tipo_usuario === "paciente"}
                       />
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-400/0 via-purple-400/0 to-purple-400/0 group-focus-within:from-purple-400/10 group-focus-within:via-transparent group-focus-within:to-indigo-400/10 transition-all duration-500 pointer-events-none"></div>
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-provence-400/0 via-provence-400/0 to-provence-400/0 group-focus-within:from-provence-400/10 group-focus-within:via-transparent group-focus-within:to-provence-500/10 transition-all duration-500 pointer-events-none"></div>
                     </div>
                   </div>
 
@@ -310,7 +310,7 @@ export default function CompletarPerfilPage() {
                       Gênero {user.tipo_usuario === "paciente" ? "*" : "(Opcional)"}
                     </Label>
                     <Select value={perfil.genero} onValueChange={(value) => handleChange("genero", value)}>
-                      <SelectTrigger className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm">
+                      <SelectTrigger className="h-12 border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm">
                         <SelectValue placeholder="Selecione seu gênero" />
                       </SelectTrigger>
                       <SelectContent>
@@ -324,7 +324,7 @@ export default function CompletarPerfilPage() {
 
                   <div className="md:col-span-2 space-y-3 group">
                     <Label htmlFor="endereco" className="text-slate-700 font-semibold flex items-center gap-2 text-sm">
-                      <MapPin className="h-4 w-4 text-purple-600" />
+                      <MapPin className="h-4 w-4 text-provence-900" />
                       Endereço Completo *
                     </Label>
                     <div className="relative">
@@ -333,10 +333,10 @@ export default function CompletarPerfilPage() {
                         value={perfil.endereco}
                         onChange={(e) => handleChange("endereco", e.target.value)}
                         placeholder="Rua, número, bairro"
-                        className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
+                        className="h-12 border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
                         required
                       />
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-400/0 via-purple-400/0 to-purple-400/0 group-focus-within:from-purple-400/10 group-focus-within:via-transparent group-focus-within:to-indigo-400/10 transition-all duration-500 pointer-events-none"></div>
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-provence-400/0 via-provence-400/0 to-provence-400/0 group-focus-within:from-provence-400/10 group-focus-within:via-transparent group-focus-within:to-provence-500/10 transition-all duration-500 pointer-events-none"></div>
                     </div>
                   </div>
 
@@ -350,10 +350,10 @@ export default function CompletarPerfilPage() {
                         value={perfil.cep}
                         onChange={handleCEPChange}
                         placeholder="00000-000"
-                        className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
+                        className="h-12 border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
                         maxLength={9}
                       />
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-400/0 via-purple-400/0 to-purple-400/0 group-focus-within:from-purple-400/10 group-focus-within:via-transparent group-focus-within:to-indigo-400/10 transition-all duration-500 pointer-events-none"></div>
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-provence-400/0 via-provence-400/0 to-provence-400/0 group-focus-within:from-provence-400/10 group-focus-within:via-transparent group-focus-within:to-provence-500/10 transition-all duration-500 pointer-events-none"></div>
                     </div>
                   </div>
 
@@ -367,10 +367,10 @@ export default function CompletarPerfilPage() {
                         value={perfil.cidade}
                         onChange={(e) => handleChange("cidade", e.target.value)}
                         placeholder="Sua cidade"
-                        className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
+                        className="h-12 border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
                         required
                       />
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-400/0 via-purple-400/0 to-purple-400/0 group-focus-within:from-purple-400/10 group-focus-within:via-transparent group-focus-within:to-indigo-400/10 transition-all duration-500 pointer-events-none"></div>
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-provence-400/0 via-provence-400/0 to-provence-400/0 group-focus-within:from-provence-400/10 group-focus-within:via-transparent group-focus-within:to-provence-500/10 transition-all duration-500 pointer-events-none"></div>
                     </div>
                   </div>
 
@@ -379,7 +379,7 @@ export default function CompletarPerfilPage() {
                       Estado *
                     </Label>
                     <Select value={perfil.estado} onValueChange={(value) => handleChange("estado", value)}>
-                      <SelectTrigger className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm">
+                      <SelectTrigger className="h-12 border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm">
                         <SelectValue placeholder="Selecione o estado" />
                       </SelectTrigger>
                       <SelectContent>
@@ -402,9 +402,9 @@ export default function CompletarPerfilPage() {
                         value={perfil.profissao}
                         onChange={(e) => handleChange("profissao", e.target.value)}
                         placeholder="Sua profissão"
-                        className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
+                        className="h-12 border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
                       />
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-400/0 via-purple-400/0 to-purple-400/0 group-focus-within:from-purple-400/10 group-focus-within:via-transparent group-focus-within:to-indigo-400/10 transition-all duration-500 pointer-events-none"></div>
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-provence-400/0 via-provence-400/0 to-provence-400/0 group-focus-within:from-provence-400/10 group-focus-within:via-transparent group-focus-within:to-provence-500/10 transition-all duration-500 pointer-events-none"></div>
                     </div>
                   </div>
 
@@ -416,7 +416,7 @@ export default function CompletarPerfilPage() {
                       value={perfil.como_conheceu}
                       onValueChange={(value) => handleChange("como_conheceu", value)}
                     >
-                      <SelectTrigger className="h-12 border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm">
+                      <SelectTrigger className="h-12 border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm">
                         <SelectValue placeholder="Selecione uma opção" />
                       </SelectTrigger>
                       <SelectContent>
@@ -439,10 +439,10 @@ export default function CompletarPerfilPage() {
                         value={perfil.objetivos}
                         onChange={(e) => handleChange("objetivos", e.target.value)}
                         placeholder="Conte-nos um pouco sobre o que você espera alcançar..."
-                        className="border-slate-200 focus:border-purple-400 focus:ring-purple-400/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 resize-none text-slate-700 placeholder:text-slate-400"
+                        className="border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 resize-none text-slate-700 placeholder:text-slate-400"
                         rows={3}
                       />
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-400/0 via-purple-400/0 to-purple-400/0 group-focus-within:from-purple-400/10 group-focus-within:via-transparent group-focus-within:to-indigo-400/10 transition-all duration-500 pointer-events-none"></div>
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-provence-400/0 via-provence-400/0 to-provence-400/0 group-focus-within:from-provence-400/10 group-focus-within:via-transparent group-focus-within:to-provence-500/10 transition-all duration-500 pointer-events-none"></div>
                     </div>
                   </div>
                 </div>
@@ -458,7 +458,7 @@ export default function CompletarPerfilPage() {
 
                 <Button
                   type="submit"
-                  className="w-full h-12 bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 hover:from-purple-700 hover:via-violet-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  className="w-full h-12 bg-gradient-to-r from-provence-900 via-provence-900 to-provence-950 hover:from-provence-950 hover:via-provence-950 hover:to-provence-950 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   disabled={loading}
                 >
                   {loading ? (

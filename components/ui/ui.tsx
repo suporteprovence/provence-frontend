@@ -20,7 +20,7 @@ export const Textarea = ({
   onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
 }) => (
   <textarea
-    className={`w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#3681AB] ${className}`}
+    className={`w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-provence-800 ${className}`}
     {...props}
   />
 )
@@ -38,7 +38,7 @@ export const Button = ({
   asChild?: boolean
 }) => {
   const buttonProps = {
-    className: `py-2 px-4 rounded-md text-white bg-[#3681AB] hover:bg-[#3681AB]/90 ${className}`,
+    className: `py-2 px-4 rounded-md text-white bg-provence-900 hover:bg-provence-900/90 ${className}`,
     ...props,
   }
 
