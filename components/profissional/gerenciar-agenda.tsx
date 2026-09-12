@@ -13,6 +13,7 @@ import {
   FileText,
   Loader2,
   AlertTriangle,
+  Link2,
 } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -22,6 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/DropdownMenu"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
+import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { API_BASE } from "@/lib/api-config"
@@ -46,6 +48,18 @@ interface Appointment {
   sessionNumber: number
   notes?: string
   linkSessao?: string
+}
+
+// Estado do formulário de link, isolado por consulta (id)
+interface LinkEdit {
+  valor: string
+  aberto: boolean
+  salvando: boolean
+  erro: string
+}
+
+function linkValido(url: string): boolean {
+  return /^https?:\/\/\S+$/i.test(url.trim())
 }
 
 // --- Helpers de Normalização ---
@@ -94,7 +108,7 @@ function mapApiToAppointment(item: any): Appointment {
   const type = normalizeType(item?.tipo ?? item?.tipo_atendimento)
   const status = normalizeStatus(item?.status ?? item?.situacao)
   const sessionNumber = Number(item?.numero_sessao) || 1
-  const linkSessao = item?.link_sessao ?? ""
+  const linkSessao = item?.link_sessao ?? item?.link_reuniao ?? ""
 
   return {
     id,
@@ -123,6 +137,7 @@ export function GerenciarAgenda() {
   const [loading, setLoading] = useState(true)
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null)
   const [error, setError] = useState("")
+  const [linkEdits, setLinkEdits] = useState<Record<string, LinkEdit>>({})
 
   const todayISO = useMemo(() => {
     const now = new Date()
@@ -158,7 +173,7 @@ export function GerenciarAgenda() {
     const res = await fetch(url, {
       ...init,
       credentials: "include",
-      headers: { "Content-Type": "application/json", ...(init?.headers || {}) },
+      headers: { Accept: "application/json", "Content-Type": "application/json", ...(init?.headers || {}) },
     })
     const text = await res.text()
     let json: any = null
@@ -206,6 +221,39 @@ export function GerenciarAgenda() {
     }
   }
 
+  const getLinkEdit = (id: string): LinkEdit =>
+    linkEdits[id] ?? { valor: "", aberto: false, salvando: false, erro: "" }
+
+  const patchLinkEdit = (id: string, patch: Partial<LinkEdit>) =>
+    setLinkEdits((prev) => ({
+      ...prev,
+      [id]: { ...(prev[id] ?? { valor: "", aberto: false, salvando: false, erro: "" }), ...patch },
+    }))
+
+  const abrirEdicaoLink = (appointment: Appointment) =>
+    patchLinkEdit(appointment.id, { aberto: true, valor: appointment.linkSessao ?? "", erro: "" })
+
+  const fecharEdicaoLink = (id: string) => patchLinkEdit(id, { aberto: false, erro: "" })
+
+  const salvarLink = async (id: string) => {
+    const valor = getLinkEdit(id).valor.trim()
+    if (!linkValido(valor)) {
+      patchLinkEdit(id, { erro: "Informe um link completo, começando com http:// ou https://." })
+      return
+    }
+    patchLinkEdit(id, { salvando: true, erro: "" })
+    try {
+      await fetchJson(`${API_BASE}/profissional/add-link-sessao.php`, {
+        method: "POST",
+        body: JSON.stringify({ consulta_id: Number(id), link_sessao: valor }),
+      })
+      setAppointments((prev) => prev.map((a) => (a.id === id ? { ...a, linkSessao: valor } : a)))
+      patchLinkEdit(id, { salvando: false, aberto: false, valor, erro: "" })
+    } catch (e) {
+      patchLinkEdit(id, { salvando: false, erro: e instanceof Error ? e.message : "Não foi possível salvar o link." })
+    }
+  }
+
   useEffect(() => { carregarConsultas() }, [])
 
   const todayAppointments = useMemo(() => appointments.filter((apt) =>
@@ -215,7 +263,10 @@ export function GerenciarAgenda() {
   const completedAppointments = useMemo(() => appointments.filter((apt) =>
     apt.status === "concluida"), [appointments])
 
-  const renderAppointmentCard = (appointment: Appointment, index: number) => (
+  const renderAppointmentCard = (appointment: Appointment, index: number) => {
+    const podeEditarLink = appointment.status === "confirmada"
+    const linkEdit = getLinkEdit(appointment.id)
+    return (
     <div key={appointment.id}>
       <Card className="p-6 border-border/50 hover:shadow-xl transition-all mb-4">
         <div className="flex items-start gap-4">
@@ -260,26 +311,65 @@ export function GerenciarAgenda() {
                   {actionLoadingId === appointment.id ? <Loader2 className="animate-spin w-4 h-4" /> : "Cancelar"}
                 </Button>
               )}
-              {appointment.status === "confirmada" &&
-                (appointment.linkSessao ? (
+              {podeEditarLink && appointment.linkSessao && !linkEdit.aberto && (
+                <>
                   <Button
                     size="sm"
-                    className="w-full bg-primary"
+                    className="bg-primary"
                     onClick={() => window.open(appointment.linkSessao, "_blank")}
                   >
-                    Entrar na Sessão
+                    <Video className="w-4 h-4 mr-2" /> Entrar na Sessão
                   </Button>
-                ) : (
-                  <p className="text-sm text-muted-foreground">Aguardando o link da sessão.</p>
-                ))}
+                  <Button size="sm" variant="outline" onClick={() => abrirEdicaoLink(appointment)}>
+                    <Link2 className="w-4 h-4 mr-2" /> Alterar link
+                  </Button>
+                </>
+              )}
             </div>
+
+            {podeEditarLink && (!appointment.linkSessao || linkEdit.aberto) && (
+              <div className="mt-3 space-y-2">
+                <Label htmlFor={`link-sessao-${appointment.id}`} className="text-sm">
+                  {appointment.linkSessao ? "Alterar link da sessão" : "Link da sessão"}
+                </Label>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Input
+                    id={`link-sessao-${appointment.id}`}
+                    type="url"
+                    inputMode="url"
+                    placeholder="https://meet.google.com/..."
+                    value={linkEdit.valor}
+                    disabled={linkEdit.salvando}
+                    onChange={(e) => patchLinkEdit(appointment.id, { valor: e.target.value, erro: "" })}
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); salvarLink(appointment.id) } }}
+                    className={`rounded-xl bg-card/50 border-border/50 ${linkEdit.erro ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                  />
+                  <div className="flex gap-2">
+                    <Button size="sm" className="h-10 bg-primary" onClick={() => salvarLink(appointment.id)} disabled={linkEdit.salvando}>
+                      {linkEdit.salvando ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : null} Salvar link
+                    </Button>
+                    {appointment.linkSessao && (
+                      <Button size="sm" variant="ghost" className="h-10" onClick={() => fecharEdicaoLink(appointment.id)} disabled={linkEdit.salvando}>
+                        Cancelar
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                {linkEdit.erro ? (
+                  <p className="text-xs text-red-500 mt-1">{linkEdit.erro}</p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">Cole o link da videochamada (Google Meet, Zoom, etc.). O paciente verá o botão para entrar.</p>
+                )}
+              </div>
+            )}
 
             <ConfirmacaoSessao consultaId={appointment.id} />
           </div>
         </div>
       </Card>
     </div>
-  )
+    )
+  }
 
   return (
     <div className="space-y-6">

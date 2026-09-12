@@ -9,6 +9,7 @@ import { ChatProfessional } from "@/components/profissional/chat-professional"
 import { HistoricoProfessional } from "@/components/profissional/historico-professional"
 import { PerfilProfessional } from "@/components/profissional/perfil-professional"
 import { PagamentosProfessional } from "@/components/profissional/pagamentos-professional"
+import { MeusHorarios } from "@/components/profissional/meus-horarios"
 
 export default function ProfessionalPage() {
   const [activeSection, setActiveSection] = useState("agenda")
@@ -18,6 +19,8 @@ export default function ProfessionalPage() {
     switch (activeSection) {
       case "agenda":
         return <GerenciarAgenda />
+      case "horarios":
+        return <MeusHorarios />
       case "consultas":
         return <ConsultasMarcadasPro />
       case "chat":
@@ -36,6 +39,7 @@ export default function ProfessionalPage() {
   // Lista de abas para evitar repetição de código (DRY)
   const tabs = [
     { id: "agenda", label: "Agenda" },
+    { id: "horarios", label: "Horários" },
     { id: "consultas", label: "Consultas" },
     { id: "chat", label: "Chat" },
     { id: "historico", label: "Histórico" },
@@ -80,4 +84,4 @@ export default function ProfessionalPage() {
       </main>
     </div>
   )
-}
+}
