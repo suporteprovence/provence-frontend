@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, Save } from "lucide-react"
 import { API_BASE } from "@/lib/api-config"
+import { MeusDados } from "@/components/lgpd/meus-dados"
 
 type Perfil = {
   nome: string
@@ -153,7 +154,7 @@ export function MeuPerfil() {
                 id="email"
                 type="email"
                 value={perfil.email}
-                onChange={(e) => setPerfil({ ...perfil, email: e.target.value })}
+                disabled
               />
             </div>
             <div className="space-y-2">
@@ -200,6 +201,8 @@ export function MeuPerfil() {
           </div>
         </CardContent>
       </Card>
+
+      <MeusDados />
     </div>
   )
 }

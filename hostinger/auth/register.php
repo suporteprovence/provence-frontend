@@ -1,10 +1,26 @@
-
 <?php
-require_once '/home/u218657465/domains/provence.host/public_html/config/db.php';
-require_once '/home/u218657465/domains/provence.host/public_html/config/mailer.php';
-require_once '/home/u218657465/domains/provence.host/public_html/config/email_templates.php';
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../config/mailer.php';
+require_once __DIR__ . '/../config/email_templates.php';
 
 session_start();
+
+require_once __DIR__ . '/../config/seguranca.php';
+
+// Etapa 3: limite de tentativas de cadastro por IP (10 por hora). Sem isso a tela de
+// cadastro poderia ser usada para descobrir, em massa, quais e-mails têm conta.
+try {
+    $stIp = $pdo->prepare("SELECT COUNT(*) FROM logs_sistema WHERE acao = 'cadastro_tentativa' AND ip_address = ? AND criado_em > NOW() - INTERVAL 1 HOUR");
+    $stIp->execute(array(provence_ip()));
+    if ((int) $stIp->fetchColumn() >= 10) {
+        http_response_code(429);
+        echo json_encode(array('success' => false, 'message' => 'Muitas tentativas de cadastro. Aguarde uma hora e tente novamente.'));
+        exit;
+    }
+    provence_log($pdo, 'cadastro_tentativa');
+} catch (Exception $e) {
+    error_log('register: limite por IP falhou: ' . $e->getMessage());
+}
 
 $input = file_get_contents("php://input");
 $data = json_decode($input, true);
@@ -31,8 +47,8 @@ if (empty($nome) || empty($email) || empty($senha)) {
     exit;
 }
 
-if (strlen($senha) < 6) {
-    echo json_encode(array('success' => false, 'message' => 'A senha deve ter pelo menos 6 caracteres'));
+if (strlen($senha) < 8) {
+    echo json_encode(array('success' => false, 'message' => 'A senha deve ter pelo menos 8 caracteres'));
     exit;
 }
 
@@ -51,7 +67,7 @@ try {
     $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE email = ?");
     $stmt->execute(array($email));
     if ($stmt->fetch()) {
-        echo json_encode(array('success' => false, 'message' => 'Este email ja esta cadastrado'));
+        echo json_encode(array('success' => false, 'message' => 'Não foi possível cadastrar com este e-mail. Se você já tem conta, entre ou use "Esqueci minha senha".'));
         exit;
     }
 } catch (Exception $e) {
@@ -118,6 +134,11 @@ try {
 
     $pdo->commit();
 
+    // Etapa 3: sessão de cadastro. As telas seguintes (completar perfil e aceitar
+    // termos) identificam a pessoa por AQUI, não pelo id enviado no corpo.
+    session_regenerate_id(true);
+    $_SESSION['onboarding_user_id'] = (int) $usuario_id;
+
     $stmt = $pdo->prepare("SELECT u.*, CASE WHEN u.tipo = 'profissional' THEN p.crp ELSE NULL END as crp, CASE WHEN u.tipo = 'profissional' THEN p.especialidade ELSE NULL END as especialidade FROM usuarios u LEFT JOIN profissionais p ON u.id = p.id WHERE u.id = ?");
     $stmt->execute(array($usuario_id));
     $usuario_completo = $stmt->fetch();
@@ -127,7 +148,6 @@ try {
         'nome' => $usuario_completo['nome'],
         'email' => $usuario_completo['email'],
         'telefone' => $usuario_completo['telefone'],
-        'cpf' => $usuario_completo['cpf'],
         'tipo_usuario' => $usuario_completo['tipo'],
         'aprovado' => (bool)$usuario_completo['aprovado'],
         'perfil_completo' => true,

@@ -14,7 +14,7 @@ require_once __DIR__ . '/../config/db.php'; // $pdo + CORS + headers
 
 session_start();
 
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['user_id']) || !empty($_SESSION['is_admin'])) {
     echo json_encode(['success' => false, 'message' => 'Usuário não autenticado']);
     exit;
 }

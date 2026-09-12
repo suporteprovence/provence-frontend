@@ -5,7 +5,7 @@ Banco de produção: **u218657465_PROVENCE** (phpMyAdmin). Raiz do site: **publi
 > ORDEM: rode a migração no phpMyAdmin ANTES de subir os PHP. E publique o frontend
 > na Vercel junto (as telas novas chamam estes endpoints; sem eles, dão erro).
 
-## Passo 1 — Backup rápido dos arquivos que serão substituídos
+## Passo 1: Backup rápido dos arquivos que serão substituídos
 config/db.php, auth (nenhum aqui), consultas/confirmar_sessao.php,
 profissional/dados_bancarios.php, chat/enviar.php,
 profissionais/listar_horarios.php, profissionais/definir_horarios.php,
@@ -13,10 +13,10 @@ profissionais/bloquear_data.php, profissionais/listar_dias_bloqueados.php,
 profissional/add-link-sessao.php, agendamento/get-horarios-disponiveis.php,
 paciente/avaliar-consulta.php, consultas/solicitar_reembolso.php
 
-## Passo 2 — Migração no phpMyAdmin (banco u218657465_PROVENCE, aba SQL)
+## Passo 2: Migração no phpMyAdmin (banco u218657465_PROVENCE, aba SQL)
 Rode `sql/05-reembolsos.sql` (cria a tabela `reembolsos`; idempotente).
 
-## Passo 3 — Subir os PHP para public_html/ (mantendo as pastas)
+## Passo 3: Subir os PHP para public_html/ (mantendo as pastas)
 
 | Arquivo | Destino | Ação |
 |---|---|---|
@@ -35,11 +35,11 @@ Rode `sql/05-reembolsos.sql` (cria a tabela `reembolsos`; idempotente).
 | profissional/dados_bancarios.php | public_html/profissional/ | SUBSTITUI (tira brecha CSRF) |
 | chat/enviar.php | public_html/chat/ | SUBSTITUI (tira brecha CSRF) |
 
-## Passo 4 — Frontend (Vercel)
+## Passo 4: Frontend (Vercel)
 Publicar a branch. As telas novas: aba "Horários" e campo de link (profissional),
 avaliação no histórico e a tela de pagamentos/reembolso (paciente).
 
-## Passo 5 — Smoke test em produção
+## Passo 5: Smoke test em produção
 1. Profissional: aba Horários, ligar um dia, salvar; bloquear uma data.
 2. Paciente: agendar com esse profissional (o horário aparece); a data bloqueada some.
 3. Profissional: colar o link numa consulta confirmada; paciente vê "Entrar na sessão".

@@ -52,11 +52,19 @@ try {
         ? (int) $consulta['id_profissional']
         : (int) $consulta['id_paciente'];
 
+    // Etapa 3: a mensagem é gravada cifrada (AES-256-GCM, chave CHAT_KEY do .env).
+    // Sem chave configurada o chat não grava em claro: responde 503.
+    $cifrada = function_exists('provence_cifrar') ? provence_cifrar($mensagem) : null;
+    if ($cifrada === null) {
+        error_log('chat/enviar: CHAT_KEY ausente ou config/seguranca.php não publicado');
+        responder(503, ['success' => false, 'message' => 'Chat temporariamente indisponível. Tente novamente em instantes.']);
+    }
+
     $stmt = $pdo->prepare(
         'INSERT INTO mensagens (id_consulta, id_remetente, id_destinatario, mensagem)
          VALUES (?, ?, ?, ?)'
     );
-    $stmt->execute([$consultaId, $uid, $destinatario, $mensagem]);
+    $stmt->execute([$consultaId, $uid, $destinatario, $cifrada]);
 
     responder(200, [
         'success' => true,

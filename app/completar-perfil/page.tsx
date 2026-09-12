@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { MapPin, Calendar, Loader2, ArrowRight, Info, AlertCircle, UserCheck } from "lucide-react"
+import { API_BASE } from "@/lib/api-config"
 
 interface UserTemp {
   id: number
@@ -173,7 +174,7 @@ export default function CompletarPerfilPage() {
     try {
       console.log("Enviando dados:", { usuario_id: user.id, ...perfil })
 
-      const response = await fetch("https://provence.host/auth/completar_perfil.php", {
+      const response = await fetch(`${API_BASE}/auth/completar_perfil.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -186,6 +187,20 @@ export default function CompletarPerfilPage() {
       })
 
       console.log("Status da resposta:", response.status)
+
+      if (response.status === 401) {
+        let dataNaoAutorizado: { message?: string } | null = null
+        try {
+          dataNaoAutorizado = await response.json()
+        } catch {
+          dataNaoAutorizado = null
+        }
+        setError(
+          dataNaoAutorizado?.message ||
+            "Sessão de cadastro não encontrada. Refaça o cadastro para continuar."
+        )
+        return
+      }
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)

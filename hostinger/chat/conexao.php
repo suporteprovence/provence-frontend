@@ -57,6 +57,14 @@ if (file_exists($configDb)) {
     }
 }
 
+// Etapa 3: criptografia das mensagens em repouso (config/seguranca.php).
+// Se o arquivo não estiver publicado, enviar/listar respondem 503 em vez de
+// gravar em claro.
+$configSeguranca = __DIR__ . '/../config/seguranca.php';
+if (file_exists($configSeguranca)) {
+    require_once $configSeguranca;
+}
+
 // Sessão — a mesma criada por auth/login.php (mesmo domínio = cookie compartilhado)
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -70,6 +78,11 @@ if (session_status() === PHP_SESSION_NONE) {
  */
 function usuario_logado_id(): ?int
 {
+    // Etapa 3: sessão de administrador não é um usuário do chat. Os ids de
+    // administradores e de usuários são tabelas diferentes e podem coincidir.
+    if (!empty($_SESSION['is_admin']) || (($_SESSION['user_type'] ?? '') === 'admin')) {
+        return null;
+    }
     $chaves = ['usuario_id', 'user_id', 'id_usuario', 'idUsuario', 'id', 'userId'];
     foreach ($chaves as $k) {
         if (isset($_SESSION[$k]) && is_numeric($_SESSION[$k])) {

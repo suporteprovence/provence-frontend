@@ -1,46 +1,79 @@
 <?php
 /**
- * Provence — Recuperação de senha (passo 2): redefine a senha.
+ * Provence — Recuperação de senha (passo 2): troca a senha usando o link.
  *
- * Só troca a senha quando E-MAIL + CPF conferem (mesma checagem do passo 1,
- * repetida aqui de propósito: a segurança tem que estar no servidor, não só
- * na tela). Substitui o redefinir_senha.php antigo, que trocava a senha só
- * com e-mail + nova senha.
+ *  POST /redefinir_senha.php   Body JSON: { "token": "...", "nova_senha": "..." }
  *
- * Deploy: enviar para a RAIZ de public_html (https://provence.host/redefinir_senha.php),
- * substituindo o arquivo atual. Reaproveita a conexão de chat/conexao.php.
+ * O token é o do link recebido por e-mail (verificar_email.php). Vale por 1 hora
+ * e só uma vez. Ao trocar a senha:
+ *   - todos os tokens abertos da conta são invalidados;
+ *   - o bloqueio de força bruta daquele e-mail é zerado (é o jeito de destravar);
+ *   - fica registrado na auditoria.
+ *
+ * Deploy: substitui public_html/redefinir_senha.php (raiz).
  */
 
-require __DIR__ . '/chat/conexao.php'; // $pdo, CORS com credenciais, JSON, preflight OPTIONS
+require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/config/seguranca.php';
 
-$b = json_decode(file_get_contents('php://input'), true);
-if (!is_array($b)) {
-    $b = $_POST;
+const SENHA_MIN = 8;
+
+if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+    provence_responder(405, ['success' => false, 'message' => 'Método não permitido.']);
 }
 
-$email = trim((string) ($b['email'] ?? ''));
-$cpf   = preg_replace('/\D/', '', (string) ($b['cpf'] ?? ''));
+$b = provence_corpo_json();
+if ($b === null) {
+    provence_responder(200, ['success' => false, 'sucesso' => false, 'message' => 'Envie os dados em JSON.']);
+}
+
+$token = (string) ($b['token'] ?? '');
 $nova  = (string) ($b['nova_senha'] ?? '');
 
-if ($email === '' || $cpf === '' || strlen($nova) < 6) {
-    responder(200, ['success' => false, 'sucesso' => false, 'message' => 'Dados inválidos.']);
+if (!preg_match('/^[a-f0-9]{64}$/', $token)) {
+    provence_responder(200, ['success' => false, 'sucesso' => false, 'message' => 'Link inválido ou expirado. Solicite um novo.']);
+}
+if (strlen($nova) < SENHA_MIN || strlen($nova) > 200) {
+    provence_responder(200, ['success' => false, 'sucesso' => false, 'message' => 'A senha deve ter pelo menos ' . SENHA_MIN . ' caracteres.']);
 }
 
-$stmt = $pdo->prepare('SELECT id, cpf FROM usuarios WHERE email = ? AND ativo = 1');
-$stmt->execute([$email]);
-$u = $stmt->fetch();
+try {
+    $pdo->beginTransaction();
 
-$confere = $u
-    && $u['cpf'] !== null
-    && preg_replace('/\D/', '', $u['cpf']) !== ''
-    && preg_replace('/\D/', '', $u['cpf']) === $cpf;
+    $st = $pdo->prepare(
+        'SELECT t.id, t.usuario_id, u.email
+           FROM tokens_recuperacao t
+           JOIN usuarios u ON u.id = t.usuario_id
+          WHERE t.token = ? AND t.usado = 0 AND t.expira_em > NOW() AND u.ativo = 1
+          LIMIT 1
+          FOR UPDATE'
+    );
+    $st->execute([hash('sha256', $token)]);
+    $t = $st->fetch();
 
-if (!$confere) {
-    responder(200, ['success' => false, 'sucesso' => false, 'message' => 'E-mail e CPF não conferem.']);
+    if (!$t) {
+        $pdo->rollBack();
+        provence_log($pdo, 'senha_redefinida_falha', 'token inválido ou expirado');
+        provence_responder(200, ['success' => false, 'sucesso' => false, 'message' => 'Link inválido ou expirado. Solicite um novo.']);
+    }
+
+    $uid = (int) $t['usuario_id'];
+
+    $pdo->prepare('UPDATE usuarios SET senha = ? WHERE id = ?')
+        ->execute([password_hash($nova, PASSWORD_BCRYPT), $uid]);
+    $pdo->prepare('UPDATE tokens_recuperacao SET usado = 1 WHERE usuario_id = ? AND usado = 0')
+        ->execute([$uid]);
+    $pdo->prepare('DELETE FROM tentativas_login WHERE email = ?')
+        ->execute([mb_strtolower((string) $t['email'])]);
+
+    $pdo->commit();
+
+    provence_log($pdo, 'senha_redefinida', 'via link de e-mail', $uid);
+    provence_responder(200, ['success' => true, 'sucesso' => true, 'message' => 'Senha redefinida com sucesso.']);
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+    error_log('redefinir_senha: ' . $e->getMessage());
+    provence_responder(500, ['success' => false, 'sucesso' => false, 'message' => 'Erro interno do servidor']);
 }
-
-$hash = password_hash($nova, PASSWORD_BCRYPT);
-$stmt = $pdo->prepare('UPDATE usuarios SET senha = ? WHERE id = ?');
-$stmt->execute([$hash, (int) $u['id']]);
-
-responder(200, ['success' => true, 'sucesso' => true]);

@@ -24,9 +24,8 @@ import {
   ArrowRight,
 } from "lucide-react"
 import Link from "next/link"
+import { API_BASE } from "@/lib/api-config"
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") || "https://provence.host"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -78,11 +77,32 @@ export default function LoginPage() {
         credentials: "include",
       })
 
+      let data: any = null
+      try {
+        data = await response.json()
+      } catch {
+        data = null
+      }
+
+      if (response.status === 429 || data?.bloqueado === true) {
+        setError(
+          data?.message ||
+            "Muitas tentativas de login. Aguarde alguns minutos e tente novamente."
+        )
+        return
+      }
+
       if (!response.ok) {
+        if (data?.message) {
+          setError(data.message)
+          return
+        }
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      const data = await response.json()
+      if (!data) {
+        throw new Error("Resposta inválida do servidor")
+      }
 
       if (data.success) {
         if (typeof window !== "undefined") {
@@ -136,7 +156,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-provence-50 flex flex-col relative overflow-hidden">
-      {/* Background decorative elements - Agora em tons de lilás suave */}
+      {/* Background decorative elements - tons suaves da paleta verde */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-provence-400/10 rounded-full blur-3xl animate-pulse" />
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-provence-400/10 rounded-full blur-3xl animate-pulse delay-1000" />
@@ -148,7 +168,7 @@ export default function LoginPage() {
             <CardHeader className="text-center pb-8 pt-12 relative z-10">
               <div className="flex justify-center mb-6">
                 <div className="relative">
-                  {/* Gradiente lilás seguindo o ícone da foto */}
+                  {/* Gradiente verde seguindo o ícone da foto */}
                   <div className="w-20 h-20 bg-gradient-to-br from-provence-600 to-provence-700 rounded-2xl flex items-center justify-center shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
                     <div className="w-16 h-16 bg-gradient-to-br from-provence-900 to-provence-950 rounded-xl flex items-center justify-center">
                       <Lock className="h-8 w-8 text-white" />
@@ -302,4 +322,4 @@ export default function LoginPage() {
       </div>
     </div>
   )
-}
+}

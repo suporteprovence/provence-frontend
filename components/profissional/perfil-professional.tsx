@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { API_BASE } from "@/lib/api-config"
+import { MeusDados } from "@/components/lgpd/meus-dados"
 
 type PerfilProfissional = {
   nome: string
@@ -307,19 +308,19 @@ export function PerfilProfessional() {
                 <div className="p-2 rounded-lg bg-primary/10">
                   <Mail className="w-4 h-4 text-primary" />
                 </div>
-                <span className="text-muted-foreground break-all">{perfil.email || "—"}</span>
+                <span className="text-muted-foreground break-all">{perfil.email || "Não informado"}</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <div className="p-2 rounded-lg bg-accent/10">
                   <Phone className="w-4 h-4 text-accent" />
                 </div>
-                <span className="text-muted-foreground">{perfil.telefone || "—"}</span>
+                <span className="text-muted-foreground">{perfil.telefone || "Não informado"}</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <div className="p-2 rounded-lg bg-emerald-500/10">
                   <MapPin className="w-4 h-4 text-emerald-500" />
                 </div>
-                <span className="text-muted-foreground">{localizacao || "—"}</span>
+                <span className="text-muted-foreground">{localizacao || "Não informado"}</span>
               </div>
             </div>
           </div>
@@ -328,7 +329,7 @@ export function PerfilProfessional() {
         {/* Details */}
         <div className="lg:col-span-2">
           <Tabs defaultValue="info" className="space-y-6">
-            <TabsList className="glass-strong border-border/50 p-1">
+            <TabsList className="glass-strong border-border/50 p-1 h-auto flex-wrap">
               <TabsTrigger value="info" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white">
                 Informações Pessoais
               </TabsTrigger>
@@ -465,6 +466,10 @@ export function PerfilProfessional() {
               </Card>
             </TabsContent>
           </Tabs>
+
+          <div className="mt-6">
+            <MeusDados />
+          </div>
         </div>
       </div>
     </div>

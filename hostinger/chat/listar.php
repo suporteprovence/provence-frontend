@@ -44,8 +44,18 @@ try {
               ORDER BY m.enviada_em ASC, m.id ASC'
         );
         $stmt->execute([$consultaId]);
+        $mensagens = $stmt->fetchAll();
 
-        responder(200, ['success' => true, 'data' => $stmt->fetchAll()]);
+        // Etapa 3: mensagens ficam cifradas no banco; decifra só para quem participa.
+        if (!function_exists('provence_decifrar')) {
+            responder(503, ['success' => false, 'message' => 'Chat temporariamente indisponível.']);
+        }
+        foreach ($mensagens as &$m) {
+            $m['mensagem'] = provence_decifrar($m['mensagem']);
+        }
+        unset($m);
+
+        responder(200, ['success' => true, 'data' => $mensagens]);
     }
 
     // ---------------------------------------------------------------
@@ -76,9 +86,13 @@ try {
 
     // Sem coluna de "lida" na tabela e sem presença em tempo real:
     // devolvemos valores neutros para os campos opcionais da tela.
+    if (!function_exists('provence_decifrar')) {
+        responder(503, ['success' => false, 'message' => 'Chat temporariamente indisponível.']);
+    }
     foreach ($conversas as &$conversa) {
-        $conversa['nao_lidas'] = 0;
-        $conversa['online']    = false;
+        $conversa['nao_lidas']       = 0;
+        $conversa['online']          = false;
+        $conversa['ultima_mensagem'] = provence_decifrar($conversa['ultima_mensagem']);
     }
     unset($conversa);
 

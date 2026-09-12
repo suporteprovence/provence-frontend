@@ -77,3 +77,50 @@ CREATE TABLE IF NOT EXISTS `confirmacoes_sessao` (
   CONSTRAINT `fk_conf_sessao_consulta` FOREIGN KEY (`consulta_id`) REFERENCES `consultas` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- ===== 05-reembolsos.sql =====
+-- Provence — solicitações de reembolso (Etapa 4)
+-- O endpoint antigo gravava numa tabela "reembolsos" que nunca foi criada.
+-- Idempotente. Rodar no phpMyAdmin (banco u218657465_PROVENCE), ANTES de subir os PHP.
+
+CREATE TABLE IF NOT EXISTS `reembolsos` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `consulta_id` INT(11) NOT NULL,
+  `id_paciente` INT(11) NOT NULL,
+  `motivo` VARCHAR(500) NOT NULL,
+  `valor_reembolso` DECIMAL(10,2) NOT NULL,
+  `status` ENUM('solicitado','aprovado','recusado','pago') NOT NULL DEFAULT 'solicitado',
+  `justificativa` TEXT DEFAULT NULL,
+  `data_solicitacao` TIMESTAMP NOT NULL DEFAULT current_timestamp(),
+  `data_resposta` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_reembolso_consulta` (`consulta_id`),
+  KEY `idx_reembolso_paciente` (`id_paciente`),
+  CONSTRAINT `fk_reembolso_consulta` FOREIGN KEY (`consulta_id`) REFERENCES `consultas` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_reembolso_paciente` FOREIGN KEY (`id_paciente`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ===== 06-seguranca-lgpd.sql =====
+-- Provence — Etapa 3: segurança + LGPD
+-- Idempotente (IF NOT EXISTS / MODIFY): pode rodar mais de uma vez sem erro.
+-- Rodar no phpMyAdmin (banco u218657465_PROVENCE) ANTES de subir os PHP da Etapa 3.
+
+-- A2: registro de tentativas de login (bloqueio de força bruta).
+-- Guarda só e-mail + IP + resultado; expurgo automático após 30 dias (config/seguranca.php).
+CREATE TABLE IF NOT EXISTS `tentativas_login` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `email` VARCHAR(100) NOT NULL,
+  `ip` VARCHAR(45) NOT NULL,
+  `sucesso` TINYINT(1) NOT NULL DEFAULT 0,
+  `criado_em` TIMESTAMP NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_tent_email` (`email`, `criado_em`),
+  KEY `idx_tent_ip` (`ip`, `criado_em`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- A1: a coluna veio com ON UPDATE current_timestamp(): qualquer UPDATE na linha
+-- (ex.: marcar usado = 1) renovaria a validade do token. Remove o ON UPDATE.
+ALTER TABLE `tokens_recuperacao`
+  MODIFY `expira_em` TIMESTAMP NOT NULL DEFAULT current_timestamp();
+
+-- B2: marca de exclusão (anonimização) da conta pelo titular.
+ALTER TABLE `usuarios` ADD COLUMN IF NOT EXISTS `excluido_em` TIMESTAMP NULL DEFAULT NULL;

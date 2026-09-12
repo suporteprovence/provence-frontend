@@ -8,8 +8,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Loader2, CheckCircle, AlertCircle, Shield } from "lucide-react"
-
-const API_BASE = "https://provence.host"
+import { API_BASE } from "@/lib/api-config"
 
 interface UserTemp {
   id: number
@@ -69,6 +68,20 @@ export default function TermosUsoPage() {
 
       if (response.status === 404) {
         throw new Error("API n\u00e3o encontrada.")
+      }
+
+      if (response.status === 401) {
+        let dataNaoAutorizado: { message?: string } | null = null
+        try {
+          dataNaoAutorizado = await response.json()
+        } catch {
+          dataNaoAutorizado = null
+        }
+        setError(
+          dataNaoAutorizado?.message ||
+            "Sess\u00e3o de cadastro n\u00e3o encontrada. Refa\u00e7a o cadastro para continuar."
+        )
+        return
       }
 
       if (!response.ok) {

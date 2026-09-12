@@ -11,6 +11,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { User, Stethoscope, Loader2, AlertTriangle, CheckCircle, Info, Sparkles } from "lucide-react"
 import Link from "next/link"
+import { API_BASE } from "@/lib/api-config"
 
 interface FormData {
   nome: string
@@ -104,7 +105,7 @@ export default function CadastroPage() {
   const validateForm = () => {
     if (!form.nome.trim()) return "Nome é obrigatório"
     if (!form.email.trim()) return "E-mail é obrigatório"
-    if (!form.senha || form.senha.length < 6) return "Senha deve ter pelo menos 6 caracteres"
+    if (!form.senha || form.senha.length < 8) return "Senha deve ter pelo menos 8 caracteres"
     if (!form.telefone.trim()) return "Telefone é obrigatório"
     if (!form.cpf.trim()) return "CPF é obrigatório"
 
@@ -158,7 +159,7 @@ export default function CadastroPage() {
         }
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") || "https://provence.host"}/auth/register.php`,
+          `${API_BASE}/auth/register.php`,
           {
             method: "POST",
             headers: {
@@ -204,7 +205,7 @@ export default function CadastroPage() {
 
             <CardHeader className="text-center pb-6 pt-8 relative z-10">
               <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-provence-800 via-provence-900 to-provence-950 rounded-2xl flex items-center justify-center shadow-2xl">
+                <div className="w-16 h-16 bg-gradient-to-br from-provence-900 via-provence-900 to-provence-950 rounded-2xl flex items-center justify-center shadow-2xl">
                   <Sparkles className="h-8 w-8 text-white" />
                 </div>
               </div>
@@ -341,8 +342,8 @@ export default function CadastroPage() {
                       onChange={handleChange}
                       required
                       className="h-12 border-slate-200 focus:border-provence-800 focus:ring-provence-800/20 rounded-xl bg-white/50 backdrop-blur-sm transition-all duration-300 pl-4 text-slate-700 placeholder:text-slate-400"
-                      placeholder="Mínimo 6 caracteres"
-                      minLength={6}
+                      placeholder="Mínimo 8 caracteres"
+                      minLength={8}
                     />
                   </div>
 

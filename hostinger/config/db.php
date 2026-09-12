@@ -13,6 +13,15 @@ if (session_status() === PHP_SESSION_NONE) {
     ini_set('session.cookie_samesite', 'None');
     ini_set('session.cookie_secure', '1');
     ini_set('session.cookie_httponly', '1');
+    // Endurecimento da sessão (Etapa 3):
+    //  - use_strict_mode: rejeita PHPSESSID que o servidor não criou (session fixation)
+    //  - use_only_cookies: id de sessão nunca vem pela URL
+    //  - cookie_lifetime 0: cookie morre ao fechar o navegador
+    //  - gc_maxlifetime 8h: sessão parada expira no servidor
+    ini_set('session.use_strict_mode', '1');
+    ini_set('session.use_only_cookies', '1');
+    ini_set('session.cookie_lifetime', '0');
+    ini_set('session.gc_maxlifetime', '28800');
 }
 
 $allowed_origins = array(
@@ -41,6 +50,17 @@ header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json; charset=UTF-8");
+
+// Cabeçalhos de segurança (Etapa 3). A API só devolve JSON com dados pessoais:
+// não pode ser embutida em iframe, o navegador não deve "adivinhar" o tipo do
+// conteúdo, nada fica em cache e o Referer não vaza para fora.
+header("X-Content-Type-Options: nosniff");
+header("X-Frame-Options: DENY");
+header("Referrer-Policy: no-referrer");
+header("Cache-Control: no-store");
+if (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") {
+    header("Strict-Transport-Security: max-age=31536000; includeSubDomains");
+}
 
 if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
     http_response_code(200);
