@@ -81,7 +81,7 @@ export function ConsultasMarcadasPro() {
       <div className="flex items-start gap-4">
         <Avatar className="w-14 h-14 border-2 border-primary/20">
           <AvatarImage src={appointment.patient.avatar || "/placeholder.svg"} />
-          <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground font-semibold">
+          <AvatarFallback className="bg-gradient-to-br from-provence-800 to-provence-950 text-primary-foreground font-semibold">
             {appointment.patient.name.split(" ").map((n) => n[0]).join("")}
           </AvatarFallback>
         </Avatar>
@@ -141,7 +141,7 @@ export function ConsultasMarcadasPro() {
           <div className="flex items-center gap-2">
             {appointment.status === "confirmada" && (
               <>
-                <Button size="sm" className="rounded-xl bg-gradient-to-r from-primary to-accent flex-1">
+                <Button size="sm" className="rounded-xl bg-gradient-to-r from-provence-800 to-provence-950 flex-1">
                   {appointment.type === "video" ? (
                     <>
                       <Video className="w-4 h-4 mr-2" />
@@ -257,7 +257,7 @@ export function ConsultasMarcadasPro() {
               <div className="flex items-center gap-3 p-4 rounded-xl bg-card/50 border border-border/50">
                 <Avatar className="w-12 h-12 border-2 border-primary/20">
                   <AvatarImage src={selectedAppointment.patient.avatar || "/placeholder.svg"} />
-                  <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground">
+                  <AvatarFallback className="bg-gradient-to-br from-provence-800 to-provence-950 text-primary-foreground">
                     {selectedAppointment.patient.name.split(" ").map((n) => n[0]).join("")}
                   </AvatarFallback>
                 </Avatar>
@@ -275,7 +275,7 @@ export function ConsultasMarcadasPro() {
                   onChange={(e) => setSessionNotes(e.target.value)}
                 />
               </div>
-              <Button className="w-full rounded-xl bg-gradient-to-r from-primary to-accent">Salvar Notas</Button>
+              <Button className="w-full rounded-xl bg-gradient-to-r from-provence-800 to-provence-950">Salvar Notas</Button>
             </div>
           )}
         </DialogContent>

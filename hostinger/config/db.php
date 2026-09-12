@@ -1,4 +1,8 @@
 <?php
+// Relógio do PHP fixo no fuso da plataforma (Brasil). Sem isso, checagens como
+// "data já passou" dependem do fuso do servidor e podem errar por um dia.
+date_default_timezone_set('America/Sao_Paulo');
+
 // ============================================================================
 // Cookie de sessão compartilhável entre o frontend (Vercel) e a API (Hostinger).
 // Como são domínios diferentes, o navegador só envia o PHPSESSID nas requisições
@@ -40,6 +44,25 @@ header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
     http_response_code(200);
+    exit;
+}
+
+// ============================================================================
+// Proteção contra CSRF. O cookie de sessão precisa ser SameSite=None para o
+// site (Vercel) conversar com a API (Hostinger), mas isso também faz o
+// navegador enviar o cookie a partir de QUALQUER site. O CORS acima impede um
+// site estranho de LER a resposta, mas não impede a ESCRITA: um formulário ou
+// um fetch com text/plain (que não passa por preflight) disparado de uma
+// página maliciosa executaria a ação em nome do usuário logado. Por isso toda
+// requisição que altera estado precisa vir de uma origem conhecida.
+// Navegadores sempre mandam Origin em POST cross-site; requisições sem Origin
+// (curl, servidor a servidor, webhooks) não carregam o cookie de uma vítima e
+// seguem permitidas.
+// ============================================================================
+$metodo = isset($_SERVER["REQUEST_METHOD"]) ? $_SERVER["REQUEST_METHOD"] : "GET";
+if (!in_array($metodo, array("GET", "HEAD", "OPTIONS"), true) && $origin !== "" && !in_array($origin, $allowed_origins, true)) {
+    http_response_code(403);
+    echo json_encode(array("success" => false, "message" => "Origem não permitida."));
     exit;
 }
 

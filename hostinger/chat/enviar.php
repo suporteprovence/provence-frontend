@@ -23,7 +23,8 @@ if ($uid === null) {
 // Aceita corpo JSON (usado pelo frontend) ou form-urlencoded
 $body = json_decode(file_get_contents('php://input'), true);
 if (!is_array($body)) {
-    $body = $_POST;
+    echo json_encode(['success' => false, 'message' => 'Envie os dados em JSON.']);
+    exit;
 }
 
 $consultaId = isset($body['consulta_id']) ? (int) $body['consulta_id'] : 0;

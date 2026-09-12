@@ -196,7 +196,7 @@ export function PagamentosProfessional() {
                 Cancelar
               </Button>
               <Button
-                className="rounded-xl bg-gradient-to-r from-primary to-accent"
+                className="rounded-xl bg-gradient-to-r from-provence-800 to-provence-950"
                 disabled={savingBanco}
                 onClick={salvarBanco}
               >

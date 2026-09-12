@@ -212,7 +212,7 @@ export function ChatProfessional() {
                   >
                     <div className="relative">
                       <Avatar className="w-12 h-12 border-2 border-primary/20">
-                        <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground">
+                        <AvatarFallback className="bg-gradient-to-br from-provence-800 to-provence-950 text-primary-foreground">
                           {initials(conversation.patient)}
                         </AvatarFallback>
                       </Avatar>
@@ -247,7 +247,7 @@ export function ChatProfessional() {
             {/* Chat Header */}
             <div className="p-4 border-b border-border/50 flex items-center gap-3">
               <Avatar className="w-12 h-12 border-2 border-primary/20">
-                <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground">
+                <AvatarFallback className="bg-gradient-to-br from-provence-800 to-provence-950 text-primary-foreground">
                   {initials(selectedChat.patient)}
                 </AvatarFallback>
               </Avatar>
@@ -267,7 +267,7 @@ export function ChatProfessional() {
                       <div className={cn("flex gap-3 max-w-[70%]", isOwn && "flex-row-reverse")}>
                         {!isOwn && (
                           <Avatar className="w-8 h-8 border-2 border-primary/20">
-                            <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground text-xs">
+                            <AvatarFallback className="bg-gradient-to-br from-provence-800 to-provence-950 text-primary-foreground text-xs">
                               {initials(selectedChat.patient)}
                             </AvatarFallback>
                           </Avatar>
@@ -277,7 +277,7 @@ export function ChatProfessional() {
                             className={cn(
                               "rounded-2xl px-4 py-3",
                               isOwn
-                                ? "bg-gradient-to-br from-primary to-accent text-white rounded-br-sm"
+                                ? "bg-gradient-to-br from-provence-800 to-provence-950 text-white rounded-br-sm"
                                 : "bg-card/80 border border-border/50 rounded-bl-sm",
                             )}
                           >
@@ -311,7 +311,7 @@ export function ChatProfessional() {
                 />
                 <Button
                   size="icon"
-                  className="rounded-xl bg-gradient-to-r from-primary to-accent shadow-lg hover:shadow-xl transition-all"
+                  className="rounded-xl bg-gradient-to-r from-provence-800 to-provence-950 shadow-lg hover:shadow-xl transition-all"
                   onClick={handleSendMessage}
                   disabled={sending || !newMessage.trim()}
                 >

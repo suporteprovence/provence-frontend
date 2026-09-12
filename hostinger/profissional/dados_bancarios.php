@@ -49,8 +49,9 @@ try {
     // POST — salvar
     $body = json_decode(file_get_contents('php://input'), true);
     if (!is_array($body)) {
-        $body = $_POST;
-    }
+    echo json_encode(['success' => false, 'message' => 'Envie os dados em JSON.']);
+    exit;
+}
 
     $banco      = trim((string) ($body['banco'] ?? ''));
     $agencia    = trim((string) ($body['agencia'] ?? ''));

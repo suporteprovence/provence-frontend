@@ -78,8 +78,9 @@ try {
     // POST — registrar confirmação
     $body = json_decode(file_get_contents('php://input'), true);
     if (!is_array($body)) {
-        $body = $_POST;
-    }
+    echo json_encode(['success' => false, 'message' => 'Envie os dados em JSON.']);
+    exit;
+}
     $consulta_id = (int) ($body['consulta_id'] ?? 0);
     $fase = (string) ($body['fase'] ?? '');
 

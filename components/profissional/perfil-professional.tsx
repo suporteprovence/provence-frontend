@@ -245,7 +245,7 @@ export function PerfilProfessional() {
             <Button
               onClick={handleSave}
               disabled={saving}
-              className="rounded-xl bg-gradient-to-r from-primary to-accent"
+              className="rounded-xl bg-gradient-to-r from-provence-800 to-provence-950"
             >
               {saving ? (
                 <>
@@ -268,7 +268,7 @@ export function PerfilProfessional() {
               setError("")
               setErros({})
             }}
-            className="rounded-xl bg-gradient-to-r from-primary to-accent"
+            className="rounded-xl bg-gradient-to-r from-provence-800 to-provence-950"
           >
             Editar Perfil
           </Button>
@@ -291,7 +291,7 @@ export function PerfilProfessional() {
         <Card className="glass p-6 border-border/50">
           <div className="flex flex-col items-center text-center">
             <Avatar className="w-32 h-32 border-4 border-primary/20 mb-4">
-              <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground text-3xl font-semibold">
+              <AvatarFallback className="bg-gradient-to-br from-provence-800 to-provence-950 text-primary-foreground text-3xl font-semibold">
                 {iniciais}
               </AvatarFallback>
             </Avatar>

@@ -18,7 +18,8 @@ export type Profissional = {
   bio: string
   foto_perfil: string
   crp: string
-  avaliacao_media?: number
+  media_avaliacoes?: number
+  total_avaliacoes?: number
 }
 
 interface Props {
@@ -126,10 +127,11 @@ export function AgendarConsulta({ onScheduleClick }: Props) {
 
               <div className="flex items-center justify-between mt-4">
                 <div className="flex items-center gap-2">
-                  {prof.avaliacao_media && (
-                    <Badge variant="secondary" className="gap-1">
-                      <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-                      {prof.avaliacao_media.toFixed(1)}
+                  {Number(prof.total_avaliacoes) > 0 && (
+                    <Badge variant="secondary" className="gap-1" title={`${prof.total_avaliacoes} avaliação(ões)`}>
+                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                      {Number(prof.media_avaliacoes).toFixed(1)}
+                      <span className="text-muted-foreground">({prof.total_avaliacoes})</span>
                     </Badge>
                   )}
                   <Badge variant="outline">
