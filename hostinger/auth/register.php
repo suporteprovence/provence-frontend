@@ -52,6 +52,18 @@ if (strlen($senha) < 8) {
     exit;
 }
 
+// Etapa 3: CPF e telefone precisam ser válidos (antes '123' era aceito nos dois).
+$cpf_digitos = preg_replace('/\D/', '', $cpf);
+if ($cpf_digitos !== '' && !provence_cpf_valido($cpf_digitos)) {
+    echo json_encode(array('success' => false, 'message' => 'CPF inválido. Confira os 11 dígitos.'));
+    exit;
+}
+$tel_digitos = preg_replace('/\D/', '', $telefone);
+if ($tel_digitos !== '' && (strlen($tel_digitos) < 10 || strlen($tel_digitos) > 13)) {
+    echo json_encode(array('success' => false, 'message' => 'Telefone inválido. Use DDD + número.'));
+    exit;
+}
+
 if (!in_array($tipo_usuario, array('paciente', 'profissional'))) {
     echo json_encode(array('success' => false, 'message' => 'Tipo de usuario invalido'));
     exit;
@@ -136,6 +148,9 @@ try {
 
     // Etapa 3: sessão de cadastro. As telas seguintes (completar perfil e aceitar
     // termos) identificam a pessoa por AQUI, não pelo id enviado no corpo.
+    // Se o navegador estava logado em outra conta, essa sessão termina aqui: o
+    // cadastro novo é de outra pessoa e não pode gravar no perfil da conta antiga.
+    $_SESSION = array();
     session_regenerate_id(true);
     $_SESSION['onboarding_user_id'] = (int) $usuario_id;
 

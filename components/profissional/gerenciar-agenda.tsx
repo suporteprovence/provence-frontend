@@ -21,7 +21,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/DropdownMenu"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -48,6 +48,8 @@ interface Appointment {
   sessionNumber: number
   notes?: string
   linkSessao?: string
+  duracaoMinutos?: number
+  valor?: number
 }
 
 // Estado do formulário de link, isolado por consulta (id)
@@ -90,6 +92,38 @@ function toDateOnlyISO(dateLike: any): string {
   return s
 }
 
+// Data local no formato YYYY-MM-DD (sem passar por UTC, que vira o dia as 21h no Brasil)
+function toLocalDateISO(d: Date): string {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, "0")
+  const day = String(d.getDate()).padStart(2, "0")
+  return `${y}-${m}-${day}`
+}
+
+function toNumberOrUndefined(raw: any): number | undefined {
+  if (raw === null || raw === undefined || raw === "") return undefined
+  const n = Number(raw)
+  return Number.isFinite(n) ? n : undefined
+}
+
+function formatDateBR(d: string): string {
+  if (!d) return "Não informada"
+  const dt = new Date(`${d}T00:00:00`)
+  if (Number.isNaN(dt.getTime())) return d
+  const txt = dt.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" })
+  return txt.charAt(0).toUpperCase() + txt.slice(1)
+}
+
+function formatDuracao(min?: number): string {
+  if (min === undefined) return "Não informada"
+  return `${min} min`
+}
+
+function formatValorBRL(v?: number): string {
+  if (v === undefined) return "Não informado"
+  return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+}
+
 function toTimeHHmm(timeLike: any): string {
   const s = String(timeLike ?? "").trim()
   if (!s) return ""
@@ -109,6 +143,9 @@ function mapApiToAppointment(item: any): Appointment {
   const status = normalizeStatus(item?.status ?? item?.situacao)
   const sessionNumber = Number(item?.numero_sessao) || 1
   const linkSessao = item?.link_sessao ?? item?.link_reuniao ?? ""
+  const duracaoMinutos = toNumberOrUndefined(item?.duracao_minutos ?? item?.duracao)
+  const valor = toNumberOrUndefined(item?.valor_pago ?? item?.valor)
+  const notes = item?.observacoes ?? item?.descricao ?? item?.notas ?? item?.notes ?? ""
 
   return {
     id,
@@ -119,6 +156,9 @@ function mapApiToAppointment(item: any): Appointment {
     status,
     sessionNumber,
     linkSessao: linkSessao ? String(linkSessao) : undefined,
+    duracaoMinutos,
+    valor,
+    notes: notes ? String(notes) : undefined,
   }
 }
 
@@ -139,10 +179,7 @@ export function GerenciarAgenda() {
   const [error, setError] = useState("")
   const [linkEdits, setLinkEdits] = useState<Record<string, LinkEdit>>({})
 
-  const todayISO = useMemo(() => {
-    const now = new Date()
-    return now.toISOString().split("T")[0]
-  }, [])
+  const todayISO = useMemo(() => toLocalDateISO(new Date()), [])
 
   const getStatusColor = (status: Appointment["status"]) => {
     switch (status) {
@@ -280,7 +317,7 @@ export function GerenciarAgenda() {
                 <h4 className="font-semibold text-lg">{appointment.patient.name}</h4>
                 <p className="text-sm text-muted-foreground">{"Sessão #" + appointment.sessionNumber}</p>
               </div>
-              <DropdownMenu>
+              <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon"><MoreVertical className="w-4 h-4" /></Button>
                 </DropdownMenuTrigger>
@@ -413,6 +450,78 @@ export function GerenciarAgenda() {
           </TabsContent>
         </Tabs>
       )}
+
+      <Dialog open={!!selectedAppointment} onOpenChange={(open) => { if (!open) setSelectedAppointment(null) }}>
+        <DialogContent className="rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>Detalhes da consulta</DialogTitle>
+            <DialogDescription>Informações da sessão selecionada.</DialogDescription>
+          </DialogHeader>
+          {selectedAppointment && (
+            <div className="space-y-4 text-sm">
+              <div className="flex items-center gap-3">
+                <Avatar className="w-12 h-12 border-2 border-primary/20">
+                  <AvatarImage src={selectedAppointment.patient.avatar || "/placeholder.svg"} />
+                  <AvatarFallback>{selectedAppointment.patient.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-semibold text-base">{selectedAppointment.patient.name}</p>
+                  <p className="text-muted-foreground">{"Sessão #" + selectedAppointment.sessionNumber}</p>
+                </div>
+              </div>
+
+              <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
+                <div>
+                  <dt className="text-muted-foreground">Data</dt>
+                  <dd className="font-medium">{formatDateBR(selectedAppointment.date)}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">Hora</dt>
+                  <dd className="font-medium">{selectedAppointment.time || "Não informada"}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">Duração</dt>
+                  <dd className="font-medium">{formatDuracao(selectedAppointment.duracaoMinutos)}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">Valor</dt>
+                  <dd className="font-medium">{formatValorBRL(selectedAppointment.valor)}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">Status</dt>
+                  <dd className="mt-1"><Badge className={getStatusColor(selectedAppointment.status)}>{selectedAppointment.status}</Badge></dd>
+                </div>
+              </dl>
+
+              <div>
+                <p className="text-muted-foreground">Link da sessão</p>
+                {selectedAppointment.linkSessao ? (
+                  <a
+                    href={selectedAppointment.linkSessao}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-primary underline break-all"
+                  >
+                    {selectedAppointment.linkSessao}
+                  </a>
+                ) : (
+                  <p className="font-medium">Nenhum link informado</p>
+                )}
+              </div>
+
+              {selectedAppointment.notes && (
+                <div>
+                  <p className="text-muted-foreground">Observações</p>
+                  <p className="font-medium whitespace-pre-wrap">{selectedAppointment.notes}</p>
+                </div>
+              )}
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSelectedAppointment(null)}>Fechar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

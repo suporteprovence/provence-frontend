@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/components/ui/use-toast"
 import { API_BASE } from "@/lib/api-config"
 
 interface Conversation {
@@ -44,7 +44,7 @@ export function ChatProfessional() {
   }, [])
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" })
   }, [messages])
 
   const fetchConversations = async () => {
@@ -243,7 +243,7 @@ export function ChatProfessional() {
 
         {/* Chat Area */}
         {selectedChat ? (
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 min-w-0 flex flex-col">
             {/* Chat Header */}
             <div className="p-4 border-b border-border/50 flex items-center gap-3">
               <Avatar className="w-12 h-12 border-2 border-primary/20">
@@ -264,7 +264,7 @@ export function ChatProfessional() {
                   const isOwn = message.sender === "professional"
                   return (
                     <div key={message.id} className={cn("flex", isOwn ? "justify-end" : "justify-start")}>
-                      <div className={cn("flex gap-3 max-w-[70%]", isOwn && "flex-row-reverse")}>
+                      <div className={cn("flex gap-3 max-w-[70%] min-w-0", isOwn && "flex-row-reverse")}>
                         {!isOwn && (
                           <Avatar className="w-8 h-8 border-2 border-primary/20">
                             <AvatarFallback className="bg-gradient-to-br from-provence-800 to-provence-950 text-primary-foreground text-xs">
@@ -281,7 +281,7 @@ export function ChatProfessional() {
                                 : "bg-card/80 border border-border/50 rounded-bl-sm",
                             )}
                           >
-                            <p className="text-sm">{message.content}</p>
+                            <p className="text-sm break-all whitespace-pre-wrap">{message.content}</p>
                           </div>
                           <span className="text-xs text-muted-foreground mt-1">{message.time}</span>
                         </div>

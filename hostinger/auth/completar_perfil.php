@@ -38,10 +38,10 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 
 // Etapa 3: o id vem da SESSÃO, nunca do corpo da requisição.
 $usuario_id = 0;
-if (isset($_SESSION['user_id']) && empty($_SESSION['is_admin'])) {
-    $usuario_id = (int) $_SESSION['user_id'];
-} elseif (isset($_SESSION['onboarding_user_id'])) {
+if (isset($_SESSION['onboarding_user_id'])) {
     $usuario_id = (int) $_SESSION['onboarding_user_id'];
+} elseif (isset($_SESSION['user_id']) && empty($_SESSION['is_admin'])) {
+    $usuario_id = (int) $_SESSION['user_id'];
 }
 if ($usuario_id <= 0) {
     http_response_code(401);
@@ -156,8 +156,9 @@ try {
         $profissionalExiste = $stmt->fetch();
 
         $cep = isset($data['cep']) ? $data['cep'] : '';
-        $data_nascimento = isset($data['data_nascimento']) ? $data['data_nascimento'] : null;
-        $genero = isset($data['genero']) ? $data['genero'] : null;
+        // Campos opcionais do profissional: string vazia vira NULL (DATE/ENUM não aceitam '')
+        $data_nascimento = (isset($data['data_nascimento']) && trim((string) $data['data_nascimento']) !== '') ? $data['data_nascimento'] : null;
+        $genero = (isset($data['genero']) && trim((string) $data['genero']) !== '') ? $data['genero'] : null;
 
         if ($profissionalExiste) {
 

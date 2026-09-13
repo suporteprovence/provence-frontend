@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/components/ui/use-toast"
 import { API_BASE } from "@/lib/api-config"
 
 interface Conversation {
@@ -274,7 +274,7 @@ export function ChatPage() {
                       msg.sender === "patient" ? "bg-provence-900 text-white" : "bg-gray-100 text-gray-900"
                     }`}
                   >
-                    <p className="text-sm">{msg.text}</p>
+                    <p className="text-sm break-words whitespace-pre-wrap">{msg.text}</p>
                     <span
                       className={`text-xs mt-1 block ${msg.sender === "patient" ? "text-provence-50" : "text-gray-500"}`}
                     >

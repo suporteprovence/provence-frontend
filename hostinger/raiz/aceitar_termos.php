@@ -39,10 +39,10 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 
 // Etapa 3: o id vem da SESSÃO, nunca do corpo da requisição.
 $usuario_id = 0;
-if (isset($_SESSION['user_id']) && empty($_SESSION['is_admin'])) {
-    $usuario_id = (int) $_SESSION['user_id'];
-} elseif (isset($_SESSION['onboarding_user_id'])) {
+if (isset($_SESSION['onboarding_user_id'])) {
     $usuario_id = (int) $_SESSION['onboarding_user_id'];
+} elseif (isset($_SESSION['user_id']) && empty($_SESSION['is_admin'])) {
+    $usuario_id = (int) $_SESSION['user_id'];
 }
 if ($usuario_id <= 0) {
     http_response_code(401);

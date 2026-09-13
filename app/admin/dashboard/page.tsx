@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import {
@@ -550,15 +550,17 @@ export default function AdminDashboard() {
                                 </div>
 
                                 <div className="flex justify-end gap-3">
-                                  <Button
-                                    variant="outline"
-                                    className="rounded-xl"
-                                    onClick={() => {
-                                      setMotivoRecusa("")
-                                    }}
-                                  >
-                                    Cancelar
-                                  </Button>
+                                  <DialogClose asChild>
+                                    <Button
+                                      variant="outline"
+                                      className="rounded-xl"
+                                      onClick={() => {
+                                        setMotivoRecusa("")
+                                      }}
+                                    >
+                                      Cancelar
+                                    </Button>
+                                  </DialogClose>
 
                                   <Button
                                     onClick={() => selectedProfissional && recusarProfissional(selectedProfissional.id)}
@@ -588,4 +590,4 @@ export default function AdminDashboard() {
       </div>
     </div>
   )
-}
+}

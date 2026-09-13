@@ -92,6 +92,7 @@ export default function CadastroPage() {
 
   const formatCurrency = (value: string) => {
     const numbers = value.replace(/\D/g, "")
+    if (!numbers) return ""
     const amount = Number.parseFloat(numbers) / 100
     return amount
       .toLocaleString("pt-BR", {
@@ -221,11 +222,11 @@ export default function CadastroPage() {
             <CardContent className="px-8 pb-8 relative z-10">
               {/* Seletor de tipo de usuário */}
               <div className="mb-8">
-                <div className="flex justify-center gap-4">
+                <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
                   <button
                     type="button"
                     onClick={() => handleUserTypeChange("paciente")}
-                    className={`flex items-center gap-3 px-8 py-4 rounded-2xl border-2 transition-all duration-300 ${
+                    className={`flex items-center justify-center gap-3 px-6 sm:px-8 py-4 rounded-2xl border-2 transition-all duration-300 ${
                       form.tipo_usuario === "paciente"
                         ? "border-provence-400 bg-gradient-to-r from-provence-50 to-provence-100 shadow-lg shadow-provence-300/50"
                         : "border-slate-200 bg-white/50 hover:border-provence-200 hover:shadow-md"
@@ -255,7 +256,7 @@ export default function CadastroPage() {
                   <button
                     type="button"
                     onClick={() => handleUserTypeChange("profissional")}
-                    className={`flex items-center gap-3 px-8 py-4 rounded-2xl border-2 transition-all duration-300 ${
+                    className={`flex items-center justify-center gap-3 px-6 sm:px-8 py-4 rounded-2xl border-2 transition-all duration-300 ${
                       form.tipo_usuario === "profissional"
                         ? "border-provence-400 bg-gradient-to-r from-provence-50 to-provence-100 shadow-lg shadow-provence-300/50"
                         : "border-slate-200 bg-white/50 hover:border-provence-200 hover:shadow-md"

@@ -69,6 +69,26 @@ não usa nenhum deles):
 Atenção: assim que `chat/enviar.php` for substituído, o chat só grava mensagens se a
 `CHAT_KEY` estiver no .env (por isso o Passo 3 vem antes).
 
+## Passo 4b: correções da varredura geral (mesmo pacote)
+
+Depois da Etapa 3 foi feita uma varredura de todos os botões e caminhos do site. Entraram
+no pacote mais estes arquivos (todos substituem o de mesmo caminho):
+
+- `agendamento/agendar-consulta.php`: o original não gravava a duração da consulta
+  (coluna obrigatória) e, no modo estrito do MariaDB, o agendamento falhava mostrando o
+  erro SQL na tela. Agora grava 50 minutos e só aceita data e hora futuras.
+- `auth/register.php`: CPF e telefone passam a ser validados (antes "123" era aceito) e
+  um cadastro feito num navegador já logado em outra conta não mistura as duas contas.
+- `auth/completar_perfil.php`: profissional pode deixar data de nascimento e gênero em
+  branco (antes dava "Erro interno").
+- `aceitar_termos.php`: idem ao anterior quanto à sessão de cadastro.
+
+No site (Vercel): aba "Consultas" do profissional passa a mostrar as consultas reais
+(era uma tela vazia fixa), painel do paciente ganhou menu para celular, agenda do
+profissional mostra "Ver detalhes" e não erra o dia após as 21h, chat não estoura com
+mensagens longas, termos podem ser lidos antes do cadastro, botão Cancelar do painel
+administrativo fecha a janela, textos antigos ("PsicoOnline") e sobras de debug removidos.
+
 ## Passo 5: site (Vercel)
 
 Avise que os PHP subiram. O push da branch `main` publica o site com a nova tela de

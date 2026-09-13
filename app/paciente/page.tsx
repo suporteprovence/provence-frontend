@@ -9,6 +9,7 @@ import {
   CreditCard,
   LogOut,
   LayoutDashboard,
+  Menu,
 } from "lucide-react"
 
 import { AgendarConsulta, type Profissional } from "@/components/paciente/agendar-consulta"
@@ -22,6 +23,7 @@ import { AgendamentoForm } from "@/components/paciente/agendamento-form"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet"
 import { logout } from "@/lib/logout"
 
 type PatientUser = {
@@ -30,13 +32,25 @@ type PatientUser = {
   email?: string
 }
 
+type ActiveItem = "dashboard" | "agendar" | "consultas" | "chat" | "historico" | "perfil" | "pagamentos"
+
+// Itens de navegação: a mesma lista alimenta o aside (desktop) e o menu lateral (mobile)
+const NAV_ITEMS: { key: ActiveItem; label: string; icon: typeof LayoutDashboard }[] = [
+  { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { key: "agendar", label: "Agendar Consulta", icon: Calendar },
+  { key: "consultas", label: "Consultas Marcadas", icon: Calendar },
+  { key: "chat", label: "Chat", icon: MessageSquare },
+  { key: "historico", label: "Histórico", icon: History },
+  { key: "perfil", label: "Meu Perfil", icon: User },
+  { key: "pagamentos", label: "Pagamentos", icon: CreditCard },
+]
+
 export default function PatientDashboard() {
-  const [activeItem, setActiveItem] = useState<
-    "dashboard" | "agendar" | "consultas" | "chat" | "historico" | "perfil" | "pagamentos"
-  >("dashboard")
+  const [activeItem, setActiveItem] = useState<ActiveItem>("dashboard")
 
   const [showAgendamentoForm, setShowAgendamentoForm] = useState(false)
   const [selectedProfissional, setSelectedProfissional] = useState<Profissional | null>(null)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   // Dados do usuário (sem hardcode)
   const [user, setUser] = useState<PatientUser>({})
@@ -87,12 +101,42 @@ export default function PatientDashboard() {
     setSelectedProfissional(null)
   }
 
-  const goTo = (item: typeof activeItem) => {
+  const goTo = (item: ActiveItem) => {
     setActiveItem(item)
     // sempre fecha o form ao trocar de tela
     setShowAgendamentoForm(false)
     setSelectedProfissional(null)
   }
+
+  // No mobile, escolher um item também fecha o menu lateral
+  const goToFromMobile = (item: ActiveItem) => {
+    goTo(item)
+    setMobileMenuOpen(false)
+  }
+
+  const renderNavItems = (onSelect: (item: ActiveItem) => void) =>
+    NAV_ITEMS.map(({ key, label, icon: Icon }) => (
+      <button
+        key={key}
+        onClick={() => onSelect(key)}
+        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+          activeItem === key ? "bg-provence-900 text-white" : "text-white/70 hover:bg-white/5"
+        }`}
+      >
+        <Icon className="w-5 h-5" />
+        <span className="text-sm font-medium">{label}</span>
+      </button>
+    ))
+
+  const renderLogoutButton = () => (
+    <button
+      onClick={() => logout()}
+      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-white/70 hover:bg-white/5 transition-colors"
+    >
+      <LogOut className="w-5 h-5" />
+      <span className="text-sm font-medium">Sair</span>
+    </button>
+  )
 
   const renderDashboard = () => {
     return (
@@ -156,8 +200,55 @@ export default function PatientDashboard() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className="w-64 bg-provence-950 text-white flex flex-col fixed h-full">
+      {/* Barra superior (só mobile) */}
+      <div className="md:hidden fixed top-0 inset-x-0 z-40 bg-provence-950 text-white border-b border-white/10">
+        <div className="flex items-center justify-between gap-3 px-4 h-14">
+          <div className="flex-1 min-w-0">
+            <p className="text-base font-bold leading-tight">Provence</p>
+            <p className="text-xs text-white/70 truncate">{userName}</p>
+          </div>
+          <button
+            type="button"
+            aria-label="Abrir menu"
+            onClick={() => setMobileMenuOpen(true)}
+            className="shrink-0 p-2 rounded-lg text-white hover:bg-white/10 transition-colors"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
+        </div>
+      </div>
+
+      {/* Menu lateral (só mobile) com os mesmos itens do aside */}
+      <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+        <SheetContent
+          side="left"
+          className="w-72 p-0 flex flex-col bg-provence-950 text-white border-white/10"
+        >
+          <div className="p-6 border-b border-white/10">
+            <SheetTitle className="text-xl font-bold text-white">Provence</SheetTitle>
+            <SheetDescription className="text-xs text-white/70">Psicologia Online</SheetDescription>
+          </div>
+
+          <div className="p-6 border-b border-white/10">
+            <div className="flex items-center gap-3">
+              <Avatar className="w-10 h-10">
+                <AvatarFallback className="bg-blue-500 text-white">{userInitials}</AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{userName}</p>
+                {userEmail ? <p className="text-xs text-white/70 truncate">{userEmail}</p> : null}
+              </div>
+            </div>
+          </div>
+
+          <nav className="flex-1 overflow-y-auto p-4 space-y-1">{renderNavItems(goToFromMobile)}</nav>
+
+          <div className="p-4 border-t border-white/10 space-y-1">{renderLogoutButton()}</div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Sidebar (desktop) */}
+      <aside className="w-64 bg-provence-950 text-white hidden md:flex flex-col fixed h-full">
         {/* Logo */}
         <div className="p-6 border-b border-white/10">
           <h1 className="text-xl font-bold">Provence</h1>
@@ -185,94 +276,16 @@ export default function PatientDashboard() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-1">
-          <button
-            onClick={() => goTo("dashboard")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              activeItem === "dashboard" ? "bg-provence-900 text-white" : "text-white/70 hover:bg-white/5"
-            }`}
-          >
-            <LayoutDashboard className="w-5 h-5" />
-            <span className="text-sm font-medium">Dashboard</span>
-          </button>
-
-          <button
-            onClick={() => goTo("agendar")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              activeItem === "agendar" ? "bg-provence-900 text-white" : "text-white/70 hover:bg-white/5"
-            }`}
-          >
-            <Calendar className="w-5 h-5" />
-            <span className="text-sm font-medium">Agendar Consulta</span>
-          </button>
-
-          <button
-            onClick={() => goTo("consultas")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              activeItem === "consultas" ? "bg-provence-900 text-white" : "text-white/70 hover:bg-white/5"
-            }`}
-          >
-            <Calendar className="w-5 h-5" />
-            <span className="text-sm font-medium">Consultas Marcadas</span>
-          </button>
-
-          <button
-            onClick={() => goTo("chat")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              activeItem === "chat" ? "bg-provence-900 text-white" : "text-white/70 hover:bg-white/5"
-            }`}
-          >
-            <MessageSquare className="w-5 h-5" />
-            <span className="text-sm font-medium">Chat</span>
-          </button>
-
-          <button
-            onClick={() => goTo("historico")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              activeItem === "historico" ? "bg-provence-900 text-white" : "text-white/70 hover:bg-white/5"
-            }`}
-          >
-            <History className="w-5 h-5" />
-            <span className="text-sm font-medium">Histórico</span>
-          </button>
-
-          <button
-            onClick={() => goTo("perfil")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              activeItem === "perfil" ? "bg-provence-900 text-white" : "text-white/70 hover:bg-white/5"
-            }`}
-          >
-            <User className="w-5 h-5" />
-            <span className="text-sm font-medium">Meu Perfil</span>
-          </button>
-
-          <button
-            onClick={() => goTo("pagamentos")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-              activeItem === "pagamentos" ? "bg-provence-900 text-white" : "text-white/70 hover:bg-white/5"
-            }`}
-          >
-            <CreditCard className="w-5 h-5" />
-            <span className="text-sm font-medium">Pagamentos</span>
-          </button>
-        </nav>
+        <nav className="flex-1 p-4 space-y-1">{renderNavItems(goTo)}</nav>
 
         {/* Bottom Actions (sem lógica fictícia) */}
-        <div className="p-4 border-t border-white/10 space-y-1">
-          <button
-            onClick={() => logout()}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-white/70 hover:bg-white/5 transition-colors"
-          >
-            <LogOut className="w-5 h-5" />
-            <span className="text-sm font-medium">Sair</span>
-          </button>
-        </div>
+        <div className="p-4 border-t border-white/10 space-y-1">{renderLogoutButton()}</div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 ml-64">
-        {/* Top Header */}
-        <header className="bg-white border-b sticky top-0 z-10">
+      <main className="flex-1 min-w-0 md:ml-64 pt-14 md:pt-0">
+        {/* Top Header (desktop; no mobile a barra fixa já mostra o usuário) */}
+        <header className="hidden md:block bg-white border-b sticky top-0 z-10">
           <div className="flex items-center justify-end gap-4 px-8 py-4">
             <div className="flex items-center gap-3">
               <div className="text-right">
@@ -287,7 +300,7 @@ export default function PatientDashboard() {
         </header>
 
         {/* Page Content */}
-        <div className="p-8">{renderContent()}</div>
+        <div className="p-4 md:p-8">{renderContent()}</div>
       </main>
     </div>
   )

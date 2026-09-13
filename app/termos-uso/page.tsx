@@ -24,10 +24,14 @@ export default function TermosUsoPage() {
   const [error, setError] = useState("")
   const router = useRouter()
 
+  // Sem cadastro em andamento (ex.: link "Termos" da tela de cadastro) a pagina fica
+  // so para leitura: mostra os termos e esconde o aceite.
+  const [somenteLeitura, setSomenteLeitura] = useState(false)
+
   useEffect(() => {
     const userTemp = localStorage.getItem("user_temp")
     if (!userTemp) {
-      router.push("/register")
+      setSomenteLeitura(true)
       return
     }
 
@@ -114,7 +118,7 @@ export default function TermosUsoPage() {
     }
   }
 
-  if (!user) {
+  if (!user && !somenteLeitura) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-provence-50 to-provence-100 flex items-center justify-center">
         <div className="text-center">
@@ -150,7 +154,7 @@ export default function TermosUsoPage() {
                 Termos de Uso
               </CardTitle>
               <CardDescription className="text-slate-600 text-lg font-medium">
-                {"Ol\u00e1, "}{user.nome}{"! Por favor, leia e aceite nossos termos para continuar"}
+                {somenteLeitura ? "Leia nossos Termos de Uso e Política de Privacidade" : "Olá, " + (user?.nome ?? "") + "! Por favor, leia e aceite nossos termos para continuar"}
               </CardDescription>
             </CardHeader>
 
@@ -216,6 +220,14 @@ export default function TermosUsoPage() {
                 </div>
               </ScrollArea>
 
+              {somenteLeitura ? (
+                <div className="mt-6 flex justify-center">
+                  <Button type="button" variant="outline" className="rounded-xl" onClick={() => (window.history.length > 1 ? window.history.back() : router.push("/register"))}>
+                    Voltar
+                  </Button>
+                </div>
+              ) : (
+              <>
               <div className="flex items-center space-x-4 mb-6 p-4 bg-white/50 backdrop-blur-sm rounded-2xl border border-slate-200">
                 <Checkbox
                   id="aceitar-termos"
@@ -260,6 +272,8 @@ export default function TermosUsoPage() {
                   </div>
                 )}
               </Button>
+              </>
+              )}
             </CardContent>
 
             <CardFooter className="text-center pt-4 pb-8 relative z-10">

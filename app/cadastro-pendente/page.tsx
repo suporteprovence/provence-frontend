@@ -319,9 +319,6 @@ export default function CadastroPendentePage() {
                   </div>
                 </div>
 
-                <p className="text-xs text-slate-500 mt-4">
-                  (Info técnica) API configurada: <span className="font-mono">{ENDPOINTS.checarStatusCadastro}</span>
-                </p>
               </div>
             </CardContent>
 
@@ -344,4 +341,4 @@ export default function CadastroPendentePage() {
       </div>
     </div>
   )
-}
+}

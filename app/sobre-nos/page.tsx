@@ -14,7 +14,7 @@ export default function AboutPage() {
           <div className="space-y-6">
             <h2 className="text-xl font-medium text-provence-900">Nossa História</h2>
             <p className="text-gray-600 leading-relaxed">
-              A PsicoOnline nasceu da visão de tornar o acesso à saúde mental mais democrático e conveniente. Fundada
+              A Provence nasceu da visão de tornar o acesso à saúde mental mais democrático e conveniente. Fundada
               por um grupo de profissionais comprometidos com o bem-estar emocional, nossa plataforma une tecnologia e
               humanização para proporcionar uma experiência única em psicoterapia online.
             </p>
@@ -41,7 +41,7 @@ export default function AboutPage() {
           <blockquote className="text-3xl sm:text-4xl lg:text-5xl font-light italic text-provence-900 leading-tight">
             "O primeiro passo para a mudança é reconhecer a importância do cuidado com a saúde mental."
           </blockquote>
-          <p className="mt-6 text-gray-600">— Equipe Provence</p>
+          <p className="mt-6 text-gray-600">Equipe Provence</p>
         </div>
 
         {/* Seção "A Equipe" */}
