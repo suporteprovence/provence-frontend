@@ -83,7 +83,13 @@ no pacote mais estes arquivos (todos substituem o de mesmo caminho):
   branco (antes dava "Erro interno").
 - `aceitar_termos.php`: idem ao anterior quanto à sessão de cadastro.
 
-No site (Vercel): aba "Consultas" do profissional passa a mostrar as consultas reais
+- `contato.php` (raiz, novo) + `config/mailer.php` (substituído): o formulário "Entre em
+  Contato" da página inicial passa a enviar a mensagem por e-mail para a caixa da
+  plataforma (o remetente configurado no .env, `MAIL_FROM`), com "responder para" apontando
+  para quem escreveu. Opcional: `CONTATO_DESTINO=outro@email` no .env para mudar o destino.
+  Limite de 5 mensagens por hora por IP.
+
+No site (Vercel): formulário de contato funcionando, aba "Consultas" do profissional passa a mostrar as consultas reais
 (era uma tela vazia fixa), painel do paciente ganhou menu para celular, agenda do
 profissional mostra "Ver detalhes" e não erra o dia após as 21h, chat não estoura com
 mensagens longas, termos podem ser lidos antes do cadastro, botão Cancelar do painel

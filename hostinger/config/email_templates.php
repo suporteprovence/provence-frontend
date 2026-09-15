@@ -209,3 +209,24 @@ function templateContaExcluida($nome) {
 
     return templateBase($conteudo);
 }
+
+/**
+ * E-mail interno com a mensagem enviada pelo formulário "Entre em Contato" do site.
+ */
+function templateContatoSite($nome, $email, $mensagem, $ip = '') {
+    $conteudo = '
+        <h2 style="color:#1f2937;margin:0 0 16px;font-size:22px;">Nova mensagem pelo site</h2>
+        <p style="color:#4b5563;font-size:15px;line-height:1.6;">
+            <strong>Nome:</strong> ' . htmlspecialchars($nome) . '<br>
+            <strong>E-mail:</strong> <a href="mailto:' . htmlspecialchars($email) . '" style="color:#284A1C;">' . htmlspecialchars($email) . '</a>
+        </p>
+        <div style="background:#f1f6ee;border-left:4px solid #284A1C;padding:16px;border-radius:8px;margin:24px 0;">
+            <p style="color:#1f2937;margin:0;font-size:15px;line-height:1.6;white-space:pre-wrap;">' . nl2br(htmlspecialchars($mensagem)) . '</p>
+        </div>
+        <p style="color:#6b7280;font-size:12px;line-height:1.6;">
+            Para responder, basta responder este e-mail (vai direto para quem escreveu).' . ($ip !== '' ? ' IP de origem: ' . htmlspecialchars($ip) : '') . '
+        </p>';
+
+    return templateBase($conteudo);
+}
+

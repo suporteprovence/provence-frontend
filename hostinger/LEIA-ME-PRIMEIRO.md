@@ -11,6 +11,8 @@ Ordem (resumo; detalhes nos dois LEIA-ME de cada etapa):
    (idempotente: contém as migrações 02 a 06; as que já rodaram não fazem nada).
 3. `.env` (public_html/.env): acrescentar `CHAT_KEY=` (openssl rand -base64 32) e
    `MIGRACAO_TOKEN=` (texto aleatório com 20+ caracteres). Ver LEIA-ME-DEPLOY-ETAPA3.md.
+   Opcional: `CONTATO_DESTINO=` se as mensagens do formulário de contato devem ir para
+   outro e-mail que não o remetente padrão (`MAIL_FROM`).
 4. Subir a pasta `public_html/` deste pacote por cima da atual.
 5. Avisar para fazer o push da branch main (Vercel publica o site).
 6. Rodar a migração das mensagens antigas do chat (Passo 6 do LEIA-ME-DEPLOY-ETAPA3.md)
