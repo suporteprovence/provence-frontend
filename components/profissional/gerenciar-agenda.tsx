@@ -177,6 +177,7 @@ export function GerenciarAgenda() {
   const [loading, setLoading] = useState(true)
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null)
   const [error, setError] = useState("")
+  const [aviso, setAviso] = useState("")
   const [linkEdits, setLinkEdits] = useState<Record<string, LinkEdit>>({})
 
   const todayISO = useMemo(() => toLocalDateISO(new Date()), [])
@@ -249,8 +250,9 @@ export function GerenciarAgenda() {
     setActionLoadingId(id)
     setError("")
     try {
-      await fetchJson(`${API_BASE}/profissional/cancelar_consulta.php`, { method: "POST", body: JSON.stringify({ consulta_id: id }) })
+      const resp = await fetchJson(`${API_BASE}/profissional/cancelar_consulta.php`, { method: "POST", body: JSON.stringify({ consulta_id: id }) })
       setAppointments((prev) => prev.map((a) => (a.id === id ? { ...a, status: "cancelada" } : a)))
+      setAviso((resp && (resp as { message?: string }).message) || "Consulta cancelada.")
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erro ao cancelar")
     } finally {
@@ -424,6 +426,14 @@ export function GerenciarAgenda() {
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+      {aviso && (
+        <Alert variant="success">
+          <AlertDescription className="flex items-center justify-between gap-3">
+            <span>{aviso}</span>
+            <button type="button" className="text-xs underline" onClick={() => setAviso("")}>fechar</button>
+          </AlertDescription>
         </Alert>
       )}
 

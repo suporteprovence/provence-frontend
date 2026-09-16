@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Loader2, Calendar, Clock, User } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Loader2, Calendar, Clock, User, CreditCard } from "lucide-react"
 import { API_BASE } from "@/lib/api-config"
 import { ConfirmacaoSessao } from "@/components/consultas/confirmacao-sessao"
 
@@ -22,10 +24,52 @@ export function ConsultasMarcadas() {
   const [consultas, setConsultas] = useState<Consulta[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  const [pagando, setPagando] = useState<number | null>(null)
+  const [erroPagamento, setErroPagamento] = useState<{ consultaId: number; mensagem: string } | null>(null)
 
   useEffect(() => {
     fetchConsultas()
   }, [])
+
+  // Cria a preferência no Mercado Pago e manda o paciente para o checkout.
+  const pagarAgora = async (consultaId: number) => {
+    setPagando(consultaId)
+    setErroPagamento(null)
+    let redirecionou = false
+    try {
+      const token = localStorage.getItem("token") || ""
+      const res = await fetch(`${API_BASE}/pagamentos/criar_pagamento.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+        body: JSON.stringify({ consulta_id: consultaId }),
+      })
+      if (res.status === 503) {
+        setErroPagamento({ consultaId, mensagem: "O pagamento online ainda não está ativo." })
+        return
+      }
+      const data = await res.json().catch(() => null)
+      const initPoint = data?.data?.init_point
+      if (res.ok && data?.success && typeof initPoint === "string" && initPoint) {
+        redirecionou = true
+        window.location.href = initPoint
+        return
+      }
+      setErroPagamento({
+        consultaId,
+        mensagem: data?.message || "Não foi possível iniciar o pagamento. Tente novamente.",
+      })
+    } catch {
+      setErroPagamento({ consultaId, mensagem: "Erro de conexão ao iniciar o pagamento." })
+    } finally {
+      // Mantém o spinner enquanto o navegador troca de página.
+      if (!redirecionou) setPagando(null)
+    }
+  }
 
   const fetchConsultas = async () => {
     setLoading(true)
@@ -136,8 +180,35 @@ export function ConsultasMarcadas() {
                       </a>
                     )}
                   </div>
-                  {statusBadge(c.status)}
+                  <div className="flex flex-col items-end gap-2">
+                    {statusBadge(c.status)}
+                    {c.status === "pendente" && (
+                      <Button
+                        size="sm"
+                        className="gap-2"
+                        onClick={() => pagarAgora(c.id)}
+                        disabled={pagando === c.id}
+                      >
+                        {pagando === c.id ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            {"Abrindo pagamento..."}
+                          </>
+                        ) : (
+                          <>
+                            <CreditCard className="w-4 h-4" />
+                            {"Pagar agora"}
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </div>
                 </div>
+                {erroPagamento && erroPagamento.consultaId === c.id && (
+                  <Alert variant="destructive" className="mt-4">
+                    <AlertDescription>{erroPagamento.mensagem}</AlertDescription>
+                  </Alert>
+                )}
                 <ConfirmacaoSessao consultaId={c.id} />
               </CardContent>
             </Card>

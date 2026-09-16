@@ -18,6 +18,8 @@
  */
 
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../config/seguranca.php';
+require_once __DIR__ . '/../config/mercadopago.php';
 
 session_start();
 
@@ -56,9 +58,10 @@ if (mb_strlen($motivo) > 500) {
 try {
     $pdo->beginTransaction();
 
-    $st = $pdo->prepare("SELECT status FROM consultas WHERE id = ? AND id_paciente = ? FOR UPDATE");
+    $st = $pdo->prepare("SELECT status, data_hora FROM consultas WHERE id = ? AND id_paciente = ? FOR UPDATE");
     $st->execute([$consulta_id, $uid]);
-    $status = $st->fetchColumn();
+    $cons = $st->fetch();
+    $status = $cons ? $cons['status'] : false;
     if ($status === false) {
         $pdo->rollBack();
         echo json_encode(['success' => false, 'message' => 'Consulta não encontrada.']);
@@ -105,10 +108,29 @@ try {
     }
 
     $pdo->commit();
+
+    // Etapa 2: cancelamento com antecedência (reembolso_horas_min) estorna na hora pelo Mercado Pago.
+    $horasMin   = mp_config_numero($pdo, 'reembolso_horas_min', 24.0);
+    $horasAte   = (strtotime((string) $cons['data_hora']) - time()) / 3600;
+    $automatico = $horasAte >= $horasMin;
+    if ($automatico && mp_configurado()) {
+        $res = mp_reembolsar($pdo, (int) $pag['id'], $rid, 'Reembolso automático: cancelamento com ' . (int) floor($horasAte) . 'h de antecedência');
+        if ($res['ok']) {
+            echo json_encode([
+                'success' => true,
+                'message' => 'Consulta cancelada e reembolso feito. O valor volta pelo mesmo meio de pagamento (Pix em minutos; cartão em até 2 faturas).',
+                'data' => ['id' => $rid, 'status' => 'pago', 'valor' => (float) $pag['valor_total'], 'automatico' => true],
+            ]);
+            exit;
+        }
+        error_log('solicitar_reembolso: estorno automático falhou (reembolso ' . $rid . '): ' . $res['message']);
+    }
     echo json_encode([
         'success' => true,
-        'message' => 'Pedido de reembolso enviado. Você será avisado quando for analisado.',
-        'data' => ['id' => $rid, 'status' => 'solicitado', 'valor' => (float) $pag['valor_total']],
+        'message' => $automatico
+            ? 'Consulta cancelada. O reembolso será concluído pela equipe em até 5 dias úteis.'
+            : 'Consulta cancelada com menos de ' . (int) $horasMin . ' horas de antecedência: o pedido de reembolso foi registrado e a equipe vai analisar (resposta em até 5 dias úteis).',
+        'data' => ['id' => $rid, 'status' => 'solicitado', 'valor' => (float) $pag['valor_total'], 'automatico' => false],
     ]);
 } catch (Exception $e) {
     if ($pdo->inTransaction()) $pdo->rollBack();

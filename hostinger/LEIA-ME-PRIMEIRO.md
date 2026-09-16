@@ -1,4 +1,4 @@
-# Pacote completo de deploy (Etapas 1, 4 e 3 + varredura geral)
+# Pacote completo de deploy (Etapas 1, 4, 3 e 2 + varredura geral)
 
 Este pacote junta tudo que ainda não está em produção. Todo arquivo aqui SUBSTITUI o de
 mesmo caminho em public_html (ou é novo). Pode subir a pasta `public_html/` inteira por
@@ -8,17 +8,21 @@ Ordem (resumo; detalhes nos dois LEIA-ME de cada etapa):
 
 1. Backup: compactar a pasta public_html atual no Gerenciador de Arquivos da Hostinger.
 2. phpMyAdmin, banco u218657465_PROVENCE, aba SQL: rodar `sql/migracoes-consolidado.sql`
-   (idempotente: contém as migrações 02 a 06; as que já rodaram não fazem nada).
+   (idempotente: contém as migrações 02 a 07; as que já rodaram não fazem nada).
 3. `.env` (public_html/.env): acrescentar `CHAT_KEY=` (openssl rand -base64 32) e
    `MIGRACAO_TOKEN=` (texto aleatório com 20+ caracteres). Ver LEIA-ME-DEPLOY-ETAPA3.md.
    Opcional: `CONTATO_DESTINO=` se as mensagens do formulário de contato devem ir para
-   outro e-mail que não o remetente padrão (`MAIL_FROM`).
+   outro e-mail que não o remetente padrão (`MAIL_FROM`). Modelo completo em `env-exemplo.txt`.
+   Pagamento (Etapa 2): `MP_ACCESS_TOKEN`, `MP_WEBHOOK_SECRET` e `API_PUBLIC_URL`, ver
+   LEIA-ME-DEPLOY-ETAPA2.md. Sem o token o pagamento online fica desligado, o resto funciona.
 4. Subir a pasta `public_html/` deste pacote por cima da atual.
 5. Avisar para fazer o push da branch main (Vercel publica o site).
 6. Rodar a migração das mensagens antigas do chat (Passo 6 do LEIA-ME-DEPLOY-ETAPA3.md)
    e depois apagar a linha MIGRACAO_TOKEN do .env.
-7. Conferência rápida (Passo 7 do LEIA-ME-DEPLOY-ETAPA3.md e Passo 5 do
-   LEIA-ME-DEPLOY-ETAPA1-ETAPA4.md).
+7. Conferência rápida: abrir `https://provence.host/admin/diagnostico.php` logado como
+   administrador (lista o que falta) e seguir o Passo 7 do LEIA-ME-DEPLOY-ETAPA3.md e o
+   Passo 5 do LEIA-ME-DEPLOY-ETAPA1-ETAPA4.md.
+8. Etapa 2: LEIA-ME-DEPLOY-ETAPA2.md (teste no sandbox, depois produção).
 
 Os arquivos `public_html/_email_test.php` e `public_html/criar-preferência.php` deste
 pacote são versões desativadas (respondem 410). Se preferir, apague os dois do servidor

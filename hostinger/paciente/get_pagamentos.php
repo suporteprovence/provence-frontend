@@ -12,6 +12,7 @@
  */
 
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../config/mercadopago.php';
 
 session_start();
 
@@ -75,11 +76,17 @@ try {
                 'data'   => $row['r_data'],
             ] : null,
             // Regras (as mesmas que o servidor aplica ao executar a ação):
-            'pode_pagar'           => $row['status_consulta'] === 'pendente' && !$pago,
+            'pode_pagar'           => $row['status_consulta'] === 'pendente' && !$pago && strtotime((string) $row['data_hora']) > time(),
             'pode_pedir_reembolso' => $pago && $row['status_consulta'] !== 'realizada' && !$reembolsoAberto,
         ];
     }
-    echo json_encode(['success' => true, 'data' => $out]);
+    echo json_encode([
+        'success' => true,
+        'data' => $out,
+        'pagamento_online' => mp_configurado(),
+        'ambiente' => mp_configurado() ? mp_ambiente() : null,
+        'reembolso_horas_min' => (int) mp_config_numero($pdo, 'reembolso_horas_min', 24.0),
+    ]);
 } catch (Exception $e) {
     error_log('get_pagamentos (paciente): ' . $e->getMessage());
     echo json_encode(['success' => false, 'message' => 'Erro interno do servidor']);

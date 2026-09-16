@@ -1,0 +1,20 @@
+# Provence: variáveis do public_html/.env (as que já existem continuam iguais).
+# Copie só as linhas que faltam. Não use aspas.
+
+# Banco e e-mail (já existem em produção)
+# DB_HOST=... DB_NAME=... DB_USER=... DB_PASS=...
+# MAIL_HOST=smtp.hostinger.com MAIL_PORT=465 MAIL_USER=... MAIL_PASS=... MAIL_FROM=... MAIL_FROM_NAME=...
+# FRONTEND_URL=https://provence-frontend.vercel.app
+
+# Etapa 3 (segurança e LGPD)
+CHAT_KEY=                # openssl rand -base64 32 (44 caracteres terminando em =)
+MIGRACAO_TOKEN=          # texto aleatório com 20+ caracteres; apagar depois de cifrar as mensagens antigas
+# CONTATO_DESTINO=       # opcional: e-mail que recebe o formulário de contato (padrão: MAIL_FROM)
+# CONFIAR_CF_IP=1        # só se o site passar a ficar atrás da Cloudflare
+
+# Etapa 2 (pagamento Mercado Pago)
+MP_ACCESS_TOKEN=         # da aplicação no painel de desenvolvedores (TEST-... para testar, APP_USR-... produção)
+MP_WEBHOOK_SECRET=       # "Assinatura secreta" da seção Webhooks da aplicação
+API_PUBLIC_URL=https://provence.host
+
+# Só para o ambiente LOCAL de testes (não usar em produção): MP_API_BASE (simulador) e CHAT_EXTRA_ORIGIN.

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { ArrowLeft, CalendarDays, Clock, Loader2 } from "lucide-react"
+import { ArrowLeft, CalendarDays, Clock, CreditCard, Loader2 } from "lucide-react"
 import type { Profissional } from "./agendar-consulta"
 import { API_BASE } from "@/lib/api-config"
 
@@ -28,6 +28,9 @@ export function AgendamentoForm({ profissional, onBack }: Props) {
   const [success, setSuccess] = useState("")
   const [selectedDate, setSelectedDate] = useState("")
   const [selectedTime, setSelectedTime] = useState("")
+  // Id da consulta recém-criada: enquanto existir, a tela oferece "Pagar agora".
+  const [consultaCriadaId, setConsultaCriadaId] = useState<number | null>(null)
+  const [pagando, setPagando] = useState(false)
 
   useEffect(() => {
     carregarHorarios()
@@ -88,6 +91,7 @@ export function AgendamentoForm({ profissional, onBack }: Props) {
     setSubmitting(true)
     setError("")
     setSuccess("")
+    setConsultaCriadaId(null)
 
     try {
       const token = localStorage.getItem("token") || ""
@@ -110,6 +114,8 @@ export function AgendamentoForm({ profissional, onBack }: Props) {
         setSuccess(data.message || "Consulta agendada com sucesso!")
         setSelectedDate("")
         setSelectedTime("")
+        const novoId = Number(data.data?.consulta_id)
+        setConsultaCriadaId(Number.isFinite(novoId) && novoId > 0 ? novoId : null)
       } else {
         setError(data.message || "Erro ao agendar consulta.")
       }
@@ -117,6 +123,44 @@ export function AgendamentoForm({ profissional, onBack }: Props) {
       setError("Erro de conexão ao agendar consulta.")
     } finally {
       setSubmitting(false)
+    }
+  }
+
+  // Cria a preferência no Mercado Pago para a consulta recém-agendada e vai para o checkout.
+  const pagarAgora = async () => {
+    if (!consultaCriadaId) return
+    setPagando(true)
+    setError("")
+    let redirecionou = false
+    try {
+      const token = localStorage.getItem("token") || ""
+      const res = await fetch(`${API_BASE}/pagamentos/criar_pagamento.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+        body: JSON.stringify({ consulta_id: consultaCriadaId }),
+      })
+      if (res.status === 503) {
+        setError("O pagamento online ainda não está ativo.")
+        return
+      }
+      const data = await res.json().catch(() => null)
+      const initPoint = data?.data?.init_point
+      if (res.ok && data?.success && typeof initPoint === "string" && initPoint) {
+        redirecionou = true
+        window.location.href = initPoint
+        return
+      }
+      setError(data?.message || "Não foi possível iniciar o pagamento. Tente novamente.")
+    } catch {
+      setError("Erro de conexão ao iniciar o pagamento.")
+    } finally {
+      // Mantém o spinner enquanto o navegador troca de página.
+      if (!redirecionou) setPagando(false)
     }
   }
 
@@ -160,7 +204,34 @@ export function AgendamentoForm({ profissional, onBack }: Props) {
 
       {success && (
         <Alert>
-          <AlertDescription className="text-emerald-700">{success}</AlertDescription>
+          <AlertDescription className="text-emerald-700">
+            <p className="font-medium">{success}</p>
+            {consultaCriadaId && (
+              <div className="mt-3 space-y-3">
+                <p className="text-muted-foreground">
+                  {"Para garantir o horário, faça o pagamento agora. Se preferir, você pode pagar depois em Consultas Marcadas ou na aba Pagamentos."}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Button onClick={pagarAgora} disabled={pagando} className="gap-2">
+                    {pagando ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        {"Abrindo pagamento..."}
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="w-4 h-4" />
+                        {"Pagar agora"}
+                      </>
+                    )}
+                  </Button>
+                  <Button variant="outline" onClick={() => setConsultaCriadaId(null)} disabled={pagando}>
+                    {"Pagar depois"}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </AlertDescription>
         </Alert>
       )}
 

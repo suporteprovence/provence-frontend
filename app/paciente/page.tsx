@@ -48,6 +48,14 @@ const NAV_ITEMS: { key: ActiveItem; label: string; icon: typeof LayoutDashboard 
 export default function PatientDashboard() {
   const [activeItem, setActiveItem] = useState<ActiveItem>("dashboard")
 
+  // Ao voltar do checkout (?pagamento=retorno) abre direto a aba Pagamentos.
+  // O PagamentosPage cuida do resto da query (consulta_id, payment_id, status).
+  useEffect(() => {
+    if (window.location.search.includes("pagamento=retorno")) {
+      setActiveItem("pagamentos")
+    }
+  }, [])
+
   const [showAgendamentoForm, setShowAgendamentoForm] = useState(false)
   const [selectedProfissional, setSelectedProfissional] = useState<Profissional | null>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)

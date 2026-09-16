@@ -12,6 +12,8 @@
  */
 
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../config/seguranca.php';
+require_once __DIR__ . '/../config/mercadopago.php';
 
 session_start();
 
@@ -52,7 +54,29 @@ try {
     $pdo->prepare("UPDATE consultas SET status = 'cancelada_por_nao_ocorrencia' WHERE id = ?")->execute([$consulta_id]);
 
     $pdo->commit();
-    echo json_encode(['success' => true, 'message' => 'Consulta cancelada com sucesso!']);
+
+    // Etapa 2: se o paciente já tinha pago, o cancelamento pelo profissional devolve o valor.
+    $reembolsoMsg = '';
+    $stP = $pdo->prepare("SELECT id, valor_total, status, mp_payment_id FROM pagamentos WHERE consulta_id = ? AND status IN ('aprovado','liberado') ORDER BY id DESC LIMIT 1");
+    $stP->execute([$consulta_id]);
+    $pagCancel = $stP->fetch();
+    if ($pagCancel) {
+        $stR = $pdo->prepare("SELECT id FROM reembolsos WHERE consulta_id = ? AND status IN ('solicitado','aprovado','pago') ORDER BY id DESC LIMIT 1");
+        $stR->execute([$consulta_id]);
+        $ridCancel = (int) ($stR->fetchColumn() ?: 0);
+        if ($ridCancel === 0) {
+            $stI = $pdo->prepare("SELECT id_paciente FROM consultas WHERE id = ?");
+            $stI->execute([$consulta_id]);
+            $pdo->prepare("INSERT INTO reembolsos (consulta_id, id_paciente, motivo, valor_reembolso, status) VALUES (?, ?, 'Consulta cancelada pelo profissional', ?, 'solicitado')")
+                ->execute([$consulta_id, (int) $stI->fetchColumn(), (float) $pagCancel['valor_total']]);
+            $ridCancel = (int) $pdo->lastInsertId();
+        }
+        $resC = (mp_configurado() && !empty($pagCancel['mp_payment_id']))
+            ? mp_reembolsar($pdo, (int) $pagCancel['id'], $ridCancel, 'Reembolso automático: consulta cancelada pelo profissional')
+            : ['ok' => false];
+        $reembolsoMsg = $resC['ok'] ? ' O paciente será reembolsado automaticamente.' : ' O reembolso ao paciente ficou pendente para a administração.';
+    }
+    echo json_encode(['success' => true, 'message' => 'Consulta cancelada com sucesso!' . $reembolsoMsg]);
 } catch (Exception $e) {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();

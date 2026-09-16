@@ -107,6 +107,9 @@ try {
     $pdo = new PDO("mysql:host=" . $host . ";dbname=" . $dbname . ";charset=utf8mb4", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    // Etapa 2: NOW() do banco no mesmo fuso do PHP (America/Sao_Paulo, sem horário de verão).
+    // Sem isso, datas gravadas pelo PHP e pelo MariaDB podiam diferir em 3 horas.
+    $pdo->exec("SET time_zone = '-03:00'");
 } catch (PDOException $e) {
     error_log('DB connection error: ' . $e->getMessage());
     http_response_code(500);
