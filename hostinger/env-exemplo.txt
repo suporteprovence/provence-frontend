@@ -13,7 +13,10 @@ MIGRACAO_TOKEN=          # texto aleatório com 20+ caracteres; apagar depois de
 # CONFIAR_CF_IP=1        # só se o site passar a ficar atrás da Cloudflare
 
 # Etapa 2 (pagamento Mercado Pago)
-MP_ACCESS_TOKEN=         # da aplicação no painel de desenvolvedores (TEST-... para testar, APP_USR-... produção)
+MP_ACCESS_TOKEN=         # Access Token da aplicação no painel de desenvolvedores
+MP_AMBIENTE=teste        # 'teste' enquanto testa, 'producao' quando for valer de verdade.
+                         # ATENÇÃO: no painel novo os dois tokens começam com APP_USR-,
+                         # então é esta linha que diz ao site em que ambiente ele está.
 MP_WEBHOOK_SECRET=       # "Assinatura secreta" da seção Webhooks da aplicação
 API_PUBLIC_URL=https://provence.host
 

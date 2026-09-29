@@ -147,6 +147,8 @@ ALTER TABLE `reembolsos`
 
 -- Regras de negócio ajustáveis sem mexer em código (valores iniciais; a Ana confirma).
 INSERT INTO `configuracoes_sistema` (`chave`, `valor`, `descricao`, `tipo`) VALUES
-  ('taxa_plataforma_percent', '20', 'Percentual de cada consulta que fica com a plataforma (o resto vai para o profissional)', 'number'),
-  ('reembolso_horas_min', '24', 'Antecedência mínima, em horas, para o paciente cancelar com reembolso automático', 'number')
+  ('taxa_plataforma_percent', '30', 'Percentual de cada consulta que fica com a plataforma (contrato, cláusula 3.3)', 'number'),
+  ('reembolso_horas_min', '24', 'Antecedência mínima, em horas, para o cancelamento ter reembolso automático', 'number'),
+  ('reembolso_retencao_percent', '30', 'Quanto a plataforma retém no cancelamento tardio (contrato, cláusula 4.1)', 'number'),
+  ('reembolso_tardio_automatico', '0', '1 = cancelamento tardio já devolve o valor menos a retenção; 0 = vai para análise da administração', 'number')
 ON DUPLICATE KEY UPDATE `chave` = `chave`;

@@ -3,7 +3,10 @@
  * Provence — integração com o Mercado Pago (Etapa 2). REST direto, sem SDK.
  *
  * Variáveis do .env:
- *   MP_ACCESS_TOKEN    Access Token da aplicação (TEST-... para testes, APP_USR-... em produção)
+ *   MP_ACCESS_TOKEN    Access Token da aplicação
+ *   MP_AMBIENTE        'teste' ou 'producao'. No painel novo do Mercado Pago as credenciais
+ *                      de teste TAMBÉM começam com APP_USR-, então o prefixo não serve
+ *                      para adivinhar. Sem esta variável, só um token TEST-... conta como teste.
  *   MP_WEBHOOK_SECRET  "Assinatura secreta" da seção Webhooks da aplicação (valida as notificações)
  *   API_PUBLIC_URL     endereço público da API (padrão https://provence.host), usado na notification_url
  *   FRONTEND_URL       endereço do site (já existe), usado nas back_urls
@@ -43,7 +46,25 @@ function mp_configurado(): bool
 
 function mp_ambiente(): string
 {
+    $exp = strtolower(trim(mp_env('MP_AMBIENTE')));
+    if ($exp === 'teste' || $exp === 'test' || $exp === 'sandbox') {
+        return 'teste';
+    }
+    if ($exp === 'producao' || $exp === 'produção' || $exp === 'production') {
+        return 'producao';
+    }
     return strpos(mp_token(), 'TEST-') === 0 ? 'teste' : 'producao';
+}
+
+/** A conta dona do token é uma conta de teste do Mercado Pago? (recebe o GET /users/me) */
+function mp_conta_e_teste(array $conta): bool
+{
+    $email = (string) ($conta['email'] ?? '');
+    if ($email !== '' && substr($email, -13) === '@testuser.com') {
+        return true;
+    }
+    $tags = $conta['tags'] ?? [];
+    return is_array($tags) && in_array('test_user', $tags, true);
 }
 
 function mp_api_base(): string
@@ -343,10 +364,13 @@ function mp_sincronizar_por_payment_id(PDO $pdo, string $mpId): array
 }
 
 /**
- * Estorna (total) um pagamento aprovado no MP e fecha o reembolso no banco.
- * $reembolsoId: linha de reembolsos a marcar como 'pago'. Retorna ['ok'=>bool,'message'=>string].
+ * Estorna um pagamento aprovado no MP e fecha o reembolso no banco.
+ * $reembolsoId: linha de reembolsos a marcar como 'pago'.
+ * $valorParcial: quando informado e menor que o total, devolve só essa parte (usado
+ * quando o cancelamento é tardio e o contrato prevê retenção de uma porcentagem).
+ * Retorna ['ok'=>bool,'message'=>string,'valor'=>float].
  */
-function mp_reembolsar(PDO $pdo, int $pagamentoId, int $reembolsoId, string $justificativa): array
+function mp_reembolsar(PDO $pdo, int $pagamentoId, int $reembolsoId, string $justificativa, ?float $valorParcial = null): array
 {
     $st = $pdo->prepare('SELECT id, consulta_id, mp_payment_id, status, valor_total FROM pagamentos WHERE id = ?');
     $st->execute([$pagamentoId]);
@@ -364,7 +388,15 @@ function mp_reembolsar(PDO $pdo, int $pagamentoId, int $reembolsoId, string $jus
     if (!mp_configurado()) {
         return ['ok' => false, 'message' => 'Mercado Pago não configurado no servidor.'];
     }
-    $r = mp_request('POST', '/v1/payments/' . $pag['mp_payment_id'] . '/refunds', null, 'reembolso-' . $reembolsoId);
+    $total   = (float) $pag['valor_total'];
+    $devolve = ($valorParcial !== null && $valorParcial > 0 && $valorParcial < $total - 0.01)
+        ? round($valorParcial, 2)
+        : $total;
+    $parcial = $devolve < $total - 0.01;
+
+    $r = mp_request('POST', '/v1/payments/' . $pag['mp_payment_id'] . '/refunds',
+        $parcial ? ['amount' => $devolve] : null,
+        'reembolso-' . $reembolsoId . ($parcial ? '-p' : ''));
     $corpo = $r['body'] ?? [];
     $okMp = in_array($r['status'], [200, 201], true) && in_array((string) ($corpo['status'] ?? ''), ['approved', 'in_process', 'pending'], true);
     if (!$okMp) {
@@ -373,15 +405,19 @@ function mp_reembolsar(PDO $pdo, int $pagamentoId, int $reembolsoId, string $jus
         return ['ok' => false, 'message' => 'O Mercado Pago não aceitou o estorno agora (' . mb_substr($msg, 0, 120) . ').'];
     }
     $refundId = isset($corpo['id']) ? mb_substr((string) $corpo['id'], 0, 40) : null;
-    $pdo->prepare("UPDATE pagamentos SET status = 'reembolsado', mp_status_detail = 'refunded' WHERE id = ?")->execute([$pagamentoId]);
-    $pdo->prepare("UPDATE reembolsos SET status = 'pago', mp_refund_id = ?, justificativa = ?, data_resposta = NOW() WHERE id = ?")
-        ->execute([$refundId, mb_substr($justificativa, 0, 1000), $reembolsoId]);
+    $pdo->prepare("UPDATE pagamentos SET status = 'reembolsado', mp_status_detail = ? WHERE id = ?")
+        ->execute([$parcial ? 'refunded_parcial' : 'refunded', $pagamentoId]);
+    $pdo->prepare("UPDATE reembolsos SET status = 'pago', valor_reembolso = ?, mp_refund_id = ?, justificativa = ?, data_resposta = NOW() WHERE id = ?")
+        ->execute([$devolve, $refundId, mb_substr($justificativa, 0, 1000), $reembolsoId]);
     $pdo->prepare("UPDATE consultas SET status = 'cancelada_por_nao_ocorrencia' WHERE id = ? AND status NOT IN ('realizada','cancelada_por_nao_ocorrencia')")
         ->execute([(int) $pag['consulta_id']]);
     if (function_exists('provence_log')) {
-        provence_log($pdo, 'mp_reembolso', 'pagamento ' . $pagamentoId . ' reembolso ' . $reembolsoId . ' mp_refund ' . $refundId);
+        provence_log($pdo, 'mp_reembolso', 'pagamento ' . $pagamentoId . ' reembolso ' . $reembolsoId . ' valor ' . $devolve . ($parcial ? ' (parcial de ' . $total . ')' : '') . ' mp_refund ' . $refundId);
     }
-    return ['ok' => true, 'message' => 'Estorno feito. O valor volta pelo mesmo meio de pagamento (Pix em minutos; cartão em até 2 faturas).'];
+    $quanto = $parcial
+        ? 'Estorno de R$ ' . number_format($devolve, 2, ',', '.') . ' feito (retenção de R$ ' . number_format($total - $devolve, 2, ',', '.') . ' conforme o contrato).'
+        : 'Estorno feito.';
+    return ['ok' => true, 'valor' => $devolve, 'message' => $quanto . ' O valor volta pelo mesmo meio de pagamento (Pix em minutos; cartão em até 2 faturas).'];
 }
 
 /**

@@ -33,10 +33,17 @@ URL separada (pode ser a mesma).
 ## Passo 3: .env (primeiro em TESTE)
 
 ```
-MP_ACCESS_TOKEN=TEST-xxxxxxxx      (token de teste)
+MP_ACCESS_TOKEN=xxxxxxxx           (Access Token de TESTE)
+MP_AMBIENTE=teste
 MP_WEBHOOK_SECRET=xxxxxxxx
 API_PUBLIC_URL=https://provence.host
 ```
+
+Atenção ao `MP_AMBIENTE`: no painel atual do Mercado Pago o token de teste e o de
+produção começam os dois com `APP_USR-`, então o site não tem como adivinhar. É essa
+linha que faz aparecer (ou não) o aviso "Ambiente de teste" para o paciente. O
+`admin/diagnostico.php` compara o que está no .env com a conta real do token e avisa
+se estiverem trocados.
 
 Conferir em `https://provence.host/admin/diagnostico.php` (logado como administrador):
 deve mostrar `mercadopago.token_valido: true`, o e-mail da conta e `ambiente: teste`.
@@ -44,9 +51,13 @@ A lista `pendencias` precisa estar vazia.
 
 ## Passo 4: teste no sandbox
 
-1. No painel do MP, em "Contas de teste", criar um comprador de teste (ou usar os
-   cartões de teste da documentação: número 5031 4332 1540 6351, CVV 123, validade
-   11/30, nome APRO para aprovar / OTHE para recusar).
+1. No painel do MP, em "Contas de teste", criar DUAS contas de teste: uma vendedora
+   (é dela que saem as credenciais de teste) e uma compradora. O Mercado Pago recusa o
+   pagamento com a mensagem "uma das partes é de teste" se o comprador for uma pessoa
+   comum pagando numa loja de teste, por isso a conta compradora é obrigatória.
+   Cartão de teste que funciona hoje: Visa 4235 6477 2802 5682, CVV 123, validade
+   11/30, titular APRO (aprova) ou OTHE (recusa), CPF 12345678909. O Mastercard
+   5031 4332 1540 6351 que aparece em tutoriais antigos é recusado pelo checkout.
 2. Como paciente no site: agendar uma consulta, "Pagar agora", concluir no Mercado Pago,
    voltar ao site: a consulta deve aparecer como "Pago, aguardando a sessão".
 3. Conferir no phpMyAdmin: `pagamentos.status = 'aprovado'` e `mp_payment_id`
@@ -63,6 +74,16 @@ A lista `pendencias` precisa estar vazia.
 3. Teste real combinado com a Ana: consulta de valor baixo (o profissional de teste
    pode colocar R$ 5,00 no perfil), pagar com Pix de verdade, conferir "Pago", cancelar e
    conferir o estorno na conta do Mercado Pago. Depois restaurar o valor da consulta.
+
+## Coisas que só apareceram no teste contra a API real
+
+- O endereço de retorno (back_urls) precisa ser público. Com o site rodando em rede
+  local o Mercado Pago recusa a preferência com `invalid_auto_return`. O código agora
+  refaz a preferência sem o retorno automático nesse caso, em vez de falhar.
+- O antigo `sandbox.mercadopago.com.br` está fora do ar. O link de pagamento é sempre
+  o `init_point` normal; com credencial de teste ele já roda em modo de teste.
+- O Pix pode não aparecer entre as formas de pagamento se a conta não tiver chave Pix
+  cadastrada no Mercado Pago. Vale conferir na conta da Provence antes de anunciar Pix.
 
 ## Como funciona (para explicar à Ana)
 

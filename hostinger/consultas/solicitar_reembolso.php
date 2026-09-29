@@ -110,16 +110,33 @@ try {
     $pdo->commit();
 
     // Etapa 2: cancelamento com antecedência (reembolso_horas_min) estorna na hora pelo Mercado Pago.
-    $horasMin   = mp_config_numero($pdo, 'reembolso_horas_min', 24.0);
-    $horasAte   = (strtotime((string) $cons['data_hora']) - time()) / 3600;
-    $automatico = $horasAte >= $horasMin;
+    $horasMin = mp_config_numero($pdo, 'reembolso_horas_min', 24.0);
+    $horasAte = (strtotime((string) $cons['data_hora']) - time()) / 3600;
+    $emTempo  = $horasAte >= $horasMin;
+
+    // Cancelamento tardio: o contrato pode prever retenção de uma parte do valor
+    // (reembolso_retencao_percent) com devolução automática do resto
+    // (reembolso_tardio_automatico = 1). Com os padrões, o pedido tardio continua
+    // indo para a análise da administração.
+    $retencao   = max(0.0, min(100.0, mp_config_numero($pdo, 'reembolso_retencao_percent', 0.0)));
+    $tardioAuto = mp_config_numero($pdo, 'reembolso_tardio_automatico', 0.0) >= 1;
+    $automatico = $emTempo || $tardioAuto;
+    $valorDevolver = null;
+    if (!$emTempo && $tardioAuto && $retencao > 0) {
+        $valorDevolver = round((float) $pag['valor_total'] * (100 - $retencao) / 100, 2);
+    }
+
     if ($automatico && mp_configurado()) {
-        $res = mp_reembolsar($pdo, (int) $pag['id'], $rid, 'Reembolso automático: cancelamento com ' . (int) floor($horasAte) . 'h de antecedência');
+        $res = mp_reembolsar($pdo, (int) $pag['id'], $rid,
+            $emTempo
+                ? 'Reembolso automático: cancelamento com ' . (int) floor($horasAte) . 'h de antecedência'
+                : 'Reembolso automático de cancelamento tardio (retenção de ' . (int) $retencao . '%)',
+            $valorDevolver);
         if ($res['ok']) {
             echo json_encode([
                 'success' => true,
-                'message' => 'Consulta cancelada e reembolso feito. O valor volta pelo mesmo meio de pagamento (Pix em minutos; cartão em até 2 faturas).',
-                'data' => ['id' => $rid, 'status' => 'pago', 'valor' => (float) $pag['valor_total'], 'automatico' => true],
+                'message' => 'Consulta cancelada. ' . $res['message'],
+                'data' => ['id' => $rid, 'status' => 'pago', 'valor' => (float) ($res['valor'] ?? $pag['valor_total']), 'automatico' => true],
             ]);
             exit;
         }

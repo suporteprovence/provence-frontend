@@ -139,14 +139,29 @@ try {
         'metadata'             => ['consulta_id' => $consultaId, 'pagamento_id' => $pagId],
     ];
 
-    $r = mp_request('POST', '/checkout/preferences', $preferencia, 'pref-' . $pagId . '-' . $valor . '-' . date('YmdH'));
+    $chave = 'pref-' . $pagId . '-' . $valor . '-' . date('YmdH');
+    $r = mp_request('POST', '/checkout/preferences', $preferencia, $chave);
     $corpo = $r['body'] ?? [];
+
+    // O Mercado Pago só aceita auto_return (voltar sozinho ao site depois de pagar)
+    // quando a back_url é pública. Em ambiente local, ou se a FRONTEND_URL estiver
+    // errada, ele devolve 400 invalid_auto_return. Nesse caso refaz a preferência sem
+    // o retorno automático: a pessoa volta pelo botão do próprio Mercado Pago.
+    if ($r['status'] === 400 && (string) ($corpo['error'] ?? '') === 'invalid_auto_return') {
+        error_log('criar_pagamento: auto_return recusado para ' . $retorno . '; recriando sem retorno automático');
+        unset($preferencia['auto_return']);
+        $r = mp_request('POST', '/checkout/preferences', $preferencia, $chave . '-sem-auto');
+        $corpo = $r['body'] ?? [];
+    }
     if (!in_array($r['status'], [200, 201], true) || empty($corpo['id']) || empty($corpo['init_point'])) {
         error_log('criar_pagamento: preferência falhou HTTP ' . $r['status'] . ' ' . mb_substr($r['raw'], 0, 300));
         provence_log($pdo, 'mp_preferencia_falhou', 'consulta ' . $consultaId . ' HTTP ' . $r['status'], $uid);
         provence_responder(502, ['success' => false, 'message' => 'O Mercado Pago não respondeu agora. Tente novamente em instantes.']);
     }
-    $initPoint = (mp_ambiente() === 'teste' && !empty($corpo['sandbox_init_point'])) ? (string) $corpo['sandbox_init_point'] : (string) $corpo['init_point'];
+    // Sempre o init_point normal. O sandbox_init_point (sandbox.mercadopago.com.br) é o
+    // ambiente antigo e hoje devolve erro; com credencial de teste o checkout comum já
+    // roda em modo de teste.
+    $initPoint = (string) $corpo['init_point'];
 
     $pdo->prepare('UPDATE pagamentos SET external_reference = ?, mp_preference_id = ?, mp_init_point = ? WHERE id = ?')
         ->execute([$extRef, mb_substr((string) $corpo['id'], 0, 80), mb_substr($initPoint, 0, 500), $pagId]);

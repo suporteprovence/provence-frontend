@@ -74,6 +74,7 @@ if (!mp_configurado()) {
         'token_valido'     => $r['status'] === 200,
         'http'             => $r['status'],
         'conta_email'      => $conta['email'] ?? null,
+        'conta_de_teste'   => $r['status'] === 200 ? mp_conta_e_teste($conta) : null,
         'conta_id'         => $conta['id'] ?? null,
         'conta_nome'       => trim(($conta['first_name'] ?? '') . ' ' . ($conta['last_name'] ?? '')) ?: null,
         'site_id'          => $conta['site_id'] ?? null,
@@ -105,6 +106,10 @@ if (empty($out['mercadopago']['configurado'])) {
     $pendencias[] = '.env: MP_ACCESS_TOKEN ausente (pagamento online desligado)';
 } elseif (empty($out['mercadopago']['token_valido'])) {
     $pendencias[] = 'mercadopago: token inválido';
+} elseif (($out['mercadopago']['conta_de_teste'] ?? null) === true && mp_ambiente() === 'producao') {
+    $pendencias[] = 'mercadopago: o token é de uma CONTA DE TESTE, mas o site está anunciando ambiente de produção. Coloque MP_AMBIENTE=teste no .env.';
+} elseif (($out['mercadopago']['conta_de_teste'] ?? null) === false && mp_ambiente() === 'teste') {
+    $pendencias[] = 'mercadopago: atenção, o token é da conta REAL (cobra de verdade), mas o site está marcado como ambiente de teste. Ajuste MP_AMBIENTE=producao no .env.';
 } elseif ($out['env']['MP_WEBHOOK_SECRET'] !== 'definida') {
     $pendencias[] = '.env: MP_WEBHOOK_SECRET ausente (webhook aceito sem validar assinatura)';
 }
