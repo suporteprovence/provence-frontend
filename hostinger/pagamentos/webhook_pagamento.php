@@ -33,16 +33,23 @@ if ($tipo !== 'payment' || $dataId === '') {
     provence_responder(200, ['ok' => true, 'ignorado' => true]);
 }
 
+// Assinatura: notificação ASSINADA com assinatura errada é tentativa de fraude e é
+// recusada. Notificação SEM assinatura é aceita, porque o Mercado Pago nem sempre
+// assina o que envia para a notification_url da preferência, e recusar deixaria
+// pagamentos presos em "pendente". Aceitar é seguro: nada aqui confia no que chegou,
+// o pagamento é sempre buscado na API do Mercado Pago com o nosso token.
 $segredo = mp_env('MP_WEBHOOK_SECRET');
-if ($segredo !== '') {
-    $xSig = (string) ($_SERVER['HTTP_X_SIGNATURE'] ?? '');
-    $xReq = (string) ($_SERVER['HTTP_X_REQUEST_ID'] ?? '');
-    if (!mp_assinatura_valida($xSig, $xReq, $dataId)) {
+$xSig = (string) ($_SERVER['HTTP_X_SIGNATURE'] ?? '');
+$xReq = (string) ($_SERVER['HTTP_X_REQUEST_ID'] ?? '');
+if ($xSig !== '') {
+    if ($segredo === '') {
+        error_log('webhook_pagamento: notificação assinada mas MP_WEBHOOK_SECRET não está no .env; não dá para conferir.');
+    } elseif (!mp_assinatura_valida($xSig, $xReq, $dataId)) {
         provence_log($pdo, 'mp_webhook_assinatura_invalida', 'data.id=' . mb_substr($dataId, 0, 40));
         provence_responder(401, ['ok' => false, 'message' => 'Assinatura inválida.']);
     }
 } else {
-    error_log('webhook_pagamento: MP_WEBHOOK_SECRET não configurado; aceitando notificação sem validar assinatura (o pagamento é sempre conferido no MP).');
+    provence_log($pdo, 'mp_webhook_sem_assinatura', 'data.id=' . mb_substr($dataId, 0, 40));
 }
 
 if (!mp_configurado()) {

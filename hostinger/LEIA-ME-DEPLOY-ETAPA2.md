@@ -19,9 +19,26 @@ Rodar `sql/07-pagamento-mercadopago.sql` (ou o `migracoes-consolidado.sql`, que 
 inclui). Depois ajustar as regras combinadas com a Ana, no phpMyAdmin:
 
 ```sql
-UPDATE configuracoes_sistema SET valor = '20' WHERE chave = 'taxa_plataforma_percent';
+-- taxa da plataforma (contrato, cláusula 3.3)
+UPDATE configuracoes_sistema SET valor = '30' WHERE chave = 'taxa_plataforma_percent';
+-- prazo para cancelar com devolução integral
 UPDATE configuracoes_sistema SET valor = '24' WHERE chave = 'reembolso_horas_min';
 ```
+
+Regra de cancelamento (confirmar com a Ana antes de ligar). O contrato, na cláusula 4,
+está ambíguo, mas os Termos de Uso do site já dizem ao paciente: "Consultas podem ser
+canceladas até 24 horas antes do horário agendado para reembolso total. Cancelamentos
+com menos de 24 horas podem estar sujeitos a taxas." Somando com a cláusula 4.1 (retenção
+de 30%), a regra fica: 24 horas ou mais devolve tudo, menos de 24 horas devolve 70%.
+Para o sistema fazer isso sozinho:
+
+```sql
+UPDATE configuracoes_sistema SET valor = '30' WHERE chave = 'reembolso_retencao_percent';
+UPDATE configuracoes_sistema SET valor = '1'  WHERE chave = 'reembolso_tardio_automatico';
+```
+
+Enquanto `reembolso_tardio_automatico` ficar em 0, o cancelamento de última hora vai para
+a administração aprovar ou recusar no painel, e o estorno sai integral quando aprovado.
 
 ## Passo 2: webhook no painel do Mercado Pago
 
@@ -29,6 +46,12 @@ Na aplicação, seção "Webhooks" (ou "Notificações"): modo Produção, URL
 `https://provence.host/pagamentos/webhook_pagamento.php`, evento "Pagamentos".
 Salvar e copiar a "Assinatura secreta". Repetir para o modo Teste, se o painel pedir
 URL separada (pode ser a mesma).
+
+Se este passo não for possível agora, o pagamento continua funcionando: o aviso do
+Mercado Pago é aceito mesmo sem assinatura (o sistema nunca confia no aviso, ele sempre
+consulta o pagamento na API do Mercado Pago) e, no pior caso, o status é atualizado
+quando o paciente volta do checkout ou clica em "Atualizar status". Aviso com assinatura
+errada continua sendo recusado.
 
 ## Passo 3: .env (primeiro em TESTE)
 
