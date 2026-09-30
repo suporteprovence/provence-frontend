@@ -13,6 +13,7 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../config/seguranca.php';
 require_once __DIR__ . '/../config/mercadopago.php';
+require_once __DIR__ . '/../config/notificacoes.php';
 
 session_start();
 if (empty($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
@@ -74,7 +75,9 @@ try {
     if ($acao === 'recusar') {
         $pdo->prepare("UPDATE reembolsos SET status = 'recusado', justificativa = ?, data_resposta = NOW() WHERE id = ?")->execute([mb_substr($just, 0, 1000), $rid]);
         provence_log($pdo, 'reembolso_recusado', 'reembolso ' . $rid . ' por admin ' . $adminId);
-        provence_responder(200, ['success' => true, 'message' => 'Pedido recusado.']);
+        provence_responder_e_notificar(200, ['success' => true, 'message' => 'Pedido recusado. O paciente foi avisado por e-mail.'], function () use ($pdo, $r, $just) {
+            notificar_reembolso($pdo, (int) $r['consulta_id'], 'recusado', (float) $r['valor_reembolso'], $just);
+        });
     }
 
     if (empty($r['pagamento_id'])) {
@@ -85,7 +88,10 @@ try {
         provence_responder(200, ['success' => false, 'message' => $res['message']]);
     }
     provence_log($pdo, 'reembolso_aprovado', 'reembolso ' . $rid . ' por admin ' . $adminId);
-    provence_responder(200, ['success' => true, 'message' => $res['message']]);
+    $valorEstorno = (float) ($res['valor'] ?? $r['valor_reembolso']);
+    provence_responder_e_notificar(200, ['success' => true, 'message' => $res['message'] . ' O paciente foi avisado por e-mail.'], function () use ($pdo, $r, $valorEstorno) {
+        notificar_reembolso($pdo, (int) $r['consulta_id'], 'pago', $valorEstorno);
+    });
 } catch (PDOException $e) {
     error_log('admin/reembolsos: ' . $e->getMessage());
     provence_responder(500, ['success' => false, 'message' => 'Erro interno do servidor']);

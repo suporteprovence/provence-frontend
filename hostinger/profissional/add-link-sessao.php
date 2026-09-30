@@ -11,6 +11,8 @@
  */
 
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../config/seguranca.php';
+require_once __DIR__ . '/../config/notificacoes.php';
 
 session_start();
 
@@ -77,7 +79,9 @@ try {
     $up->execute([$link, $link, $consulta_id]);
 
     $pdo->commit();
-    echo json_encode(['success' => true, 'message' => 'Link da sessão salvo.']);
+    provence_responder_e_notificar(200, ['success' => true, 'message' => 'Link da sessão salvo. O paciente foi avisado por e-mail.'], function () use ($pdo, $consulta_id, $link) {
+        notificar_link_sessao($pdo, (int) $consulta_id, $link);
+    });
 } catch (Exception $e) {
     if ($pdo->inTransaction()) $pdo->rollBack();
     error_log('add-link-sessao: ' . $e->getMessage());

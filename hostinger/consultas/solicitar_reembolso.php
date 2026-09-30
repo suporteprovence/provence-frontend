@@ -20,6 +20,7 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../config/seguranca.php';
 require_once __DIR__ . '/../config/mercadopago.php';
+require_once __DIR__ . '/../config/notificacoes.php';
 
 session_start();
 
@@ -133,22 +134,28 @@ try {
                 : 'Reembolso automático de cancelamento tardio (retenção de ' . (int) $retencao . '%)',
             $valorDevolver);
         if ($res['ok']) {
-            echo json_encode([
+            $valorPago = (float) ($res['valor'] ?? $pag['valor_total']);
+            provence_responder_e_notificar(200, [
                 'success' => true,
                 'message' => 'Consulta cancelada. ' . $res['message'],
-                'data' => ['id' => $rid, 'status' => 'pago', 'valor' => (float) ($res['valor'] ?? $pag['valor_total']), 'automatico' => true],
-            ]);
-            exit;
+                'data' => ['id' => $rid, 'status' => 'pago', 'valor' => $valorPago, 'automatico' => true],
+            ], function () use ($pdo, $consulta_id, $valorPago) {
+                notificar_consulta_cancelada($pdo, (int) $consulta_id, 'paciente');
+                notificar_reembolso($pdo, (int) $consulta_id, 'pago', $valorPago);
+            });
         }
         error_log('solicitar_reembolso: estorno automático falhou (reembolso ' . $rid . '): ' . $res['message']);
     }
-    echo json_encode([
+    provence_responder_e_notificar(200, [
         'success' => true,
         'message' => $automatico
             ? 'Consulta cancelada. O reembolso será concluído pela equipe em até 5 dias úteis.'
             : 'Consulta cancelada com menos de ' . (int) $horasMin . ' horas de antecedência: o pedido de reembolso foi registrado e a equipe vai analisar (resposta em até 5 dias úteis).',
         'data' => ['id' => $rid, 'status' => 'solicitado', 'valor' => (float) $pag['valor_total'], 'automatico' => false],
-    ]);
+    ], function () use ($pdo, $consulta_id, $pag) {
+        notificar_consulta_cancelada($pdo, (int) $consulta_id, 'paciente');
+        notificar_reembolso($pdo, (int) $consulta_id, 'solicitado', (float) $pag['valor_total']);
+    });
 } catch (Exception $e) {
     if ($pdo->inTransaction()) $pdo->rollBack();
     error_log('solicitar_reembolso: ' . $e->getMessage());

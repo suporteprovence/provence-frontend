@@ -14,6 +14,7 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../config/seguranca.php';
 require_once __DIR__ . '/../config/mercadopago.php';
+require_once __DIR__ . '/../config/notificacoes.php';
 
 session_start();
 
@@ -35,13 +36,15 @@ if ($consultaId <= 0) {
     provence_responder(200, ['success' => false, 'message' => 'Informe a consulta.']);
 }
 
-$responder = function () use ($pdo, $consultaId) {
+// Guarda o que mudou durante esta sincronização, para avisar depois de responder.
+$mudancas = [];
+$responder = function () use ($pdo, $consultaId, &$mudancas) {
     $st = $pdo->prepare('SELECT c.status AS status_consulta, p.status AS status_pagamento, p.metodo_pagamento, p.mp_status_detail, p.valor_total
                            FROM consultas c LEFT JOIN pagamentos p ON p.id = (SELECT MAX(id) FROM pagamentos WHERE consulta_id = c.id)
                           WHERE c.id = ?');
     $st->execute([$consultaId]);
     $row = $st->fetch() ?: [];
-    provence_responder(200, ['success' => true, 'data' => [
+    provence_responder_e_notificar(200, ['success' => true, 'data' => [
         'consulta_id'      => $consultaId,
         'status_consulta'  => $row['status_consulta'] ?? null,
         'status_pagamento' => $row['status_pagamento'] ?? null,
@@ -49,7 +52,11 @@ $responder = function () use ($pdo, $consultaId) {
         'detalhe'          => $row['mp_status_detail'] ?? null,
         'valor'            => isset($row['valor_total']) ? (float) $row['valor_total'] : null,
         'ambiente'         => mp_ambiente(),
-    ]]);
+    ]], function () use ($pdo, $consultaId, $mudancas) {
+        if (($mudancas['status'] ?? '') === 'aprovado') {
+            notificar_pagamento_aprovado($pdo, $consultaId);
+        }
+    });
 };
 
 try {
@@ -74,13 +81,15 @@ try {
         if ($r['status'] === 200 && is_array($r['body'])) {
             // O pagamento informado na URL tem que ser desta consulta
             if ((string) ($r['body']['external_reference'] ?? '') === (string) $pag['external_reference']) {
-                mp_aplicar_pagamento($pdo, $r['body']);
+                $res = mp_aplicar_pagamento($pdo, $r['body']);
+                if (!empty($res['mudou'])) { $mudancas = $res; }
             } else {
                 provence_log($pdo, 'mp_sync_referencia_errada', 'consulta ' . $consultaId . ' payment ' . $paymentId, $uid);
             }
         }
     } elseif (!empty($pag['mp_payment_id'])) {
-        mp_sincronizar_por_payment_id($pdo, (string) $pag['mp_payment_id']);
+        $res = mp_sincronizar_por_payment_id($pdo, (string) $pag['mp_payment_id']);
+        if (!empty($res['mudou'])) { $mudancas = $res; }
     } elseif (!empty($pag['external_reference'])) {
         $r = mp_request('GET', '/v1/payments/search?sort=date_created&criteria=desc&external_reference=' . rawurlencode((string) $pag['external_reference']));
         $lista = $r['body']['results'] ?? [];
@@ -90,7 +99,8 @@ try {
                 $peso = ['approved' => 0, 'refunded' => 0, 'charged_back' => 0, 'in_process' => 1, 'pending' => 1, 'rejected' => 2, 'cancelled' => 2];
                 return ($peso[$a['status'] ?? ''] ?? 3) <=> ($peso[$b['status'] ?? ''] ?? 3);
             });
-            mp_aplicar_pagamento($pdo, $lista[0]);
+            $res = mp_aplicar_pagamento($pdo, $lista[0]);
+            if (!empty($res['mudou'])) { $mudancas = $res; }
         }
     }
     $responder();

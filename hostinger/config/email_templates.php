@@ -230,3 +230,122 @@ function templateContatoSite($nome, $email, $mensagem, $ip = '') {
     return templateBase($conteudo);
 }
 
+/** Bloco padrão com os dados da consulta, usado pelos avisos abaixo. */
+function blocoConsulta($linhas) {
+    $html = '<div style="background:#f1f6ee;border-left:4px solid #284A1C;padding:16px;border-radius:8px;margin:24px 0;">';
+    foreach ($linhas as $rotulo => $valor) {
+        $html .= '<p style="color:#1f2937;margin:0 0 6px;font-size:15px;"><strong>' . htmlspecialchars($rotulo) . ':</strong> ' . htmlspecialchars($valor) . '</p>';
+    }
+    return $html . '</div>';
+}
+
+/** Para o PROFISSIONAL: alguém marcou um horário com ele. */
+function templateConsultaAgendada($profissional, $paciente, $quando, $valor) {
+    $conteudo = '
+        <h2 style="color:#1f2937;margin:0 0 16px;font-size:22px;">Você tem uma consulta nova</h2>
+        <p style="color:#4b5563;font-size:15px;line-height:1.6;">
+            Olá, <strong>' . htmlspecialchars($profissional) . '</strong>! Um paciente acabou de agendar um horário com você.
+        </p>'
+        . blocoConsulta(['Paciente' => $paciente, 'Data e hora' => $quando, 'Valor' => $valor]) . '
+        <p style="color:#4b5563;font-size:15px;line-height:1.6;">
+            Assim que o pagamento for confirmado, você recebe outro aviso e poderá enviar o link da sessão pela sua agenda.
+        </p>';
+    return templateBase($conteudo);
+}
+
+/** Para o PACIENTE: pagamento aprovado. */
+function templatePagamentoConfirmado($paciente, $profissional, $quando, $valor) {
+    $conteudo = '
+        <h2 style="color:#1f2937;margin:0 0 16px;font-size:22px;">Pagamento confirmado</h2>
+        <p style="color:#4b5563;font-size:15px;line-height:1.6;">
+            Olá, <strong>' . htmlspecialchars($paciente) . '</strong>! Recebemos o seu pagamento e sua consulta está garantida.
+        </p>'
+        . blocoConsulta(['Profissional' => $profissional, 'Data e hora' => $quando, 'Valor pago' => $valor]) . '
+        <p style="color:#4b5563;font-size:15px;line-height:1.6;">
+            O link para entrar na sessão chega por e-mail assim que o profissional enviar, e fica também na sua área de consultas.
+        </p>';
+    return templateBase($conteudo);
+}
+
+/** Para o PROFISSIONAL: a consulta foi paga. */
+function templateConsultaPaga($profissional, $paciente, $quando) {
+    $conteudo = '
+        <h2 style="color:#1f2937;margin:0 0 16px;font-size:22px;">Consulta paga</h2>
+        <p style="color:#4b5563;font-size:15px;line-height:1.6;">
+            Olá, <strong>' . htmlspecialchars($profissional) . '</strong>! O pagamento desta consulta foi confirmado.
+        </p>'
+        . blocoConsulta(['Paciente' => $paciente, 'Data e hora' => $quando]) . '
+        <p style="color:#4b5563;font-size:15px;line-height:1.6;">
+            Você já pode enviar o link da sessão pela sua agenda. O valor fica disponível para repasse depois que os dois confirmarem o término da sessão.
+        </p>';
+    return templateBase($conteudo);
+}
+
+/** Para o PACIENTE: link da sessão. */
+function templateLinkSessao($paciente, $profissional, $quando, $link) {
+    $linkSeguro = htmlspecialchars($link, ENT_QUOTES, 'UTF-8');
+    $conteudo = '
+        <h2 style="color:#1f2937;margin:0 0 16px;font-size:22px;">O link da sua consulta chegou</h2>
+        <p style="color:#4b5563;font-size:15px;line-height:1.6;">
+            Olá, <strong>' . htmlspecialchars($paciente) . '</strong>! O profissional enviou o endereço da sua sessão.
+        </p>'
+        . blocoConsulta(['Profissional' => $profissional, 'Data e hora' => $quando]) . '
+        <div style="text-align:center;margin:28px 0;">
+            <a href="' . $linkSeguro . '" style="display:inline-block;background:#284A1C;color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:700;font-size:15px;">Entrar na sessão</a>
+        </div>
+        <p style="color:#6b7280;font-size:13px;line-height:1.6;">
+            Se o botão não funcionar, copie este endereço no navegador:<br>
+            <a href="' . $linkSeguro . '" style="color:#284A1C;word-break:break-all;">' . $linkSeguro . '</a>
+        </p>
+        <p style="color:#4b5563;font-size:15px;line-height:1.6;">
+            Entre alguns minutos antes do horário. Em caso de imprevisto, avise pelo chat da plataforma.
+        </p>';
+    return templateBase($conteudo);
+}
+
+/** Consulta cancelada: avisa o outro lado. */
+function templateConsultaCancelada($nome, $porQuem, $quando, $observacao = '') {
+    $extra = trim((string) $observacao) !== ''
+        ? '<p style="color:#4b5563;font-size:15px;line-height:1.6;"><strong>Observação:</strong> ' . htmlspecialchars($observacao) . '</p>'
+        : '';
+    $conteudo = '
+        <h2 style="color:#1f2937;margin:0 0 16px;font-size:22px;">Consulta cancelada</h2>
+        <p style="color:#4b5563;font-size:15px;line-height:1.6;">
+            Olá, <strong>' . htmlspecialchars($nome) . '</strong>. A consulta marcada para <strong>' . htmlspecialchars($quando) . '</strong> foi cancelada por ' . htmlspecialchars($porQuem) . '.
+        </p>
+        ' . $extra . '
+        <p style="color:#4b5563;font-size:15px;line-height:1.6;">
+            Se houve pagamento, a devolução segue as regras dos Termos de Uso e você recebe um aviso assim que for concluída. Para remarcar, é só entrar na plataforma e escolher um novo horário.
+        </p>';
+    return templateBase($conteudo);
+}
+
+/** Para o PACIENTE: situação do reembolso. */
+function templateReembolso($paciente, $quando, $valor, $situacao, $observacao = '') {
+    if ($situacao === 'pago') {
+        $titulo = 'Reembolso feito';
+        $texto  = 'O valor de <strong>' . htmlspecialchars($valor) . '</strong> foi devolvido pelo mesmo meio de pagamento que você usou. No Pix costuma cair em minutos; no cartão de crédito, pode aparecer em até duas faturas, conforme o seu banco.';
+    } elseif ($situacao === 'recusado') {
+        $titulo = 'Sobre seu pedido de reembolso';
+        $texto  = 'Analisamos seu pedido de reembolso e ele não pôde ser aprovado.';
+    } else {
+        $titulo = 'Recebemos seu pedido de reembolso';
+        $texto  = 'Seu pedido foi registrado e nossa equipe vai analisar. Você recebe a resposta por e-mail em até 5 dias úteis.';
+    }
+    $extra = trim((string) $observacao) !== ''
+        ? '<p style="color:#4b5563;font-size:15px;line-height:1.6;"><strong>Observação da equipe:</strong> ' . htmlspecialchars($observacao) . '</p>'
+        : '';
+    $conteudo = '
+        <h2 style="color:#1f2937;margin:0 0 16px;font-size:22px;">' . $titulo . '</h2>
+        <p style="color:#4b5563;font-size:15px;line-height:1.6;">
+            Olá, <strong>' . htmlspecialchars($paciente) . '</strong>.
+        </p>'
+        . blocoConsulta(['Consulta' => $quando, 'Valor' => $valor]) . '
+        <p style="color:#4b5563;font-size:15px;line-height:1.6;">' . $texto . '</p>
+        ' . $extra . '
+        <p style="color:#4b5563;font-size:15px;line-height:1.6;">
+            Qualquer dúvida, responda este e-mail.
+        </p>';
+    return templateBase($conteudo);
+}
+

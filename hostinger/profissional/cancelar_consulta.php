@@ -14,6 +14,7 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../config/seguranca.php';
 require_once __DIR__ . '/../config/mercadopago.php';
+require_once __DIR__ . '/../config/notificacoes.php';
 
 session_start();
 
@@ -76,7 +77,14 @@ try {
             : ['ok' => false];
         $reembolsoMsg = $resC['ok'] ? ' O paciente será reembolsado automaticamente.' : ' O reembolso ao paciente ficou pendente para a administração.';
     }
-    echo json_encode(['success' => true, 'message' => 'Consulta cancelada com sucesso!' . $reembolsoMsg]);
+    $estornou = isset($resC) && !empty($resC['ok']);
+    $valorEstornado = $estornou ? (float) ($resC['valor'] ?? 0) : null;
+    provence_responder_e_notificar(200, ['success' => true, 'message' => 'Consulta cancelada com sucesso!' . $reembolsoMsg], function () use ($pdo, $consulta_id, $estornou, $valorEstornado) {
+        notificar_consulta_cancelada($pdo, (int) $consulta_id, 'profissional');
+        if ($estornou) {
+            notificar_reembolso($pdo, (int) $consulta_id, 'pago', $valorEstornado);
+        }
+    });
 } catch (Exception $e) {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();

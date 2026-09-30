@@ -10,6 +10,8 @@
  */
 
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../config/seguranca.php';
+require_once __DIR__ . '/../config/notificacoes.php';
 
 session_start();
 
@@ -107,7 +109,7 @@ try {
     
     $pdo->commit();
     
-    echo json_encode([
+    provence_responder_e_notificar(200, [
         'success' => true,
         'message' => 'Consulta agendada com sucesso',
         'data' => [
@@ -115,7 +117,9 @@ try {
             'codigo_confirmacao' => $codigo_confirmacao,
             'valor' => $profissional['valor_consulta']
         ]
-    ]);
+    ], function () use ($pdo, $consulta_id) {
+        notificar_consulta_agendada($pdo, (int) $consulta_id);
+    });
 
 } catch (PDOException $e) {
     if ($pdo->inTransaction()) {

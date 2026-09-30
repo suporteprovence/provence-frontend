@@ -27,3 +27,18 @@ Ordem (resumo; detalhes nos dois LEIA-ME de cada etapa):
 Os arquivos `public_html/_email_test.php` e `public_html/criar-preferência.php` deste
 pacote são versões desativadas (respondem 410). Se preferir, apague os dois do servidor
 em vez de substituí-los.
+
+## Avisos por e-mail (cortesia, fora do orçamento)
+
+O pacote inclui `config/notificacoes.php` (novo) e um `config/email_templates.php` com
+seis modelos a mais. Com eles, o site passa a avisar automaticamente:
+
+- profissional: quando alguém agenda um horário com ele, e quando o pagamento entra
+- paciente: pagamento confirmado, link da sessão, consulta cancelada, e cada mudança
+  do reembolso (pedido recebido, dinheiro devolvido ou pedido recusado)
+
+Não é preciso configurar nada: usa o mesmo e-mail que já envia o cadastro e a
+recuperação de senha. O envio acontece depois que a tela responde, então nada fica
+lento para quem está usando, e o sistema não repete o mesmo aviso se o evento chegar
+por dois caminhos. Se o e-mail falhar, a ação continua valendo e a falha fica no log
+do servidor.

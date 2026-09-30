@@ -340,7 +340,7 @@ function mp_aplicar_pagamento(PDO $pdo, array $p): array
         if ($novo !== $atual && function_exists('provence_log')) {
             provence_log($pdo, 'mp_pagamento_' . $novo, 'pagamento ' . $pagId . ' (mp ' . $mpId . ') consulta ' . $consultaId . ' ' . $mpStatus . '/' . $detalhe);
         }
-        return ['ok' => true, 'motivo' => $mpStatus, 'pagamento_id' => $pagId, 'consulta_id' => $consultaId, 'status' => $novo];
+        return ['ok' => true, 'motivo' => $mpStatus, 'pagamento_id' => $pagId, 'consulta_id' => $consultaId, 'status' => $novo, 'mudou' => ($novo !== $atual)];
     } catch (Throwable $e) {
         if ($pdo->inTransaction()) {
             $pdo->rollBack();

@@ -17,6 +17,7 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../config/seguranca.php';
 require_once __DIR__ . '/../config/mercadopago.php';
+require_once __DIR__ . '/../config/notificacoes.php';
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
     provence_responder(405, ['ok' => false]);
@@ -62,4 +63,15 @@ if (!$r['ok'] && isset($r['http']) && $r['http'] !== 404) {
     // (404 = pagamento não existe; reenviar não resolveria)
     provence_responder(500, ['ok' => false, 'message' => 'Tente novamente.']);
 }
-provence_responder(200, ['ok' => true, 'resultado' => $r['motivo'], 'status' => $r['status']]);
+provence_responder_e_notificar(200, ['ok' => true, 'resultado' => $r['motivo'], 'status' => $r['status']], function () use ($pdo, $r) {
+    if (empty($r['mudou']) || empty($r['consulta_id'])) {
+        return;
+    }
+    if ($r['status'] === 'aprovado') {
+        notificar_pagamento_aprovado($pdo, (int) $r['consulta_id']);
+    } elseif ($r['status'] === 'reembolsado') {
+        // Estorno feito fora da plataforma (direto no painel do Mercado Pago).
+        // Quando sai por aqui, quem avisa é o próprio endpoint do reembolso.
+        notificar_reembolso($pdo, (int) $r['consulta_id'], 'pago');
+    }
+});
