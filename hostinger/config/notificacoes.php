@@ -57,6 +57,19 @@ function provence_dados_consulta(PDO $pdo, int $consultaId): ?array
         }
         $c['quando'] = $c['data_br'] . ' às ' . $c['hora_br'];
         $c['valor_br'] = 'R$ ' . number_format((float) $c['valor_pago'], 2, ',', '.');
+        // Quanto fica para o profissional depois da taxa da plataforma
+        $taxa = 0.0;
+        try {
+            $stT = $pdo->prepare("SELECT valor FROM configuracoes_sistema WHERE chave = 'taxa_plataforma_percent' LIMIT 1");
+            $stT->execute();
+            $v = $stT->fetchColumn();
+            if ($v !== false && is_numeric($v)) {
+                $taxa = max(0.0, min(100.0, (float) $v));
+            }
+        } catch (Throwable $e) {
+            $taxa = 0.0;
+        }
+        $c['valor_profissional_br'] = 'R$ ' . number_format((float) $c['valor_pago'] * (100 - $taxa) / 100, 2, ',', '.');
         return $c;
     } catch (Throwable $e) {
         error_log('provence_dados_consulta: ' . $e->getMessage());
@@ -87,44 +100,74 @@ function provence_carrega_mailer(): bool
  * mesmo evento chega por dois caminhos (o aviso do Mercado Pago e a nossa própria
  * ação podem se cruzar).
  */
-function provence_aviso_repetido(PDO $pdo, string $acao, int $consultaId, int $janelaMin): bool
+function provence_aviso_repetido(PDO $pdo, string $acao, int $consultaId, int $janelaMin, string $variante = ''): bool
 {
     if ($consultaId <= 0) {
         return false;
     }
-    $janela = max(1, min(1440, $janelaMin));
+    $janela = (int) max(1, min(1440, $janelaMin));
     try {
+        // Só conta aviso que REALMENTE saiu: a ação de falha é outra ('..._falhou'),
+        // então uma tentativa frustrada não bloqueia a próxima.
         $st = $pdo->prepare(
             'SELECT 1 FROM logs_sistema
               WHERE acao = ? AND descricao LIKE ? AND criado_em > NOW() - INTERVAL ' . $janela . ' MINUTE
               LIMIT 1'
         );
-        $st->execute([$acao, 'consulta ' . $consultaId . ' %']);
+        $st->execute([$acao, provence_chave_aviso($consultaId, $variante) . '%']);
         return (bool) $st->fetchColumn();
     } catch (Throwable $e) {
         return false;
     }
 }
 
+/**
+ * Identifica o aviso na trilha de auditoria. A "variante" separa avisos do mesmo tipo
+ * que têm conteúdo diferente (por exemplo, dois links de sessão distintos).
+ */
+function provence_chave_aviso(int $consultaId, string $variante = ''): string
+{
+    return 'consulta ' . $consultaId . '|' . substr($variante, 0, 16) . '|';
+}
+
+/** Esconde o meio do e-mail antes de gravar na auditoria (dado pessoal, LGPD). */
+function provence_email_mascarado(string $email): string
+{
+    $at = strpos($email, '@');
+    if ($at === false) {
+        return '***';
+    }
+    $nome = substr($email, 0, $at);
+    $visivel = mb_substr($nome, 0, 2);
+    return $visivel . str_repeat('*', max(1, mb_strlen($nome) - 2)) . substr($email, $at);
+}
+
 /** Envia e registra na auditoria, sem nunca interromper o fluxo. */
-function provence_avisar(PDO $pdo, string $para, string $nome, string $assunto, string $html, string $evento, int $consultaId = 0, int $janelaMin = 15): void
+function provence_avisar(PDO $pdo, string $para, string $nome, string $assunto, string $html, string $evento, int $consultaId = 0, int $janelaMin = 15, string $variante = ''): bool
 {
     if ($para === '' || !filter_var($para, FILTER_VALIDATE_EMAIL) || !provence_carrega_mailer()) {
-        return;
+        return false;
     }
-    if (provence_aviso_repetido($pdo, 'aviso_' . $evento, $consultaId, $janelaMin)) {
-        return;
+    if (provence_aviso_repetido($pdo, 'aviso_' . $evento, $consultaId, $janelaMin, $variante)) {
+        return false;
     }
     try {
         $r = enviarEmail($para, $nome, $assunto, $html);
-        if (empty($r['success'])) {
-            error_log('notificacoes: falha ao enviar "' . $evento . '" para ' . $para . ': ' . ($r['message'] ?? ''));
+        $ok = !empty($r['success']);
+        if (!$ok) {
+            error_log('notificacoes: falha ao enviar "' . $evento . '" da consulta ' . $consultaId . ': ' . ($r['message'] ?? ''));
         }
         if (function_exists('provence_log')) {
-            provence_log($pdo, 'aviso_' . $evento, 'consulta ' . $consultaId . ' ' . (empty($r['success']) ? 'falhou' : 'enviado') . ' para ' . $para);
+            provence_log(
+                $pdo,
+                'aviso_' . $evento . ($ok ? '' : '_falhou'),
+                provence_chave_aviso($consultaId, $variante) . ($ok ? 'enviado' : 'falhou') . ' para ' . provence_email_mascarado($para)
+            );
         }
+        return $ok;
     } catch (Throwable $e) {
         error_log('notificacoes: ' . $e->getMessage());
+        return false;
     }
 }
 
@@ -140,7 +183,7 @@ function notificar_consulta_agendada(PDO $pdo, int $consultaId): void
     }
     provence_avisar($pdo, $c['profissional_email'], $c['profissional_nome'],
         'Nova consulta agendada - Provence',
-        templateConsultaAgendada($c['profissional_nome'], $c['paciente_nome'], $c['quando'], $c['valor_br']),
+        templateConsultaAgendada($c['profissional_nome'], $c['paciente_nome'], $c['quando'], $c['valor_br'], $c['valor_profissional_br']),
         'consulta_agendada', $consultaId);
 }
 
@@ -177,7 +220,7 @@ function notificar_link_sessao(PDO $pdo, int $consultaId, string $link): void
     provence_avisar($pdo, $c['paciente_email'], $c['paciente_nome'],
         'Link da sua consulta - Provence',
         templateLinkSessao($c['paciente_nome'], $c['profissional_nome'], $c['quando'], $link),
-        'link_sessao', $consultaId, 1);
+        'link_sessao', $consultaId, 1, substr(sha1($link), 0, 12));
 }
 
 /** Consulta cancelada: avisa o outro lado. $porQuem = 'paciente' | 'profissional'. */
@@ -193,12 +236,12 @@ function notificar_consulta_cancelada(PDO $pdo, int $consultaId, string $porQuem
     if ($porQuem === 'profissional') {
         provence_avisar($pdo, $c['paciente_email'], $c['paciente_nome'],
             'Sua consulta foi cancelada - Provence',
-            templateConsultaCancelada($c['paciente_nome'], 'o profissional ' . $c['profissional_nome'], $c['quando'], $observacao),
+            templateConsultaCancelada($c['paciente_nome'], 'pelo profissional ' . $c['profissional_nome'], $c['quando'], $observacao),
             'consulta_cancelada_paciente', $consultaId);
     } else {
         provence_avisar($pdo, $c['profissional_email'], $c['profissional_nome'],
             'Consulta cancelada pelo paciente - Provence',
-            templateConsultaCancelada($c['profissional_nome'], 'o paciente ' . $c['paciente_nome'], $c['quando'], $observacao),
+            templateConsultaCancelada($c['profissional_nome'], 'pelo paciente ' . $c['paciente_nome'], $c['quando'], $observacao),
             'consulta_cancelada_profissional', $consultaId);
     }
 }

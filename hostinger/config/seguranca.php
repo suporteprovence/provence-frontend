@@ -174,6 +174,12 @@ function provence_finalizar_resposta(int $status, array $payload): void
 {
     ignore_user_abort(true);
     set_time_limit(60);
+    // Solta o arquivo de sessão ANTES do trabalho lento. Sem isto, o PHP segura o
+    // bloqueio da sessão até o fim do script e a próxima ação da mesma pessoa fica
+    // esperando o envio do e-mail terminar.
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        session_write_close();
+    }
     http_response_code($status);
     $corpo = json_encode($payload);
     header('Content-Length: ' . strlen($corpo));

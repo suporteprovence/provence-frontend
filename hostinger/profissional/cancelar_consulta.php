@@ -78,7 +78,7 @@ try {
         $reembolsoMsg = $resC['ok'] ? ' O paciente será reembolsado automaticamente.' : ' O reembolso ao paciente ficou pendente para a administração.';
     }
     $estornou = isset($resC) && !empty($resC['ok']);
-    $valorEstornado = $estornou ? (float) ($resC['valor'] ?? 0) : null;
+    $valorEstornado = ($estornou && isset($resC['valor'])) ? (float) $resC['valor'] : null;
     provence_responder_e_notificar(200, ['success' => true, 'message' => 'Consulta cancelada com sucesso!' . $reembolsoMsg], function () use ($pdo, $consulta_id, $estornou, $valorEstornado) {
         notificar_consulta_cancelada($pdo, (int) $consulta_id, 'profissional');
         if ($estornou) {

@@ -75,7 +75,7 @@ try {
     if ($acao === 'recusar') {
         $pdo->prepare("UPDATE reembolsos SET status = 'recusado', justificativa = ?, data_resposta = NOW() WHERE id = ?")->execute([mb_substr($just, 0, 1000), $rid]);
         provence_log($pdo, 'reembolso_recusado', 'reembolso ' . $rid . ' por admin ' . $adminId);
-        provence_responder_e_notificar(200, ['success' => true, 'message' => 'Pedido recusado. O paciente foi avisado por e-mail.'], function () use ($pdo, $r, $just) {
+        provence_responder_e_notificar(200, ['success' => true, 'message' => 'Pedido recusado. O paciente será avisado por e-mail.'], function () use ($pdo, $r, $just) {
             notificar_reembolso($pdo, (int) $r['consulta_id'], 'recusado', (float) $r['valor_reembolso'], $just);
         });
     }
@@ -89,7 +89,7 @@ try {
     }
     provence_log($pdo, 'reembolso_aprovado', 'reembolso ' . $rid . ' por admin ' . $adminId);
     $valorEstorno = (float) ($res['valor'] ?? $r['valor_reembolso']);
-    provence_responder_e_notificar(200, ['success' => true, 'message' => $res['message'] . ' O paciente foi avisado por e-mail.'], function () use ($pdo, $r, $valorEstorno) {
+    provence_responder_e_notificar(200, ['success' => true, 'message' => $res['message'] . ' O paciente será avisado por e-mail.'], function () use ($pdo, $r, $valorEstorno) {
         notificar_reembolso($pdo, (int) $r['consulta_id'], 'pago', $valorEstorno);
     });
 } catch (PDOException $e) {

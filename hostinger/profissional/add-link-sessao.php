@@ -79,7 +79,7 @@ try {
     $up->execute([$link, $link, $consulta_id]);
 
     $pdo->commit();
-    provence_responder_e_notificar(200, ['success' => true, 'message' => 'Link da sessão salvo. O paciente foi avisado por e-mail.'], function () use ($pdo, $consulta_id, $link) {
+    provence_responder_e_notificar(200, ['success' => true, 'message' => 'Link da sessão salvo. O paciente será avisado por e-mail.'], function () use ($pdo, $consulta_id, $link) {
         notificar_link_sessao($pdo, (int) $consulta_id, $link);
     });
 } catch (Exception $e) {

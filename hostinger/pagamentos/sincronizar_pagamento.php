@@ -53,8 +53,13 @@ $responder = function () use ($pdo, $consultaId, &$mudancas) {
         'valor'            => isset($row['valor_total']) ? (float) $row['valor_total'] : null,
         'ambiente'         => mp_ambiente(),
     ]], function () use ($pdo, $consultaId, $mudancas) {
-        if (($mudancas['status'] ?? '') === 'aprovado') {
+        $novoStatus = $mudancas['status'] ?? '';
+        if ($novoStatus === 'aprovado') {
             notificar_pagamento_aprovado($pdo, $consultaId);
+        } elseif ($novoStatus === 'reembolsado') {
+            // Estorno feito fora da plataforma e descoberto aqui (o aviso do Mercado
+            // Pago pode não ter chegado). O anti-repetição evita e-mail em dobro.
+            notificar_reembolso($pdo, $consultaId, 'pago');
         }
     });
 };

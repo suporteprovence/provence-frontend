@@ -240,13 +240,18 @@ function blocoConsulta($linhas) {
 }
 
 /** Para o PROFISSIONAL: alguém marcou um horário com ele. */
-function templateConsultaAgendada($profissional, $paciente, $quando, $valor) {
+function templateConsultaAgendada($profissional, $paciente, $quando, $valor, $valorProfissional = null) {
     $conteudo = '
         <h2 style="color:#1f2937;margin:0 0 16px;font-size:22px;">Você tem uma consulta nova</h2>
         <p style="color:#4b5563;font-size:15px;line-height:1.6;">
             Olá, <strong>' . htmlspecialchars($profissional) . '</strong>! Um paciente acabou de agendar um horário com você.
         </p>'
-        . blocoConsulta(['Paciente' => $paciente, 'Data e hora' => $quando, 'Valor' => $valor]) . '
+        . blocoConsulta(array_filter([
+            'Paciente' => $paciente,
+            'Data e hora' => $quando,
+            'Valor da consulta' => $valor,
+            'Seu repasse' => $valorProfissional,
+        ])) . '
         <p style="color:#4b5563;font-size:15px;line-height:1.6;">
             Assim que o pagamento for confirmado, você recebe outro aviso e poderá enviar o link da sessão pela sua agenda.
         </p>';
@@ -311,7 +316,7 @@ function templateConsultaCancelada($nome, $porQuem, $quando, $observacao = '') {
     $conteudo = '
         <h2 style="color:#1f2937;margin:0 0 16px;font-size:22px;">Consulta cancelada</h2>
         <p style="color:#4b5563;font-size:15px;line-height:1.6;">
-            Olá, <strong>' . htmlspecialchars($nome) . '</strong>. A consulta marcada para <strong>' . htmlspecialchars($quando) . '</strong> foi cancelada por ' . htmlspecialchars($porQuem) . '.
+            Olá, <strong>' . htmlspecialchars($nome) . '</strong>. A consulta marcada para <strong>' . htmlspecialchars($quando) . '</strong> foi cancelada ' . htmlspecialchars($porQuem) . '.
         </p>
         ' . $extra . '
         <p style="color:#4b5563;font-size:15px;line-height:1.6;">
