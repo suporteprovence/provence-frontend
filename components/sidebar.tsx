@@ -109,7 +109,7 @@ export default function Sidebar({ userData }: SidebarProps) {
       <div className="p-6 border-t border-slate-700">
         <div className="flex items-center space-x-3 mb-4 p-3 bg-slate-800 rounded-xl">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={userData.foto_perfil || "/placeholder.svg?height=40&width=40"} />
+            <AvatarImage src={userData.foto_perfil || undefined} />
             <AvatarFallback className="bg-gradient-to-r from-provence-900 to-provence-950 text-white">
               {userData.nome
                 .split(" ")

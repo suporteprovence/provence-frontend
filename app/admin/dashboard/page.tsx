@@ -709,7 +709,7 @@ export default function AdminDashboard() {
                         <TableCell>
                           <div className="flex items-center gap-3">
                             <Avatar className="h-12 w-12">
-                              <AvatarImage src={profissional.foto_perfil || "/placeholder.svg"} />
+                              <AvatarImage src={profissional.foto_perfil || undefined} />
                               <AvatarFallback className="bg-gradient-to-br from-provence-900 to-provence-950 text-white font-semibold">
                                 {profissional.nome.charAt(0)}
                               </AvatarFallback>
@@ -761,7 +761,7 @@ export default function AdminDashboard() {
                                   <div className="space-y-6">
                                     <div className="flex items-center gap-4">
                                       <Avatar className="h-20 w-20">
-                                        <AvatarImage src={selectedProfissional.foto_perfil || "/placeholder.svg"} />
+                                        <AvatarImage src={selectedProfissional.foto_perfil || undefined} />
                                         <AvatarFallback className="bg-gradient-to-br from-provence-900 to-provence-950 text-white text-2xl font-bold">
                                           {selectedProfissional.nome.charAt(0)}
                                         </AvatarFallback>

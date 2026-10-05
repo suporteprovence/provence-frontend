@@ -82,8 +82,8 @@ export function ConfirmacaoSessao({ consultaId }: { consultaId: number | string 
     const meu = estado[fase][papel]
     const doOutro = estado[fase][outro]
     return (
-      <div className="flex items-center justify-between gap-2 text-sm">
-        <span className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-sm">
+        <span className="flex items-center gap-2 whitespace-nowrap">
           {meu ? (
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
           ) : (
@@ -91,8 +91,8 @@ export function ConfirmacaoSessao({ consultaId }: { consultaId: number | string 
           )}
           {fase === "inicio" ? "Início da sessão" : "Fim da sessão"}
         </span>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">
+        <div className="flex items-center gap-2 ml-auto">
+          <span className="text-xs text-muted-foreground whitespace-nowrap">
             {doOutro ? `${nomePapel(outro)} confirmou` : `aguardando ${nomePapel(outro)}`}
           </span>
           {!meu && !jaRealizada && (

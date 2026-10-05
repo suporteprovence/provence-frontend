@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import {
   Loader2,
   Calendar,
@@ -445,11 +445,12 @@ export function PagamentosPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Solicitar reembolso</DialogTitle>
+            <DialogDescription>Ao pedir o reembolso, a consulta é cancelada.</DialogDescription>
           </DialogHeader>
           {reembolso && (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Valor a reembolsar: <span className="font-medium text-foreground">{brl(reembolso.valor)}</span>. Ao pedir o reembolso, a consulta é cancelada.
+                Valor a reembolsar: <span className="font-medium text-foreground">{brl(reembolso.valor)}</span>.
               </p>
               <p className="text-sm text-muted-foreground">
                 Cancelamentos com pelo menos {meta.reembolso_horas_min} horas de antecedência são reembolsados na hora; depois disso o pedido passa por análise da Provence.

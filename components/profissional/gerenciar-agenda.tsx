@@ -114,6 +114,15 @@ function formatDateBR(d: string): string {
   return txt.charAt(0).toUpperCase() + txt.slice(1)
 }
 
+// Data curta para o card da agenda: "seg., 06/10".
+function formatDataCurta(d: string): string {
+  if (!d) return ""
+  const dt = new Date(`${d}T00:00:00`)
+  if (Number.isNaN(dt.getTime())) return d
+  const txt = dt.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit" })
+  return txt.charAt(0).toUpperCase() + txt.slice(1)
+}
+
 function formatDuracao(min?: number): string {
   if (min === undefined) return "Não informada"
   return `${min} min`
@@ -282,12 +291,13 @@ export function GerenciarAgenda() {
     }
     patchLinkEdit(id, { salvando: true, erro: "" })
     try {
-      await fetchJson(`${API_BASE}/profissional/add-link-sessao.php`, {
+      const resp = await fetchJson(`${API_BASE}/profissional/add-link-sessao.php`, {
         method: "POST",
         body: JSON.stringify({ consulta_id: Number(id), link_sessao: valor }),
       })
       setAppointments((prev) => prev.map((a) => (a.id === id ? { ...a, linkSessao: valor } : a)))
       patchLinkEdit(id, { salvando: false, aberto: false, valor, erro: "" })
+      setAviso((resp && (resp as { message?: string }).message) || "Link da sessão salvo.")
     } catch (e) {
       patchLinkEdit(id, { salvando: false, erro: e instanceof Error ? e.message : "Não foi possível salvar o link." })
     }
@@ -307,16 +317,16 @@ export function GerenciarAgenda() {
     const linkEdit = getLinkEdit(appointment.id)
     return (
     <div key={appointment.id}>
-      <Card className="p-6 border-border/50 hover:shadow-xl transition-all mb-4">
-        <div className="flex items-start gap-4">
-          <Avatar className="w-14 h-14 border-2 border-primary/20">
-            <AvatarImage src={appointment.patient.avatar || "/placeholder.svg"} />
+      <Card className="p-4 sm:p-6 border-border/50 hover:shadow-xl transition-all mb-4">
+        <div className="flex items-start gap-3 sm:gap-4">
+          <Avatar className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 border-2 border-primary/20">
+            <AvatarImage src={appointment.patient.avatar || undefined} />
             <AvatarFallback>{appointment.patient.name.charAt(0)}</AvatarFallback>
           </Avatar>
-          <div className="flex-1">
-            <div className="flex justify-between items-start">
-              <div>
-                <h4 className="font-semibold text-lg">{appointment.patient.name}</h4>
+          <div className="flex-1 min-w-0">
+            <div className="flex justify-between items-start gap-2">
+              <div className="min-w-0">
+                <h4 className="font-semibold text-lg break-words">{appointment.patient.name}</h4>
                 <p className="text-sm text-muted-foreground">{"Sessão #" + appointment.sessionNumber}</p>
               </div>
               <DropdownMenu modal={false}>
@@ -336,7 +346,8 @@ export function GerenciarAgenda() {
 
             <div className="flex flex-wrap gap-3 my-4">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Clock className="w-4 h-4" /> {appointment.time}
+                <Clock className="w-4 h-4" />{" "}
+                {appointment.date ? `${formatDataCurta(appointment.date)} às ${appointment.time}` : appointment.time}
               </div>
               <Badge variant="secondary" className="flex gap-1">
                 {getTypeIcon(appointment.type)} {getTypeLabel(appointment.type)}
@@ -344,7 +355,7 @@ export function GerenciarAgenda() {
               <Badge className={getStatusColor(appointment.status)}>{appointment.status}</Badge>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {appointment.status === "pendente" && (
                 <Button size="sm" variant="outline" className="text-red-500 border-red-200" onClick={() => cancelarConsulta(appointment.id)} disabled={actionLoadingId === appointment.id}>
                   {actionLoadingId === appointment.id ? <Loader2 className="animate-spin w-4 h-4" /> : "Cancelar"}
@@ -471,7 +482,7 @@ export function GerenciarAgenda() {
             <div className="space-y-4 text-sm">
               <div className="flex items-center gap-3">
                 <Avatar className="w-12 h-12 border-2 border-primary/20">
-                  <AvatarImage src={selectedAppointment.patient.avatar || "/placeholder.svg"} />
+                  <AvatarImage src={selectedAppointment.patient.avatar || undefined} />
                   <AvatarFallback>{selectedAppointment.patient.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div>
