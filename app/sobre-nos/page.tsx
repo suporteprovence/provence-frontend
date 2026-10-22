@@ -99,15 +99,15 @@ export default function AboutPage() {
         </div>
 
         {/* Links de Redes Sociais */}
+        {/* Facebook e LinkedIn voltam quando a Ana mandar os endereços */}
         <div className="mt-32 flex justify-end space-x-6 text-sm text-gray-600">
-          <a href="#" className="hover:text-provence-900 transition-colors">
+          <a
+            href="https://www.instagram.com/psi.anaschreiber/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-provence-900 transition-colors"
+          >
             instagram.
-          </a>
-          <a href="#" className="hover:text-provence-900 transition-colors">
-            facebook.
-          </a>
-          <a href="#" className="hover:text-provence-900 transition-colors">
-            linkedin.
           </a>
         </div>
       </div>
